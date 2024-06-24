@@ -71,26 +71,26 @@ const GstR1 = () => {
       try {
         if (userRole == 'admin' && serviceRef) {
           api
-            .getDataUploadStageDetails('', serviceRef?._id, entitiyId)
+            .getDataUploadStageDetails('', serviceRef?._id, entitiyId, 'gstr1')
             .then(({ data }) => {
               setLoading(false);
               setDataUpload(data.data.orders);
             });
           api
-            .getWorkingStageDetails('', serviceRef?._id, entitiyId)
+            .getWorkingStageDetails('', serviceRef?._id, entitiyId, 'gstr1')
             .then(({ data }) => {
               setLoading(false);
               setWorkingStage(data.data.orders);
             });
 
           api
-            .getSubmitStageDetails('', serviceRef?._id, entitiyId)
+            .getSubmitStageDetails('', serviceRef?._id, entitiyId, 'gstr1')
             .then(({ data }) => {
               setLoading(false);
               setSubmitStage(data.data.orders);
             });
           api
-            .getCompleteStageDetails('', serviceRef?._id, entitiyId)
+            .getCompleteStageDetails('', serviceRef?._id, entitiyId, 'gstr1')
             .then(({ data }) => {
               setLoading(false);
               setCompleteStage(data.data.orders);

@@ -1,36 +1,108 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Sidebar from './Sidebar';
-import TableComponent from './TableComponent';
 import TableComponentService from './TableComponentService';
+import * as api from '../api';
+import { useSelector } from 'react-redux';
+import Loader from './Loader';
 
 const Gst3B = () => {
   const [activeTab, setActiveTab] = useState('tab1');
+  const [dataUpload, setDataUpload] = useState([]);
+  const [workingStage, setWorkingStage] = useState([]);
+  const [submitStage, setSubmitStage] = useState([]);
+  const [completeStage, setCompleteStage] = useState([]);
+  const [services, setServices] = useState([]);
+  const [loading, setLoading] = useState([]);
+  const userRole = useSelector((state) => state.auth.authData.role);
+  const entitiyId = useSelector((state) => state.auth.authData.entityID);
 
   const openTab = (event, tabName) => {
     console.log('tabName', tabName);
     setActiveTab(tabName);
   };
 
-  let tabKeys = ['tab1', 'tab2', 'tab3', 'tab4', 'tab5'];
-  let tabValues = ['Data', 'Working', 'Payment', 'Submit', 'Completed'];
+  let tabKeys = ['tab1', 'tab2', 'tab3', 'tab4'];
+  let tabValues = ['Data', 'Working', 'Submit', 'Completed'];
 
   const handleDropdownChange = (event) => {
     const selectedTab = event.target.value;
     openTab(event, selectedTab);
   };
 
-  let dataTableHeader = [
+  let dataHeader = [
     'Sr No.',
     'Client Name',
     'Data Provider Name',
     'Number',
     'Upload',
   ];
-  let dataTableRow = [
-    [30, 'John', 'New York', '6776', 'upload'],
-    [25, 'Alice', 'Los Angeles', '33', 'upload'],
-    [35, 'Bob', 'Chicago', '444', 'upload'],
+
+  let workingHeader = [
+    'Sr No.',
+    'View',
+    'Client Name',
+    'Past Note',
+    'Working',
+    'Note',
+    'Done',
   ];
+
+  let submitHeader = ['Sr No.', 'View', 'Client Name', 'ARN Number', 'Done'];
+  let completeHeader = ['Sr No.', 'View', 'Client Name', 'ARN Number'];
+
+  useEffect(() => {
+    setLoading(true);
+    try {
+      api.fetchAllServices().then(({ data }) => {
+        data.statusCode == 200 && setServices(data.data.services);
+      });
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    setLoading(true);
+
+    async function fetchData() {
+      let serviceRef = services.find(({ subheading }) => subheading == 'R1');
+      try {
+        if (userRole == 'admin' && serviceRef) {
+          api
+            .getDataUploadStageDetails('', serviceRef?._id, entitiyId, 'gst3b')
+            .then(({ data }) => {
+              setLoading(false);
+              setDataUpload(data.data.orders);
+            });
+          api
+            .getWorkingStageDetails('', serviceRef?._id, entitiyId, 'gst3b')
+            .then(({ data }) => {
+              setLoading(false);
+              setWorkingStage(data.data.orders);
+            });
+
+          api
+            .getSubmitStageDetails('', serviceRef?._id, entitiyId, 'gst3b')
+            .then(({ data }) => {
+              setLoading(false);
+              setSubmitStage(data.data.orders);
+            });
+          api
+            .getCompleteStageDetails('', serviceRef?._id, entitiyId, 'gst3b')
+            .then(({ data }) => {
+              setLoading(false);
+              setCompleteStage(data.data.orders);
+            });
+        }
+      } catch (error) {
+        console.log('Error: ', error);
+      } finally {
+      }
+    }
+    if (services) fetchData();
+  }, [services]);
 
   return (
     <>
@@ -42,86 +114,87 @@ const Gst3B = () => {
         >
           <div>GST - 3B</div>
         </div>
+        {loading ? (
+          <Loader />
+        ) : (
+          <div className='p-4 flex flex-col gap-y-5'>
+            <div className='md:hidden'>
+              <select
+                className='w-full py-4 px-6 block leading-normal border border-gray-200 rounded-lg bg-slate-50 text-gray-900 focus:outline-none focus:shadow-outline'
+                value={activeTab}
+                onChange={handleDropdownChange}
+              >
+                {tabKeys.map((tab, index) => (
+                  <option key={index} value={tab}>
+                    {tabValues[index]}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className='hidden md:block border-b border-gray-200'>
+              <nav className='flex flex-wrap -mb-px'>
+                {tabKeys.map((tab, index) => (
+                  <button
+                    key={index}
+                    className={`w-1/2 md:w-1/4 py-4 px-6 block leading-normal border-l border-t border-r rounded-t-lg focus:outline-none focus:shadow-outline ${
+                      activeTab === tab
+                        ? 'border-b-0 font-medium bg-slate-50'
+                        : 'border-b border-gray-200'
+                    }`}
+                    onClick={(event) => openTab(event, tab)}
+                  >
+                    {tabValues[index]}
+                  </button>
+                ))}
+              </nav>
+            </div>
 
-        <div className='p-4 flex flex-col gap-y-5'>
-          <div className='md:hidden'>
-            <select
-              className='w-full py-4 px-6 block leading-normal border border-gray-200 rounded-lg bg-slate-50 text-gray-900 focus:outline-none focus:shadow-outline'
-              value={activeTab}
-              onChange={handleDropdownChange}
+            <div
+              id='tab1'
+              className={`tabcontent ${
+                activeTab === 'tab1' ? 'block' : 'hidden'
+              }`}
             >
-              {tabKeys.map((tab, index) => (
-                <option key={index} value={tab}>
-                  {tabValues[index]}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className='hidden md:block border-b border-gray-200'>
-            <nav className='flex flex-wrap -mb-px'>
-              {tabKeys.map((tab, index) => (
-                <button
-                  key={index}
-                  className={`w-1/2 md:w-1/5 py-4 px-6 block leading-normal border-l border-t border-r rounded-t-lg focus:outline-none focus:shadow-outline ${
-                    activeTab === tab
-                      ? 'border-b-0 font-medium bg-slate-50'
-                      : 'border-b border-gray-200'
-                  }`}
-                  onClick={(event) => openTab(event, tab)}
-                >
-                  {tabValues[index]}
-                </button>
-              ))}
-            </nav>
-          </div>
+              <TableComponentService headers={dataHeader} data={dataUpload} />
+            </div>
 
-          <div
-            id='tab1'
-            className={`tabcontent ${
-              activeTab === 'tab1' ? 'block' : 'hidden'
-            }`}
-          >
-            <TableComponentService
-              headers={dataTableHeader}
-              data={dataTableRow}
-            />
-          </div>
+            <div
+              id='tab2'
+              className={`tabcontent ${
+                activeTab === 'tab2' ? 'block' : 'hidden'
+              }`}
+            >
+              <TableComponentService
+                headers={workingHeader}
+                data={workingStage}
+              />
+            </div>
 
-          <div
-            id='tab2'
-            className={`tabcontent ${
-              activeTab === 'tab2' ? 'block' : 'hidden'
-            }`}
-          >
-            Tab 2 Content Your table content goes here
-          </div>
+            <div
+              id='tab3'
+              className={`tabcontent ${
+                activeTab === 'tab3' ? 'block' : 'hidden'
+              }`}
+            >
+              <TableComponentService
+                headers={submitHeader}
+                data={submitStage}
+              />
+            </div>
 
-          <div
-            id='tab3'
-            className={`tabcontent ${
-              activeTab === 'tab3' ? 'block' : 'hidden'
-            }`}
-          >
-            Tab 3 Content Your table content goes here
+            <div
+              id='tab4'
+              className={`tabcontent ${
+                activeTab === 'tab4' ? 'block' : 'hidden'
+              }`}
+            >
+              <TableComponentService
+                headers={completeHeader}
+                data={completeStage}
+              />
+            </div>
           </div>
-
-          <div
-            id='tab4'
-            className={`tabcontent ${
-              activeTab === 'tab4' ? 'block' : 'hidden'
-            }`}
-          >
-            Tab 4 Content Your table content goes here
-          </div>
-          <div
-            id='tab5'
-            className={`tabcontent ${
-              activeTab === 'tab5' ? 'block' : 'hidden'
-            }`}
-          >
-            Tab 5 Content Your table content goes here
-          </div>
-        </div>
+        )}
       </div>
     </>
   );

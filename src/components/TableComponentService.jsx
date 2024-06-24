@@ -8,7 +8,7 @@ const TableComponentService = ({ headers, data }) => {
     'Data Provider Name': 'dataProviderName',
     Number: 'clientNumber',
     Upload: 'upload', // Assuming 'upload' is a placeholder for file input
-    View: '_id', // Assuming '_id' can be used uniquely for identifying rows
+    View: 'clientUploadArray', // Assuming '_id' can be used uniquely for identifying rows
     'Past Note': 'pastNote',
     Working: 'currentNote',
     Note: 'currentNote',
@@ -51,6 +51,10 @@ const TableComponentService = ({ headers, data }) => {
                           console.log('file', file);
                         }}
                       />
+                    ) : header === 'View' ? (
+                      (cellData.length > 0 &&
+                        cellData.map((file) => <p>{file}</p>)) ||
+                      'NA'
                     ) : (
                       cellData
                     )}
