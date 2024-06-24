@@ -1,0 +1,9 @@
+{
+  "short_name": "CA Portal",
+  "name": "CA Portal to file taxes & more",
+  "icons": [],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}
