@@ -151,7 +151,7 @@ const Sidebar = ({ activeTab }) => {
                     3B
                   </NavLink>
                 </li>
-                <li>
+                {/* <li>
                   <NavLink
                     to='/gst/9r'
                     className={`flex items-center w-full p-2 transition duration-75 rounded-lg pl-11 group dark:text-white ${
@@ -174,7 +174,7 @@ const Sidebar = ({ activeTab }) => {
                   >
                     9RC
                   </NavLink>
-                </li>
+                </li> */}
               </ul>
             </li>
             <li>
