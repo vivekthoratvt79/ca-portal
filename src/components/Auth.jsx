@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux';
 import axios from 'axios';
 import { signin } from '../actions/auth';
 import { useNavigate } from 'react-router-dom';
+import Loader from './Loader';
 
 const Auth = () => {
   const dispatch = useDispatch();
@@ -15,6 +16,9 @@ const Auth = () => {
     username: '',
     password: '',
   });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [isSubmitted, setIsSubmitted] = useState('');
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -22,8 +26,18 @@ const Auth = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData);
-    dispatch(signin(formData, navigate));
+    setLoading(true);
+    dispatch(signin(formData, navigate)).then((data) => {
+      if (data?.response?.status == 401) {
+        setError(data?.response?.data?.message);
+      }
+      setLoading(false);
+    });
+
+    setTimeout(() => {
+      setLoading(false);
+      setError('');
+    }, 3000);
   };
 
   return (
@@ -98,12 +112,20 @@ const Auth = () => {
                 </div>
               </div>
             </div>
-            <button
-              type='submit'
-              className='w-full text-sm p-3 bg-cyan-400 text-white rounded-lg font-semibold hover:bg-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-600'
-            >
-              LOGIN
-            </button>
+            {loading ? (
+              <Loader />
+            ) : error ? (
+              <div className='flex justify-center text-center text-red-400'>
+                {error}
+              </div>
+            ) : (
+              <button
+                type='submit'
+                className='w-full text-sm p-3 bg-cyan-400 text-white rounded-lg font-semibold hover:bg-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-600'
+              >
+                LOGIN
+              </button>
+            )}
             {/* <div className='mt-4 text-center'>
               <a
                 href='#'

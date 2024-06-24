@@ -18,6 +18,7 @@ export const signin = (userData, navigate) => async (dispatch) => {
     navigate('/');
   } catch (error) {
     console.log(error);
+    return error;
   }
 };
 
