@@ -34,7 +34,7 @@ const Gst3B = () => {
     'Client Name',
     'Data Provider Name',
     'Number',
-    'Upload',
+    'Client Upload',
   ];
 
   let workingHeader = [
@@ -42,7 +42,7 @@ const Gst3B = () => {
     'View',
     'Client Name',
     'Past Note',
-    'Working',
+    'Admin Upload',
     'Note',
     'Done',
   ];
@@ -67,7 +67,7 @@ const Gst3B = () => {
     setLoading(true);
 
     async function fetchData() {
-      let serviceRef = services.find(({ subheading }) => subheading == 'R1');
+      let serviceRef = services.find(({ subheading }) => subheading == '3B');
       try {
         if (userRole == 'admin' && serviceRef) {
           api
@@ -120,7 +120,7 @@ const Gst3B = () => {
           <div className='p-4 flex flex-col gap-y-5'>
             <div className='md:hidden'>
               <select
-                className='w-full py-4 px-6 block leading-normal border border-gray-200 rounded-lg bg-slate-50 text-gray-900 focus:outline-none focus:shadow-outline'
+                className='w-full font-semibold bg-slate-50 py-4 px-6 block leading-normal border border-gray-300 rounded-lg bg-slate-50 text-gray-900 focus:outline-none focus:shadow-outline'
                 value={activeTab}
                 onChange={handleDropdownChange}
               >
@@ -138,8 +138,8 @@ const Gst3B = () => {
                     key={index}
                     className={`w-1/2 md:w-1/4 py-4 px-6 block leading-normal border-l border-t border-r rounded-t-lg focus:outline-none focus:shadow-outline ${
                       activeTab === tab
-                        ? 'border-b-0 font-medium bg-slate-50'
-                        : 'border-b border-gray-200'
+                        ? 'border-b-0 font-semibold bg-slate-50'
+                        : 'border-b border-gray-200 bg-gray-100'
                     }`}
                     onClick={(event) => openTab(event, tab)}
                   >
@@ -155,7 +155,14 @@ const Gst3B = () => {
                 activeTab === 'tab1' ? 'block' : 'hidden'
               }`}
             >
-              <TableComponentService headers={dataHeader} data={dataUpload} />
+              <TableComponentService
+                headers={dataHeader}
+                data={dataUpload}
+                service='gst3b'
+                stage='data'
+                setServices={setServices}
+                services={services}
+              />
             </div>
 
             <div
@@ -167,6 +174,10 @@ const Gst3B = () => {
               <TableComponentService
                 headers={workingHeader}
                 data={workingStage}
+                stage='working'
+                service='gst3b'
+                setServices={setServices}
+                services={services}
               />
             </div>
 
@@ -179,6 +190,10 @@ const Gst3B = () => {
               <TableComponentService
                 headers={submitHeader}
                 data={submitStage}
+                service='gst3b'
+                stage='submit'
+                setServices={setServices}
+                services={services}
               />
             </div>
 
@@ -191,6 +206,10 @@ const Gst3B = () => {
               <TableComponentService
                 headers={completeHeader}
                 data={completeStage}
+                service='gst3b'
+                stage='completed'
+                setServices={setServices}
+                services={services}
               />
             </div>
           </div>

@@ -290,12 +290,23 @@ const AddClientModal = ({ showModal, closeModal, services }) => {
             ) : (
               !isSubmitted &&
               !error && (
-                <button
-                  type='submit'
-                  className='bg-green-400 text-black py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50'
-                >
-                  Submit
-                </button>
+                <>
+                  <button
+                    className='bg-neutral-200 mr-2 text-black px-4 py-2 rounded-md hover:bg-neutral-300 focus:outline-none focus:ring-2 focus:ring-neutral-400 dark:bg-neutral-600 dark:hover:bg-neutral-700'
+                    onClick={(e) => {
+                      e.preventDefault();
+                      closeModal();
+                    }}
+                  >
+                    Close
+                  </button>
+                  <button
+                    type='submit'
+                    className='bg-green-400 text-black py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50'
+                  >
+                    Submit
+                  </button>
+                </>
               )
             )}
           </div>

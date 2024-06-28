@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import './App.css';
+import * as api from '../src/api';
 import Auth from './components/Auth';
 import Home from './components/Home';
 import Navbar from './components/Navbar';
@@ -20,6 +21,7 @@ import NoPageFound from './components/NoPageFound';
 import { useDispatch, useSelector } from 'react-redux';
 import Managers from './components/Managers';
 import { syncUserData } from './actions/auth';
+import NotificationForm from './components/NotificationForm';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -34,6 +36,49 @@ const App = () => {
     dispatch(syncUserData(user));
   }
   const userRole = useSelector((state) => state?.auth?.authData?.role);
+
+  const publicVapidKey =
+    'BDzzxr7CQi8Yur7Z5gGVgS5uFANpCQl2ysNiRJ6Hbr5CBd82dgQP2vt2kYVFcRfPJ1LclHo0sRG0E4C_Ca-GFdI';
+
+  function urlBase64ToUint8Array(base64String) {
+    const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
+    const base64 = (base64String + padding)
+      .replace(/-/g, '+')
+      .replace(/_/g, '/');
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+    for (let i = 0; i < rawData.length; ++i) {
+      outputArray[i] = rawData.charCodeAt(i);
+    }
+    return outputArray;
+  }
+
+  const subscribeUser = async () => {
+    if ('serviceWorker' in navigator && 'PushManager' in window) {
+      const registration = await navigator.serviceWorker.register('/sw.js', {
+        scope: '/',
+      });
+
+      const subscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(publicVapidKey),
+      });
+
+      // await fetch('/notification/subscribe', {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      //   body: JSON.stringify(subscription),
+      // });
+
+      // api.notificationSubscribe(subscription);
+    }
+  };
+
+  useEffect(() => {
+    subscribeUser();
+  }, []);
 
   return (
     <BrowserRouter>
@@ -51,6 +96,7 @@ const App = () => {
             <Route path='/tax/individual' element={<IndividualTax />}></Route>
             <Route path='/tax/company' element={<CompanyTax />}></Route>
             <Route path='/loan' element={<Loan />}></Route>
+            <Route path='/notification' element={<NotificationForm />}></Route>
             {userRole && userRole == 'admin' && (
               <Route path='/managers' element={<Managers />}></Route>
             )}

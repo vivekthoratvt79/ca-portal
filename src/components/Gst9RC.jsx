@@ -45,7 +45,7 @@ const Gst9RC = () => {
         <div className='p-4 flex flex-col gap-y-5'>
           <div className='md:hidden'>
             <select
-              className='w-full py-4 px-6 block leading-normal border border-gray-200 rounded-lg bg-slate-50 text-gray-900 focus:outline-none focus:shadow-outline'
+              className='w-full font-semibold bg-slate-50 py-4 px-6 block leading-normal border border-gray-300 rounded-lg bg-slate-50 text-gray-900 focus:outline-none focus:shadow-outline'
               value={activeTab}
               onChange={handleDropdownChange}
             >
@@ -63,8 +63,8 @@ const Gst9RC = () => {
                   key={index}
                   className={`w-1/2 md:w-1/5 py-4 px-6 block leading-normal border-l border-t border-r rounded-t-lg focus:outline-none focus:shadow-outline ${
                     activeTab === tab
-                      ? 'border-b-0 font-medium bg-slate-50'
-                      : 'border-b border-gray-200'
+                      ? 'border-b-0 font-semibold bg-slate-50'
+                      : 'border-b border-gray-200 bg-gray-100'
                   }`}
                   onClick={(event) => openTab(event, tab)}
                 >

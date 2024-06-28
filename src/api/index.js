@@ -1,8 +1,15 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: 'http://34.229.58.48:4000/',
+  baseURL: 'http://34.229.58.48:4000/api/',
 });
+
+export const notificationSubscribe = (data) =>
+  API.post('/notification/subscribe', data);
+
+export const sendNotification = (data) =>
+  API.post('/notification/sendNotification', data);
+
 // API.interceptors.request.use((req) => {
 //   if (localStorage.getItem('profile')) {
 //     req.headers.authorization = `Bearer ${
@@ -11,8 +18,15 @@ const API = axios.create({
 //   }
 //   return req;
 // });
+
 export const fetchForAdmin = (role, adminId) =>
   API.get(`/list/${role}?adminRef=${adminId}`);
+
+export const fetchAdminServices = (adminId) =>
+  API.get(`/getAdminServiceData?adminRef=${adminId}`);
+
+export const updateAdminServiceData = (payload) =>
+  API.post(`/updateAdminServiceData`, payload);
 
 export const fetchAgentsForManager = (adminId) =>
   API.get(`/getAgentsForManager?managerRef=${adminId}`);
@@ -97,3 +111,12 @@ export const getCompleteStageDetails = (
     : API.get(
         `/${service}/getCompleteStageDetails?serviceRef=${serviceRef}&adminRef=${adminRef}`
       );
+
+export const postClientDataUpload = (formData, service) =>
+  API.post(`/${service}/postClientDataUpload`, formData);
+
+export const postWorkingStageDetails = (formData, service) =>
+  API.post(`/${service}/postWorkingStageDetails`, formData);
+
+export const postSubmitStageDetails = (formData, service) =>
+  API.post(`/${service}/postSubmitStageDetails`, formData);
