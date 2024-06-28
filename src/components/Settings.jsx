@@ -20,7 +20,7 @@ const Settings = () => {
         }
 
         if (userRole === 'admin') {
-          const res = await api.fetchAdminServices('667483b9609dcd4a40b05c5e');
+          const res = await api.fetchAdminServices(entityId);
           if (res.data.statusCode === 200) {
             setAdminServices(res.data.data.adminServiceData);
           }
