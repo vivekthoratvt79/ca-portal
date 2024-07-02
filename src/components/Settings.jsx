@@ -4,7 +4,7 @@ import * as api from '../api';
 import Loader from './Loader';
 import { useSelector } from 'react-redux';
 
-const Settings = () => {
+const Settings = ({ access }) => {
   const [adminServices, setAdminServices] = useState([]);
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -36,7 +36,7 @@ const Settings = () => {
 
   return (
     <>
-      <Sidebar activeTab='settings' />
+      <Sidebar activeTab='settings' access={access} />
       <div className='p-4 sm:ml-64 h-91vh'>
         <div
           className='flex justify-between items-center font-semibold h-16 p-4 border-2 border-dashed rounded-lg dark:border-gray-700 clients-container'
@@ -52,7 +52,6 @@ const Settings = () => {
               adminServices={adminServices}
             />
           )}
-          <ManagerAccess />
         </div>
       </div>
     </>
@@ -277,26 +276,6 @@ const NotificationSettings = ({ services, adminServices, loading }) => {
           </div>
         </>
       )}
-    </div>
-  );
-};
-
-const ManagerAccess = () => {
-  return (
-    <div
-      className='p-4 mt-4 rounded-lg dark:border-gray-700'
-      style={{ borderColor: '#41506b' }}
-    >
-      <h2 className='font-semibold mb-2'>Manager Access</h2>
-      <hr className='mb-4' />
-      <div className='space-y-2'>
-        {['Access 1', 'Access 2', 'Access 3'].map((access) => (
-          <div key={access} className='flex items-center'>
-            <input type='checkbox' className='mr-2' />
-            <span>{access}</span>
-          </div>
-        ))}
-      </div>
     </div>
   );
 };

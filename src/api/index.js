@@ -54,6 +54,16 @@ export const fetchAllServices = () => API.get('/getAllServices');
 export const signup = (userData) => API.post(`/user/signup`, userData);
 export const signin = (userData) => API.post(`/login`, userData);
 
+export const getAccessKeys = (id) => API.get(`/getAccessKeys?entityID=${id}`);
+export const updateAccessKeys = (payload) =>
+  API.post(`/updateAccessKeys`, payload);
+
+export const getAllBillsOfAdmin = (payload) =>
+  API.post(`/getAllBillsOfAdmin`, payload);
+
+export const getAllBillsOfClient = (payload) =>
+  API.post(`/getAllBillsOfClient`, payload);
+
 // =====================   ORDERS  ============================
 
 export const getDataUploadStageDetails = (

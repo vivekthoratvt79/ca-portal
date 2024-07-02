@@ -7,6 +7,23 @@ import Loader from './Loader';
 const ViewDetailsModal = ({ showModal, closeModal, type, id, allServices }) => {
   const [selectedServices, setSelectedServices] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [accessUpdated, setAccessUpdated] = useState('');
+  const [access, setAccess] = useState([]);
+
+  const allAccess =
+    type == 'agent'
+      ? ['clients', 'agents', 'dashboard', 'settings', 'billings', 'managers']
+      : [];
+
+  const handleCheckboxChange = (service) => {
+    setAccess((prev) => {
+      if (prev.includes(service)) {
+        return prev.filter((item) => item !== service);
+      } else {
+        return [...prev, service];
+      }
+    });
+  };
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -62,9 +79,44 @@ const ViewDetailsModal = ({ showModal, closeModal, type, id, allServices }) => {
     }
   }, [id, type, allServices]);
 
+  useEffect(() => {
+    // let user =
+    //   type === 'client'
+    //     ? clients.find(({ _id }) => _id === id)
+    //     : employees.find(({ _id }) => _id === id);
+    function fetchAccess() {
+      try {
+        api.getAccessKeys(id).then(({ data }) => {
+          setAccess(data.data.user[0].accessKeys);
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    if (id) fetchAccess();
+  }, [id]);
+
   if (!showModal || !formData) return null;
 
-  console.log('selec', selectedServices);
+  console.log('access', access);
+
+  const saveAccess = (e) => {
+    e.preventDefault();
+    let payload = {};
+    payload.entityID = id;
+    payload.accessKeys = access;
+    try {
+      api.updateAccessKeys(payload).then(({ data }) => {
+        console.log(data);
+        setAccessUpdated('Access Updated!');
+      });
+      setTimeout(() => {
+        setAccessUpdated('');
+      }, 4000);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div
@@ -112,6 +164,47 @@ const ViewDetailsModal = ({ showModal, closeModal, type, id, allServices }) => {
                 )}
               </div>
             </div>
+            {type == 'agent' && (
+              <div className='max-w-lg mx-auto p-4 bg-cyan-50 shadow-md rounded'>
+                <h2 className='font-bold text-center'>Manage Access</h2>
+                <hr className=' mb-2' />
+                <div className='flex justify-evenly text-center flex-wrap'>
+                  {access.length > 0 ? (
+                    <>
+                      {allAccess.map((service) => (
+                        <div key={service} className='p-2'>
+                          <label className='block font-semibold mb-1'>
+                            {service.charAt(0).toUpperCase() + service.slice(1)}
+                            <input
+                              type='checkbox'
+                              checked={access.includes(service)}
+                              onChange={() => handleCheckboxChange(service)}
+                              className='ml-2'
+                            />
+                          </label>
+                        </div>
+                      ))}
+                      <div className='flex justify-center'>
+                        {accessUpdated ? (
+                          <button className='bg-green-400 text-xs text-black px-3 py-2 rounded-md hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-blue-600 dark:hover:bg-blue-700'>
+                            {accessUpdated}
+                          </button>
+                        ) : (
+                          <button
+                            className='bg-teal-300 text-xs text-black px-3 py-2 rounded-md hover:bg-teal-500 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-blue-600 dark:hover:bg-blue-700'
+                            onClick={(e) => saveAccess(e)}
+                          >
+                            Update
+                          </button>
+                        )}
+                      </div>
+                    </>
+                  ) : (
+                    <p>Please try again later!</p>
+                  )}
+                </div>
+              </div>
+            )}
             <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
               {[
                 { label: 'Name', name: 'name', type: 'text' },
@@ -127,15 +220,7 @@ const ViewDetailsModal = ({ showModal, closeModal, type, id, allServices }) => {
                   type: 'text',
                 },
                 { label: 'PAN Number', name: 'panNumber', type: 'text' },
-                { label: 'Bank Name', name: 'bankName', type: 'text' },
-                {
-                  label: 'Account Number',
-                  name: 'accountNumber',
-                  type: 'text',
-                },
-                { label: 'Account Name', name: 'accountName', type: 'text' },
-                { label: 'Branch Name', name: 'bankBranch', type: 'text' },
-                { label: 'IFSC Code', name: 'bankCode', type: 'text' },
+
                 ...(type === 'client'
                   ? [
                       {
@@ -151,7 +236,7 @@ const ViewDetailsModal = ({ showModal, closeModal, type, id, allServices }) => {
                       {
                         label: 'Income Tax Password',
                         name: 'incomeTaxPassword',
-                        type: 'password',
+                        type: 'text',
                       },
                       {
                         label: 'TAN Number',
@@ -167,7 +252,7 @@ const ViewDetailsModal = ({ showModal, closeModal, type, id, allServices }) => {
                       {
                         label: 'PTEC Password',
                         name: 'ptecPassword',
-                        type: 'password',
+                        type: 'text',
                       },
                       {
                         label: 'Accountant Name',
@@ -180,7 +265,25 @@ const ViewDetailsModal = ({ showModal, closeModal, type, id, allServices }) => {
                         type: 'text',
                       },
                     ]
-                  : []),
+                  : [
+                      { label: 'Bank Name', name: 'bankName', type: 'text' },
+                      {
+                        label: 'Account Number',
+                        name: 'accountNumber',
+                        type: 'text',
+                      },
+                      {
+                        label: 'Account Name',
+                        name: 'accountName',
+                        type: 'text',
+                      },
+                      {
+                        label: 'Branch Name',
+                        name: 'bankBranch',
+                        type: 'text',
+                      },
+                      { label: 'IFSC Code', name: 'bankCode', type: 'text' },
+                    ]),
               ].map(({ label, name, type }) => (
                 <div key={name}>
                   <label className='block text-zinc-700 dark:text-zinc-300'>

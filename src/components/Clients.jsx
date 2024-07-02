@@ -7,7 +7,7 @@ import { fetchForAdmin } from '../actions/managers';
 import TableComponent from './TableComponent';
 import * as api from '../api';
 
-const Clients = () => {
+const Clients = ({ access }) => {
   const dispatch = useDispatch();
 
   const userRole = useSelector((state) => state.auth.authData.role);
@@ -41,7 +41,7 @@ const Clients = () => {
 
   return (
     <>
-      <Sidebar activeTab='clients' />
+      <Sidebar activeTab='clients' access={access} />
       <AddClientModal
         showModal={showModal}
         services={services}

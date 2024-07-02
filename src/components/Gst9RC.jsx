@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Sidebar from './Sidebar';
 import TableComponentService from './TableComponentService';
 
-const Gst9RC = () => {
+const Gst9RC = ({ access }) => {
   const [activeTab, setActiveTab] = useState('tab1');
 
   const openTab = (event, tabName) => {
@@ -33,7 +33,7 @@ const Gst9RC = () => {
 
   return (
     <>
-      <Sidebar activeTab='9rc' />
+      <Sidebar activeTab='9rc' access={access} />
       <div className='p-4 sm:ml-64 h-91vh'>
         <div
           className='flex justify-between items-center font-semibold h-16 p-4 border-2 border-dashed rounded-lg dark:border-gray-700 clients-container'

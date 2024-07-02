@@ -5,7 +5,7 @@ import { fetchForAdmin, getManagers } from '../actions/managers';
 import AddManagerModal from './AddManagerModal';
 import TableComponent from './TableComponent';
 
-const Managers = () => {
+const Managers = ({ access }) => {
   const dispatch = useDispatch();
   const userRole = useSelector((state) => state.auth.authData.role);
   const entitiyId = useSelector((state) => state.auth.authData.entityID);
@@ -25,7 +25,7 @@ const Managers = () => {
 
   return (
     <>
-      <Sidebar activeTab='managers' />
+      <Sidebar activeTab='managers' access={access} />
       <AddManagerModal showModal={showModal} closeModal={closeModal} />
 
       <div className='p-4 sm:ml-64 h-91vh'>

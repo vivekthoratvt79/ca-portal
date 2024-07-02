@@ -4,8 +4,9 @@ import TableComponentService from './TableComponentService';
 import * as api from '../api';
 import { useSelector } from 'react-redux';
 import Loader from './Loader';
+import { useLocation, useNavigate } from 'react-router-dom';
 
-const Gst3B = () => {
+const Gst3B = ({ access }) => {
   const [activeTab, setActiveTab] = useState('tab1');
   const [dataUpload, setDataUpload] = useState([]);
   const [workingStage, setWorkingStage] = useState([]);
@@ -16,10 +17,21 @@ const Gst3B = () => {
   const userRole = useSelector((state) => state.auth.authData.role);
   const entitiyId = useSelector((state) => state.auth.authData.entityID);
 
+  const location = useLocation();
+  const navigate = useNavigate();
+
   const openTab = (event, tabName) => {
-    console.log('tabName', tabName);
     setActiveTab(tabName);
+    navigate(`?tab=${tabName}`);
   };
+
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const tab = queryParams.get('tab');
+    if (tab) {
+      setActiveTab(tab);
+    }
+  }, [location.search]);
 
   let tabKeys = ['tab1', 'tab2', 'tab3', 'tab4'];
   let tabValues = ['Data', 'Working', 'Submit', 'Completed'];
@@ -106,7 +118,7 @@ const Gst3B = () => {
 
   return (
     <>
-      <Sidebar activeTab='3b' />
+      <Sidebar activeTab='3b' access={access} />
       <div className='p-4 sm:ml-64 h-91vh'>
         <div
           className='flex justify-between items-center font-semibold h-16 p-4 border-2 border-dashed rounded-lg dark:border-gray-700 clients-container'
@@ -115,7 +127,7 @@ const Gst3B = () => {
           <div>GST - 3B</div>
         </div>
         {loading ? (
-          <Loader />
+          <Loader appendClass='h-[500px]' />
         ) : (
           <div className='p-4 flex flex-col gap-y-5'>
             <div className='md:hidden'>

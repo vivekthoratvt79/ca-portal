@@ -30,7 +30,6 @@ const TableComponent = ({ headers, data, type, allServices }) => {
   const closeWorkModal = () => {
     setShowWorkModal(false);
   };
-  console.log('type', type);
   return (
     <>
       {type != 'manager' && (

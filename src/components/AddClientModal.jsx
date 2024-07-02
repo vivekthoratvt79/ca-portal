@@ -40,6 +40,8 @@ const AddClientModal = ({ showModal, closeModal, services }) => {
     accountantPhone: '',
     adminRef: user.entityID,
     serviceFreqMap: [],
+    billType: '',
+    billAmount: '',
   });
 
   const [errors, setErrors] = useState({});
@@ -97,7 +99,12 @@ const AddClientModal = ({ showModal, closeModal, services }) => {
       checked
         ? [
             ...prevSelectedServices,
-            { serviceRef: service._id, serviceType: '' },
+            {
+              serviceRef: service._id,
+              serviceType: '',
+              billType: '',
+              billAmount: '',
+            },
           ]
         : prevSelectedServices.filter(
             (selectedService) => selectedService.serviceRef !== service._id
@@ -111,6 +118,28 @@ const AddClientModal = ({ showModal, closeModal, services }) => {
       prevSelectedServices.map((selectedService) =>
         selectedService.serviceRef === serviceId
           ? { ...selectedService, serviceType: value }
+          : selectedService
+      )
+    );
+  };
+
+  const handleBillTypeChange = (event, serviceId) => {
+    const { value } = event.target;
+    setSelectedServices((prevSelectedServices) =>
+      prevSelectedServices.map((selectedService) =>
+        selectedService.serviceRef === serviceId
+          ? { ...selectedService, billType: value }
+          : selectedService
+      )
+    );
+  };
+
+  const handleBillAmountChange = (event, serviceId) => {
+    const { value } = event.target;
+    setSelectedServices((prevSelectedServices) =>
+      prevSelectedServices.map((selectedService) =>
+        selectedService.serviceRef === serviceId
+          ? { ...selectedService, billAmount: value }
           : selectedService
       )
     );
@@ -246,44 +275,105 @@ const AddClientModal = ({ showModal, closeModal, services }) => {
             <h2 className='text-lg mt-6'>Select Services</h2>
             <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
               {services.map((service) => (
-                <div key={service._id} className='flex items-center'>
-                  <input
-                    type='checkbox'
-                    id={service._id}
-                    onChange={(e) => handleCheckboxChange(e, service)}
-                    className='mr-2'
-                  />
-                  <label
-                    htmlFor={service._id}
-                    className='text-zinc-700 dark:text-zinc-300'
-                  >
-                    {service.heading + ' - ' + service.subheading}
-                  </label>
+                <div key={service._id} className='flex flex-col space-y-2'>
+                  <div className='flex items-center'>
+                    <input
+                      type='checkbox'
+                      id={service._id}
+                      onChange={(e) => handleCheckboxChange(e, service)}
+                      className='mr-2'
+                    />
+                    <label
+                      htmlFor={service._id}
+                      className='text-zinc-700 dark:text-zinc-300'
+                    >
+                      {service.heading + ' - ' + service.subheading}
+                    </label>
+                  </div>
                   {selectedServices.some(
                     (selectedService) =>
                       selectedService.serviceRef === service._id
                   ) && (
-                    <select
-                      required
-                      value={
-                        selectedServices.find(
-                          (selectedService) =>
-                            selectedService.serviceRef === service._id
-                        )?.serviceType || ''
-                      }
-                      onChange={(e) => handleTypeChange(e, service._id)}
-                      className='ml-2 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-zinc-300'
-                    >
-                      <option value=''>Select Type</option>
-                      <option value='monthly'>Monthly</option>
-                      <option value='quarterly'>Quarterly</option>
-                      <option value='yearly'>Yearly</option>
-                    </select>
+                    <>
+                      <div className='mx-5'>
+                        <label
+                          htmlFor={`serviceType-${service._id}`}
+                          className='block text-zinc-700 dark:text-zinc-300'
+                        >
+                          Service Type
+                        </label>
+                        <select
+                          id={`serviceType-${service._id}`}
+                          required
+                          value={
+                            selectedServices.find(
+                              (selectedService) =>
+                                selectedService.serviceRef === service._id
+                            )?.serviceType || ''
+                          }
+                          onChange={(e) => handleTypeChange(e, service._id)}
+                          className='w-full mt-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-zinc-300'
+                        >
+                          <option value=''>Select Type</option>
+                          <option value='monthly'>Monthly</option>
+                          <option value='quarterly'>Quarterly</option>
+                          <option value='yearly'>Yearly</option>
+                        </select>
+                      </div>
+                      <div className='mx-5'>
+                        <label
+                          htmlFor={`billType-${service._id}`}
+                          className='block text-zinc-700 dark:text-zinc-300'
+                        >
+                          Bill Type
+                        </label>
+                        <select
+                          id={`billType-${service._id}`}
+                          required
+                          value={
+                            selectedServices.find(
+                              (selectedService) =>
+                                selectedService.serviceRef === service._id
+                            )?.billType || ''
+                          }
+                          onChange={(e) => handleBillTypeChange(e, service._id)}
+                          className='w-full mt-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-zinc-300'
+                        >
+                          <option value=''>Select Type</option>
+                          <option value='monthly'>Monthly</option>
+                          <option value='quarterly'>Quarterly</option>
+                          <option value='yearly'>Yearly</option>
+                        </select>
+                      </div>
+                      <div className='mx-5'>
+                        <label
+                          htmlFor={`billAmount-${service._id}`}
+                          className='block text-zinc-700 dark:text-zinc-300'
+                        >
+                          Bill Amount (in Rs)
+                        </label>
+                        <input
+                          type='number'
+                          id={`billAmount-${service._id}`}
+                          value={
+                            selectedServices.find(
+                              (selectedService) =>
+                                selectedService.serviceRef === service._id
+                            )?.billAmount || ''
+                          }
+                          onChange={(e) =>
+                            handleBillAmountChange(e, service._id)
+                          }
+                          className='w-full mt-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-zinc-300'
+                        />
+                      </div>
+                    </>
                   )}
                 </div>
               ))}
             </div>
           </div>
+
           <div className='flex justify-center text-center'>
             {loading ? (
               <Loader />

@@ -8,10 +8,11 @@ import { fetchForAdmin } from '../actions/managers';
 import TableComponent from './TableComponent';
 import * as api from '../api';
 
-const Employees = () => {
+const Employees = ({ access }) => {
   const dispatch = useDispatch();
   const userRole = useSelector((state) => state.auth.authData.role);
   const entitiyId = useSelector((state) => state.auth.authData.entityID);
+  const userId = useSelector((state) => state.auth.authData.userid);
 
   useEffect(() => {
     if (userRole == 'admin') dispatch(fetchForAdmin('manager', entitiyId));
@@ -45,7 +46,7 @@ const Employees = () => {
 
   return (
     <>
-      <Sidebar activeTab='employees' />
+      <Sidebar activeTab='employees' access={access} />
       <AddEmployeeModal
         showModal={showModal}
         closeModal={closeModal}

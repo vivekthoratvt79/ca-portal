@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import './App.css';
 import * as api from '../src/api';
 import Auth from './components/Auth';
@@ -36,6 +36,8 @@ const App = () => {
     dispatch(syncUserData(user));
   }
   const userRole = useSelector((state) => state?.auth?.authData?.role);
+  const userId = useSelector((state) => state?.auth?.authData?.entityID);
+  const [access, setAccess] = useState([]);
 
   const publicVapidKey =
     'BDzzxr7CQi8Yur7Z5gGVgS5uFANpCQl2ysNiRJ6Hbr5CBd82dgQP2vt2kYVFcRfPJ1LclHo0sRG0E4C_Ca-GFdI';
@@ -54,31 +56,69 @@ const App = () => {
   }
 
   const subscribeUser = async () => {
-    if ('serviceWorker' in navigator && 'PushManager' in window) {
-      const registration = await navigator.serviceWorker.register('/sw.js', {
-        scope: '/',
-      });
+    try {
+      if ('serviceWorker' in navigator && 'PushManager' in window) {
+        try {
+          const registration = await navigator.serviceWorker.register(
+            '/sw.js',
+            {
+              scope: '/',
+            }
+          );
+          console.log('Service Worker registered:', registration);
 
-      const subscription = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(publicVapidKey),
-      });
+          // Wait until the service worker is active
+          await navigator.serviceWorker.ready;
+          console.log('Service Worker is ready.');
 
-      // await fetch('/notification/subscribe', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify(subscription),
-      // });
+          const subscription = await registration.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlBase64ToUint8Array(publicVapidKey),
+          });
+          console.log('Push Subscription:', subscription);
 
-      // api.notificationSubscribe(subscription);
+          try {
+            let data = await api.notificationSubscribe(subscription);
+          } catch (error) {
+            console.log(error);
+          }
+
+          // try {
+          //   await fetch('api/notification/subscribe', {
+          //     method: 'POST',
+          //     headers: {
+          //       'Content-Type': 'application/json',
+          //     },
+          //     body: JSON.stringify(subscription),
+          //   });
+          // } catch (error) {}
+        } catch (error) {
+          console.error('Service Worker or Push Subscription failed:', error);
+        }
+      } else {
+        console.warn('Push messaging is not supported');
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
   useEffect(() => {
     subscribeUser();
   }, []);
+
+  useEffect(() => {
+    function fetchAccessKeys() {
+      try {
+        api.getAccessKeys(userId).then(({ data }) => {
+          setAccess(data.data.user[0].accessKeys);
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    if (userId) fetchAccessKeys();
+  }, [userId]);
 
   return (
     <BrowserRouter>
@@ -87,24 +127,48 @@ const App = () => {
         {user ? (
           <>
             <Route path='*' element={<NoPageFound />} />
-            <Route path='/' element={<Home />}></Route>
-            <Route path='/home' element={<Home />}></Route>
-            <Route path='/gst/r1' element={<GstR1 />}></Route>
-            <Route path='/gst/3b' element={<Gst3B />}></Route>
-            <Route path='/gst/9r' element={<Gst9R />}></Route>
-            <Route path='/gst/9rc' element={<Gst9RC />}></Route>
-            <Route path='/tax/individual' element={<IndividualTax />}></Route>
-            <Route path='/tax/company' element={<CompanyTax />}></Route>
-            <Route path='/loan' element={<Loan />}></Route>
-            <Route path='/notification' element={<NotificationForm />}></Route>
+            <Route path='/' element={<Home access={access} />}></Route>
+            <Route path='/home' element={<Home access={access} />}></Route>
+            <Route path='/gst/r1' element={<GstR1 access={access} />}></Route>
+            <Route path='/gst/3b' element={<Gst3B access={access} />}></Route>
+            <Route path='/gst/9r' element={<Gst9R access={access} />}></Route>
+            <Route path='/gst/9rc' element={<Gst9RC access={access} />}></Route>
+            <Route
+              path='/tax/individual'
+              element={<IndividualTax access={access} />}
+            ></Route>
+            <Route
+              path='/tax/company'
+              element={<CompanyTax access={access} />}
+            ></Route>
+            <Route path='/loan' element={<Loan access={access} />}></Route>
+            <Route
+              path='/notification'
+              element={<NotificationForm access={access} />}
+            ></Route>
             {userRole && userRole == 'admin' && (
-              <Route path='/managers' element={<Managers />}></Route>
+              <Route
+                path='/managers'
+                element={<Managers access={access} />}
+              ></Route>
             )}
-            <Route path='/employees' element={<Employees />}></Route>
-            <Route path='/clients' element={<Clients />}></Route>
-            <Route path='/settings' element={<Settings />}></Route>
-            <Route path='/income' element={<Income />}></Route>
-            <Route path='/expenditure' element={<Expenditure />}></Route>
+            <Route
+              path='/employees'
+              element={<Employees access={access} />}
+            ></Route>
+            <Route
+              path='/clients'
+              element={<Clients access={access} />}
+            ></Route>
+            <Route
+              path='/settings'
+              element={<Settings access={access} />}
+            ></Route>
+            <Route path='/income' element={<Income access={access} />}></Route>
+            {/* <Route
+              path='/expenditure'
+              element={<Expenditure access={access} />}
+            ></Route> */}
           </>
         ) : (
           <>

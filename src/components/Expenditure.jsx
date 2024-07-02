@@ -1,10 +1,10 @@
 import React from 'react';
 import Sidebar from './Sidebar';
 
-const Expenditure = () => {
+const Expenditure = ({ access }) => {
   return (
     <>
-      <Sidebar activeTab='expenditure' />
+      <Sidebar activeTab='expenditure' access={access} />
 
       <div className='p-4 sm:ml-64 h-91vh'>
         <div

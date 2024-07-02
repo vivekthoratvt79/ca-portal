@@ -1,7 +1,7 @@
 import React from 'react';
 
-const Loader = () => (
-  <div className='flex justify-center items-center h-full'>
+const Loader = ({ appendClass }) => (
+  <div className={`${appendClass} flex justify-center items-center h-full`}>
     <svg
       className='animate-spin h-10 w-10 text-teal-700'
       xmlns='http://www.w3.org/2000/svg'

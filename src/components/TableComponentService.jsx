@@ -132,7 +132,11 @@ const TableComponentService = ({
     }));
   };
 
-  return (
+  return !data.length ? (
+    <div className='flex justify-center h-full'>
+      <p className='text-red-400 text-sm'>No data found in this stage!</p>
+    </div>
+  ) : (
     <div className='overflow-x-auto'>
       <table className='table-auto w-full border-collapse'>
         <thead>
