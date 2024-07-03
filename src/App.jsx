@@ -55,57 +55,59 @@ const App = () => {
     return outputArray;
   }
 
-  const subscribeUser = async () => {
+  const subscribeUser = async (entityID, publicVapidKey) => {
     try {
       if ('serviceWorker' in navigator && 'PushManager' in window) {
+        const registration = await navigator.serviceWorker.register('/sw.js', {
+          scope: '/',
+        });
+        console.log('Service Worker registered:', registration);
+
+        // Wait until the service worker is active
+        await navigator.serviceWorker.ready;
+        console.log('Service Worker is ready.');
+
+        // Check if the user is already subscribed
+        const existingSubscription =
+          await registration.pushManager.getSubscription();
+
+        if (existingSubscription) {
+          console.log('Already subscribed:', existingSubscription);
+          return existingSubscription;
+        }
+
+        // Subscribe the user if not already subscribed
+        const subscription = await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(publicVapidKey),
+        });
+        console.log('Push Subscription:', subscription);
+
+        // Add entityID to the subscription payload
+        const payload = {
+          entityID: entityID,
+          endpoint: subscription.endpoint,
+          keys: subscription.toJSON().keys,
+        };
+
+        // Send the subscription to the server
         try {
-          const registration = await navigator.serviceWorker.register(
-            '/sw.js',
-            {
-              scope: '/',
-            }
-          );
-          console.log('Service Worker registered:', registration);
-
-          // Wait until the service worker is active
-          await navigator.serviceWorker.ready;
-          console.log('Service Worker is ready.');
-
-          const subscription = await registration.pushManager.subscribe({
-            userVisibleOnly: true,
-            applicationServerKey: urlBase64ToUint8Array(publicVapidKey),
-          });
-          console.log('Push Subscription:', subscription);
-
-          try {
-            let data = await api.notificationSubscribe(subscription);
-          } catch (error) {
-            console.log(error);
-          }
-
-          // try {
-          //   await fetch('api/notification/subscribe', {
-          //     method: 'POST',
-          //     headers: {
-          //       'Content-Type': 'application/json',
-          //     },
-          //     body: JSON.stringify(subscription),
-          //   });
-          // } catch (error) {}
+          const data = await api.notificationSubscribe(payload);
+          console.log('Subscription sent to server:', data);
         } catch (error) {
-          console.error('Service Worker or Push Subscription failed:', error);
+          console.error('Failed to send subscription to server:', error);
         }
       } else {
         console.warn('Push messaging is not supported');
       }
     } catch (error) {
-      console.log(error);
+      console.error('Service Worker or Push Subscription failed:', error);
     }
   };
 
   useEffect(() => {
-    subscribeUser();
-  }, []);
+    if (user) subscribeUser(user.entityID, publicVapidKey);
+  }, [user]);
 
   useEffect(() => {
     function fetchAccessKeys() {
