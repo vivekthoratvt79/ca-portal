@@ -141,9 +141,9 @@ const NotificationSettings = ({ services, adminServices, loading }) => {
       : 'Unknown Service';
   };
 
-  const getMonthName = (dateString) => {
+  const getMonthNumber = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleString('en-us', { month: 'long' });
+    return date.getMonth() + 1; // +1 because getMonth() returns zero-based month index
   };
 
   const handleSave = async (serviceId) => {
@@ -157,15 +157,15 @@ const NotificationSettings = ({ services, adminServices, loading }) => {
           quarterly:
             selectedDates[serviceId]?.quarterly.map((period) => ({
               ...period,
-              startMonth: getMonthName(period.startDate),
-              endMonth: getMonthName(period.endDate),
+              startMonth: getMonthNumber(period.startDate), // Ensure correct conversion
+              endMonth: getMonthNumber(period.endDate), // Ensure correct conversion
             })) || [],
           annually: selectedDates[serviceId]?.annually || [],
         },
       };
-      console.log('payload', payload);
+
       await api.updateAdminServiceData(payload).then((data) => {
-        if (data?.status == 200) {
+        if (data?.status === 200) {
           setSuccess({
             [serviceId]: `Date updated successfully for ${getServiceName(
               service.serviceRef
@@ -262,7 +262,7 @@ const NotificationSettings = ({ services, adminServices, loading }) => {
                         )}
                     </div>
                   ))}
-                  <div className='w-full flex justify-center mt-4'>
+                  <div className='w-full flex justify-center lg:justify-start mt-4'>
                     <div
                       className='p-2 px-4 bg-green-400 hover:bg-green-500 cursor-pointer rounded-md text-xs font-medium'
                       onClick={() => handleSave(service._id)}
