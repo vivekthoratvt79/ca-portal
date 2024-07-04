@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import Sidebar from './Sidebar';
 import AddEmployeeModal from './AddEmployeeModal';
 import { useDispatch, useSelector } from 'react-redux';
-import { getClients } from '../actions/clients';
 import { fetchAgentsForManager, getEmployees } from '../actions/employees';
 import { fetchForAdmin } from '../actions/managers';
 import TableComponent from './TableComponent';

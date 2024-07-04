@@ -46,6 +46,8 @@ const AssignWork = ({ type, id, showModal, closeModal, allServices }) => {
                 managerRef,
               }));
 
+        console.log('serviceRefs', serviceRefs);
+
         const matchedServices = allServices.filter((service) =>
           serviceRefs.some((s) => s.serviceRef === service._id)
         );

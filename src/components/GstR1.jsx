@@ -13,7 +13,7 @@ const GstR1 = ({ access }) => {
   const [submitStage, setSubmitStage] = useState([]);
   const [completeStage, setCompleteStage] = useState([]);
   const [services, setServices] = useState([]);
-  const [loading, setLoading] = useState([]);
+  const [loading, setLoading] = useState(true);
   const userRole = useSelector((state) => state.auth.authData.role);
   const entitiyId = useSelector((state) => state.auth.authData.entityID);
 
@@ -107,6 +107,8 @@ const GstR1 = ({ access }) => {
               setLoading(false);
               setCompleteStage(data.data.orders);
             });
+        } else {
+          setLoading(false);
         }
       } catch (error) {
         console.log('Error: ', error);

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Sidebar from './Sidebar';
 import AddClientModal from './AddClientModal';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchClientsForAgent, getClients } from '../actions/clients';
+import { fetchClientsForAgent } from '../actions/clients';
 import { fetchForAdmin } from '../actions/managers';
 import TableComponent from './TableComponent';
 import * as api from '../api';

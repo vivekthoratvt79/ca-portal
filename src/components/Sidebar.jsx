@@ -20,6 +20,8 @@ const Sidebar = ({ activeTab, access }) => {
     }
   }, []);
 
+  const userRole = useSelector((state) => state.auth.authData.role);
+
   return (
     <>
       <button
@@ -87,80 +89,82 @@ const Sidebar = ({ activeTab, access }) => {
                 </NavLink>
               </li>
             )}
-            <li>
-              <button
-                type='button'
-                className='custom-txt-color flex items-center w-full p-2 text-base transition duration-75 rounded-lg group dark:text-white dark:hover:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-black'
-                aria-controls='dropdown-gst'
-                data-collapse-toggle='dropdown-gst'
-                onClick={() => {
-                  let el = document.getElementById('dropdown-gst');
-                  if (el.offsetParent === null) {
-                    el.classList.remove('hidden');
-                  } else {
-                    el.classList.add('hidden');
-                  }
-                }}
-              >
-                <svg
-                  className='flex-shrink-0 w-5 h-5 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white'
-                  aria-hidden='true'
-                  xmlns='http://www.w3.org/2000/svg'
-                  width='24'
-                  height='24'
-                  fill='currentColor'
-                  viewBox='0 0 24 24'
+            {userRole != 'client' && (
+              <li>
+                <button
+                  type='button'
+                  className='custom-txt-color flex items-center w-full p-2 text-base transition duration-75 rounded-lg group dark:text-white dark:hover:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-black'
+                  aria-controls='dropdown-gst'
+                  data-collapse-toggle='dropdown-gst'
+                  onClick={() => {
+                    let el = document.getElementById('dropdown-gst');
+                    if (el.offsetParent === null) {
+                      el.classList.remove('hidden');
+                    } else {
+                      el.classList.add('hidden');
+                    }
+                  }}
                 >
-                  <path
-                    fillRule='evenodd'
-                    d='M2 6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6Zm2 8v-2h7v2H4Zm0 2v2h7v-2H4Zm9 2h7v-2h-7v2Zm7-4v-2h-7v2h7Z'
-                    clipRule='evenodd'
-                  />
-                </svg>
-                <span className='flex-1 ms-3 text-left rtl:text-right whitespace-nowrap'>
-                  GST
-                </span>
-                <svg
-                  className='w-3 h-3'
-                  aria-hidden='true'
-                  fill='none'
-                  viewBox='0 0 10 6'
-                >
-                  <path
-                    stroke='currentColor'
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                    strokeWidth='2'
-                    d='m1 1 4 4 4-4'
-                  />
-                </svg>
-              </button>
-              <ul id='dropdown-gst' className='hidden py-2 space-y-2'>
-                <li>
-                  <NavLink
-                    to='/gst/r1'
-                    className={`flex items-center w-full p-2 transition duration-75 rounded-lg pl-11 group dark:text-white ${
-                      activeTab == 'r1'
-                        ? 'bg-gray-300'
-                        : 'hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-black custom-txt-color'
-                    }`}
+                  <svg
+                    className='flex-shrink-0 w-5 h-5 transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white'
+                    aria-hidden='true'
+                    xmlns='http://www.w3.org/2000/svg'
+                    width='24'
+                    height='24'
+                    fill='currentColor'
+                    viewBox='0 0 24 24'
                   >
-                    R1
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    to='/gst/3b'
-                    className={`flex items-center w-full p-2 transition duration-75 rounded-lg pl-11 group dark:text-white ${
-                      activeTab == '3b'
-                        ? 'bg-gray-300'
-                        : 'hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-black custom-txt-color'
-                    }`}
+                    <path
+                      fillRule='evenodd'
+                      d='M2 6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6Zm2 8v-2h7v2H4Zm0 2v2h7v-2H4Zm9 2h7v-2h-7v2Zm7-4v-2h-7v2h7Z'
+                      clipRule='evenodd'
+                    />
+                  </svg>
+                  <span className='flex-1 ms-3 text-left rtl:text-right whitespace-nowrap'>
+                    GST
+                  </span>
+                  <svg
+                    className='w-3 h-3'
+                    aria-hidden='true'
+                    fill='none'
+                    viewBox='0 0 10 6'
                   >
-                    3B
-                  </NavLink>
-                </li>
-                {/* <li>
+                    <path
+                      stroke='currentColor'
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                      strokeWidth='2'
+                      d='m1 1 4 4 4-4'
+                    />
+                  </svg>
+                </button>
+
+                <ul id='dropdown-gst' className='hidden py-2 space-y-2'>
+                  <li>
+                    <NavLink
+                      to='/gst/r1'
+                      className={`flex items-center w-full p-2 transition duration-75 rounded-lg pl-11 group dark:text-white ${
+                        activeTab == 'r1'
+                          ? 'bg-gray-300'
+                          : 'hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-black custom-txt-color'
+                      }`}
+                    >
+                      R1
+                    </NavLink>
+                  </li>
+                  <li>
+                    <NavLink
+                      to='/gst/3b'
+                      className={`flex items-center w-full p-2 transition duration-75 rounded-lg pl-11 group dark:text-white ${
+                        activeTab == '3b'
+                          ? 'bg-gray-300'
+                          : 'hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-black custom-txt-color'
+                      }`}
+                    >
+                      3B
+                    </NavLink>
+                  </li>
+                  {/* <li>
                   <NavLink
                     to='/gst/9r'
                     className={`flex items-center w-full p-2 transition duration-75 rounded-lg pl-11 group dark:text-white ${
@@ -184,77 +188,80 @@ const Sidebar = ({ activeTab, access }) => {
                     9RC
                   </NavLink>
                 </li> */}
-              </ul>
-            </li>
-            <li>
-              <button
-                type='button'
-                className='custom-txt-color flex items-center w-full p-2 text-base transition duration-75 rounded-lg group dark:text-white dark:hover:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-black'
-                aria-controls='dropdown-income-tax'
-                data-collapse-toggle='dropdown-income-tax'
-                onClick={() => {
-                  let el = document.getElementById('dropdown-income-tax');
-                  if (el.offsetParent === null) {
-                    el.classList.remove('hidden');
-                  } else {
-                    el.classList.add('hidden');
-                  }
-                }}
-              >
-                <svg
-                  className='flex-shrink-0 w-5 h-5  transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white'
-                  aria-hidden='true'
-                  xmlns='http://www.w3.org/2000/svg'
-                  fill='currentColor'
-                  viewBox='0 0 18 21'
+                </ul>
+              </li>
+            )}
+            {userRole != 'client' && (
+              <li>
+                <button
+                  type='button'
+                  className='custom-txt-color flex items-center w-full p-2 text-base transition duration-75 rounded-lg group dark:text-white dark:hover:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-black'
+                  aria-controls='dropdown-income-tax'
+                  data-collapse-toggle='dropdown-income-tax'
+                  onClick={() => {
+                    let el = document.getElementById('dropdown-income-tax');
+                    if (el.offsetParent === null) {
+                      el.classList.remove('hidden');
+                    } else {
+                      el.classList.add('hidden');
+                    }
+                  }}
                 >
-                  <path d='M15 12a1 1 0 0 0 .962-.726l2-7A1 1 0 0 0 17 3H3.77L3.175.745A1 1 0 0 0 2.208 0H1a1 1 0 0 0 0 2h.438l.6 2.255v.019l2 7 .746 2.986A3 3 0 1 0 9 17a2.966 2.966 0 0 0-.184-1h2.368c-.118.32-.18.659-.184 1a3 3 0 1 0 3-3H6.78l-.5-2H15Z' />
-                </svg>
-                <span className='flex-1 ms-3 text-left rtl:text-right whitespace-nowrap'>
-                  Income Tax
-                </span>
-                <svg
-                  className='w-3 h-3'
-                  aria-hidden='true'
-                  fill='none'
-                  viewBox='0 0 10 6'
-                >
-                  <path
-                    stroke='currentColor'
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                    strokeWidth='2'
-                    d='m1 1 4 4 4-4'
-                  />
-                </svg>
-              </button>
-              <ul id='dropdown-income-tax' className='hidden py-2 space-y-2'>
-                <li>
-                  <NavLink
-                    to='/tax/individual'
-                    className={`flex items-center w-full p-2 transition duration-75 rounded-lg pl-11 group dark:text-white ${
-                      activeTab == 'individual'
-                        ? 'bg-gray-300'
-                        : 'hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-black custom-txt-color'
-                    }`}
+                  <svg
+                    className='flex-shrink-0 w-5 h-5  transition duration-75 group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-white'
+                    aria-hidden='true'
+                    xmlns='http://www.w3.org/2000/svg'
+                    fill='currentColor'
+                    viewBox='0 0 18 21'
                   >
-                    Individual
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    to='/tax/company'
-                    className={`flex items-center w-full p-2 transition duration-75 rounded-lg pl-11 group dark:text-white ${
-                      activeTab == 'company'
-                        ? 'bg-gray-300'
-                        : 'hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-black custom-txt-color'
-                    }`}
+                    <path d='M15 12a1 1 0 0 0 .962-.726l2-7A1 1 0 0 0 17 3H3.77L3.175.745A1 1 0 0 0 2.208 0H1a1 1 0 0 0 0 2h.438l.6 2.255v.019l2 7 .746 2.986A3 3 0 1 0 9 17a2.966 2.966 0 0 0-.184-1h2.368c-.118.32-.18.659-.184 1a3 3 0 1 0 3-3H6.78l-.5-2H15Z' />
+                  </svg>
+                  <span className='flex-1 ms-3 text-left rtl:text-right whitespace-nowrap'>
+                    Income Tax
+                  </span>
+                  <svg
+                    className='w-3 h-3'
+                    aria-hidden='true'
+                    fill='none'
+                    viewBox='0 0 10 6'
                   >
-                    Company
-                  </NavLink>
-                </li>
-              </ul>
-            </li>
+                    <path
+                      stroke='currentColor'
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                      strokeWidth='2'
+                      d='m1 1 4 4 4-4'
+                    />
+                  </svg>
+                </button>
+                <ul id='dropdown-income-tax' className='hidden py-2 space-y-2'>
+                  <li>
+                    <NavLink
+                      to='/tax/individual'
+                      className={`flex items-center w-full p-2 transition duration-75 rounded-lg pl-11 group dark:text-white ${
+                        activeTab == 'individual'
+                          ? 'bg-gray-300'
+                          : 'hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-black custom-txt-color'
+                      }`}
+                    >
+                      Individual
+                    </NavLink>
+                  </li>
+                  <li>
+                    <NavLink
+                      to='/tax/company'
+                      className={`flex items-center w-full p-2 transition duration-75 rounded-lg pl-11 group dark:text-white ${
+                        activeTab == 'company'
+                          ? 'bg-gray-300'
+                          : 'hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-black custom-txt-color'
+                      }`}
+                    >
+                      Company
+                    </NavLink>
+                  </li>
+                </ul>
+              </li>
+            )}
             {/* <li>
               <NavLink
                 className={`flex items-center p-2 rounded-lg dark:text-white group ${

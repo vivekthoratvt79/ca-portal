@@ -22,6 +22,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import Managers from './components/Managers';
 import { syncUserData } from './actions/auth';
 import NotificationForm from './components/NotificationForm';
+import InvoiceForm from './components/InvoiceForm';
+import ClientHome from './components/ClientHome';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -126,10 +128,11 @@ const App = () => {
     <BrowserRouter>
       <Navbar user={user} />
       <Routes>
-        {user ? (
+        {user && userRole != 'client' ? (
           <>
             <Route path='*' element={<NoPageFound />} />
             <Route path='/' element={<Home access={access} />}></Route>
+            <Route path='/invoice' element={<InvoiceForm />}></Route>
             <Route path='/home' element={<Home access={access} />}></Route>
             <Route path='/gst/r1' element={<GstR1 access={access} />}></Route>
             <Route path='/gst/3b' element={<Gst3B access={access} />}></Route>
@@ -148,12 +151,11 @@ const App = () => {
               path='/notification'
               element={<NotificationForm access={access} />}
             ></Route>
-            {userRole && userRole == 'admin' && (
-              <Route
-                path='/managers'
-                element={<Managers access={access} />}
-              ></Route>
-            )}
+            <Route
+              path='/managers'
+              element={<Managers access={access} />}
+            ></Route>
+
             <Route
               path='/employees'
               element={<Employees access={access} />}
@@ -171,6 +173,11 @@ const App = () => {
               path='/expenditure'
               element={<Expenditure access={access} />}
             ></Route> */}
+          </>
+        ) : userRole == 'client' ? (
+          <>
+            <Route path='*' element={<NoPageFound />} />
+            <Route path='/' element={<ClientHome />}></Route>
           </>
         ) : (
           <>

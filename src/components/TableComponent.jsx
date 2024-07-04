@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import ViewDetailsModal from './ViewDetailsModal';
 import AssignWork from './AssignWork';
+import { useSelector } from 'react-redux';
 
 const TableComponent = ({ headers, data, type, allServices }) => {
+  const userRole = useSelector((state) => state.auth.authData.role);
   // Mapping headers to the keys in the data objects
   const keyMap = {
     'Sr No.': 'index',
@@ -30,6 +32,8 @@ const TableComponent = ({ headers, data, type, allServices }) => {
   const closeWorkModal = () => {
     setShowWorkModal(false);
   };
+  console.log('type', type);
+  console.log('role', userRole);
   return (
     <>
       {type != 'manager' && (
@@ -62,7 +66,7 @@ const TableComponent = ({ headers, data, type, allServices }) => {
                   {header}
                 </th>
               ))}
-              {type != 'manager' && (
+              {type != 'manager' && userRole != 'agent' && (
                 <th className='px-4 py-2 bg-gray-200 text-gray-700 border border-gray-300'>
                   Assign Work
                 </th>
@@ -107,7 +111,7 @@ const TableComponent = ({ headers, data, type, allServices }) => {
                     </td>
                   );
                 })}
-                {type != 'manager' && (
+                {type != 'manager' && userRole != 'agent' && (
                   <td className='px-4 py-2 border border-gray-300 text-center'>
                     <button
                       className='px-3 py-1 text-white rounded'
