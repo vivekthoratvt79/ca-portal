@@ -285,7 +285,7 @@ const AddClientModal = ({ showModal, closeModal, services }) => {
                     />
                     <label
                       htmlFor={service._id}
-                      className='text-zinc-700 dark:text-zinc-300'
+                      className='text-zinc-700 dark:text-zinc-300 font-bold'
                     >
                       {service.heading + ' - ' + service.subheading}
                     </label>

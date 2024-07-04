@@ -11,6 +11,9 @@ const TableComponentService = ({
 }) => {
   const [selectedFiles, setSelectedFiles] = useState({});
   const [adminSelectedFiles, setAdminSelectedFiles] = useState({});
+  const [imgErrors, setImgErrors] = useState({});
+  const [clientUploadErrors, setClientUploadErrors] = useState({});
+  const [arnErrors, setArnErrors] = useState({});
   const [noteValues, setNoteValues] = useState({});
   const [arnValues, setArnValues] = useState({});
 
@@ -31,6 +34,7 @@ const TableComponentService = ({
   };
 
   const handleFileChange = (rowIndex, files) => {
+    setClientUploadErrors({ [rowIndex]: '' });
     setSelectedFiles((prev) => ({
       ...prev,
       [rowIndex]: files,
@@ -38,6 +42,7 @@ const TableComponentService = ({
   };
 
   const handleFileChangeforAdmin = (rowIndex, files) => {
+    setImgErrors({ [rowIndex]: '' });
     setAdminSelectedFiles((prev) => ({
       ...prev,
       [rowIndex]: files,
@@ -46,8 +51,12 @@ const TableComponentService = ({
 
   const handleUpload = async (rowIndex, rowData) => {
     const files = selectedFiles[rowIndex];
-    if (!files) return;
 
+    if (!files || !files.length) {
+      console.log(files);
+      setClientUploadErrors({ [rowIndex]: 'Please Upload Image' });
+      return;
+    }
     const formData = new FormData();
     let { adminRef, agentRef, clientRef, serviceRef, _id } = rowData;
     formData.append('adminRef', adminRef);
@@ -81,9 +90,12 @@ const TableComponentService = ({
     }
   };
 
-  const handleWorkDone = async (rowIndex, rowData) => {
+  const handleWorkDone = async (rowIndex, rowData, e) => {
     const files = adminSelectedFiles[rowIndex];
-    if (!files) return;
+    if (!files || !files.length) {
+      setImgErrors({ [rowIndex]: 'Please Upload Image' });
+      return;
+    }
     const formData = new FormData();
     let { adminRef, _id } = rowData;
     formData.append('adminRef', adminRef);
@@ -108,7 +120,10 @@ const TableComponentService = ({
     let { _id } = rowData;
     formData.orderRef = _id;
     formData.arnNumber = arnValues[rowIndex];
-    if (!arnValues[rowIndex]) return;
+    if (!arnValues[rowIndex]) {
+      setArnErrors({ [rowIndex]: 'ARN Number is required' });
+      return;
+    }
     try {
       const response = await api.postSubmitStageDetails(formData, service);
       console.log('Submit response:', response);
@@ -126,6 +141,7 @@ const TableComponentService = ({
   };
 
   const handleArnChange = (rowIndex, value) => {
+    setArnErrors({ [rowIndex]: '' });
     setArnValues((prev) => ({
       ...prev,
       [rowIndex]: value,
@@ -165,12 +181,18 @@ const TableComponentService = ({
                     } px-4 py-2 border border-gray-300 text-center`}
                   >
                     {header === 'Client Upload' ? (
-                      <div className='flex items-center'>
+                      <div
+                        className={`flex items-center font-semibold ${
+                          clientUploadErrors[rowIndex]
+                            ? 'text-red-600 '
+                            : 'text-stone-500 '
+                        }`}
+                      >
                         <input
                           type='file'
                           multiple='multiple'
                           accept='image/jpeg,image/gif,image/png,application/pdf,image/x-eps'
-                          className='text-xs text-stone-500 file:mr-2 file:py-1 file:px-3 file:border-[1px] file:text-xs file:font-small file:bg-stone-50 file:text-stone-700 hover:file:cursor-pointer hover:file:bg-blue-50 hover:file:text-blue-700'
+                          className='text-xs file:mr-2 file:py-1 file:px-3 file:border-[1px] file:text-xs file:font-small file:bg-stone-50 file:text-stone-700 hover:file:cursor-pointer hover:file:bg-blue-50 hover:file:text-blue-700'
                           onChange={(e) =>
                             handleFileChange(rowIndex, e.target.files)
                           }
@@ -183,12 +205,18 @@ const TableComponentService = ({
                         </button>
                       </div>
                     ) : header === 'Admin Upload' ? (
-                      <div className='flex items-center w-52'>
+                      <div
+                        className={`flex items-center w-52 font-semibold ${
+                          imgErrors[rowIndex]
+                            ? 'text-red-600 '
+                            : 'text-stone-500 '
+                        }`}
+                      >
                         <input
                           type='file'
                           multiple='multiple'
                           accept='image/jpeg,image/gif,image/png,application/pdf,image/x-eps'
-                          className='text-xs text-stone-500 file:mr-2 file:py-1 file:px-3 file:border-[1px] file:text-xs file:font-small file:bg-stone-50 file:text-stone-700 hover:file:cursor-pointer hover:file:bg-blue-50 hover:file:text-blue-700'
+                          className='text-xs  file:mr-2 file:py-1 file:px-3 file:border-[1px] file:text-xs file:font-small file:bg-stone-50 file:text-stone-700 hover:file:cursor-pointer hover:file:bg-blue-50 hover:file:text-blue-700'
                           onChange={(e) =>
                             handleFileChangeforAdmin(rowIndex, e.target.files)
                           }
@@ -295,9 +323,9 @@ const TableComponentService = ({
                       )
                     ) : header === 'Done' ? (
                       <button
-                        onClick={() =>
+                        onClick={(e) =>
                           stage === 'working'
-                            ? handleWorkDone(rowIndex, rowData)
+                            ? handleWorkDone(rowIndex, rowData, e)
                             : stage === 'submit' &&
                               handleSubmitDone(rowIndex, rowData)
                         }
@@ -314,7 +342,9 @@ const TableComponentService = ({
                           handleArnChange(rowIndex, e.target.value)
                         }
                         placeholder='Enter ARN No.'
-                        className='w-full mt-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-zinc-300'
+                        className={`w-full mt-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-zinc-300 ${
+                          arnErrors[rowIndex] ? 'border border-red-500' : ''
+                        }`}
                       />
                     ) : header === 'ARN Number' && stage === 'completed' ? (
                       <input
@@ -332,7 +362,7 @@ const TableComponentService = ({
                         onChange={(e) =>
                           handleNoteChange(rowIndex, e.target.value)
                         }
-                        className='w-full w-52 mt-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-zinc-300'
+                        className='w-52 mt-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-zinc-300'
                       />
                     ) : (
                       (cellData && cellData) || ' - '
