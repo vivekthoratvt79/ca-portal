@@ -8,7 +8,7 @@ const Navbar = ({ user }) => {
   const navigate = useNavigate();
   return (
     <nav
-      className='custom-bg-color navbar-container bg-gray-50 py-2'
+      className='custom-bg-color navbar-container bg-gray-50 py-2 h-[7vh]'
       style={{ borderBottom: '1px solid #d9f2ff' }}
     >
       <div className='mx-auto px-4'>

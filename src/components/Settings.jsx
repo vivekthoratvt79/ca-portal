@@ -71,9 +71,15 @@ const NotificationSettings = ({ services, adminServices, loading }) => {
       const initialDates = {};
       adminServices.forEach((service) => {
         initialDates[service._id] = {
-          monthly: service.periodDetails.monthly,
-          quarterly: service.periodDetails.quarterly,
-          annually: service.periodDetails.annually,
+          monthly: Array.isArray(service.periodDetails.monthly)
+            ? service.periodDetails.monthly
+            : [],
+          quarterly: Array.isArray(service.periodDetails.quarterly)
+            ? service.periodDetails.quarterly
+            : [],
+          annually: Array.isArray(service.periodDetails.annually)
+            ? service.periodDetails.annually
+            : [],
         };
       });
       setSelectedDates(initialDates);
@@ -182,6 +188,7 @@ const NotificationSettings = ({ services, adminServices, loading }) => {
     }
   };
 
+  console.log('selectedd', selectedDates);
   return (
     <div
       className='p-4 mt-4 rounded-lg dark:border-gray-700'
@@ -197,7 +204,10 @@ const NotificationSettings = ({ services, adminServices, loading }) => {
           <div className='flex flex-wrap'>
             {adminServices.length > 0 &&
               adminServices.map((service, index) => (
-                <div key={service._id} className='space-y-4 w-full md:w-1/2'>
+                <div
+                  key={service._id}
+                  className='space-y-4 mb-8 w-full md:w-1/2'
+                >
                   <div
                     className={`${
                       smallScreen &&

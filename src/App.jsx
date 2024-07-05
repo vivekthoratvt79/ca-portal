@@ -13,8 +13,8 @@ import Income from './components/Income';
 import Expenditure from './components/Expenditure';
 import GstR1 from './components/GstR1';
 import Gst3B from './components/Gst3B';
-import Gst9R from './components/Gst9R';
-import Gst9RC from './components/Gst9RC';
+import GstR9 from './components/GstR9';
+import Gst2B from './components/Gst2B';
 import IndividualTax from './components/IndividualTax';
 import CompanyTax from './components/CompanyTax';
 import NoPageFound from './components/NoPageFound';
@@ -24,6 +24,7 @@ import { syncUserData } from './actions/auth';
 import NotificationForm from './components/NotificationForm';
 import InvoiceForm from './components/InvoiceForm';
 import ClientHome from './components/ClientHome';
+import Gst2BPR from './components/Gst2BPR';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -136,8 +137,12 @@ const App = () => {
             <Route path='/home' element={<Home access={access} />}></Route>
             <Route path='/gst/r1' element={<GstR1 access={access} />}></Route>
             <Route path='/gst/3b' element={<Gst3B access={access} />}></Route>
-            <Route path='/gst/9r' element={<Gst9R access={access} />}></Route>
-            <Route path='/gst/9rc' element={<Gst9RC access={access} />}></Route>
+            <Route path='/gst/r9' element={<GstR9 access={access} />}></Route>
+            <Route path='/gst/2b' element={<Gst2B access={access} />}></Route>
+            <Route
+              path='/gst/2bpr'
+              element={<Gst2BPR access={access} />}
+            ></Route>
             <Route
               path='/tax/individual'
               element={<IndividualTax access={access} />}

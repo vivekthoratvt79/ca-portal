@@ -8,8 +8,9 @@ const Sidebar = ({ activeTab, access }) => {
     if (
       activeTab == 'r1' ||
       activeTab == '3b' ||
-      activeTab == '9r' ||
-      activeTab == '9rc'
+      activeTab == 'r9' ||
+      activeTab == '2b' ||
+      activeTab == '2bpr'
     ) {
       let el = document.getElementById('dropdown-gst');
       el.classList.remove('hidden');
@@ -164,30 +165,42 @@ const Sidebar = ({ activeTab, access }) => {
                       3B
                     </NavLink>
                   </li>
-                  {/* <li>
-                  <NavLink
-                    to='/gst/9r'
-                    className={`flex items-center w-full p-2 transition duration-75 rounded-lg pl-11 group dark:text-white ${
-                      activeTab == '9r'
-                        ? 'bg-gray-300'
-                        : 'hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-black custom-txt-color'
-                    }`}
-                  >
-                    9R
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    to='/gst/9rc'
-                    className={`flex items-center w-full p-2 transition duration-75 rounded-lg pl-11 group dark:text-white ${
-                      activeTab == '9rc'
-                        ? 'bg-gray-300'
-                        : 'hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-black custom-txt-color'
-                    }`}
-                  >
-                    9RC
-                  </NavLink>
-                </li> */}
+                  <li>
+                    <NavLink
+                      to='/gst/r9'
+                      className={`flex items-center w-full p-2 transition duration-75 rounded-lg pl-11 group dark:text-white ${
+                        activeTab == 'r9'
+                          ? 'bg-gray-300'
+                          : 'hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-black custom-txt-color'
+                      }`}
+                    >
+                      R9/R9C
+                    </NavLink>
+                  </li>
+                  <li>
+                    <NavLink
+                      to='/gst/2b'
+                      className={`flex items-center w-full p-2 transition duration-75 rounded-lg pl-11 group dark:text-white ${
+                        activeTab == '2b'
+                          ? 'bg-gray-300'
+                          : 'hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-black custom-txt-color'
+                      }`}
+                    >
+                      2B
+                    </NavLink>
+                  </li>
+                  <li>
+                    <NavLink
+                      to='/gst/2bpr'
+                      className={`flex items-center w-full p-2 transition duration-75 rounded-lg pl-11 group dark:text-white ${
+                        activeTab == '2bpr'
+                          ? 'bg-gray-300'
+                          : 'hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-black custom-txt-color'
+                      }`}
+                    >
+                      2B vs Purchase Register
+                    </NavLink>
+                  </li>
                 </ul>
               </li>
             )}

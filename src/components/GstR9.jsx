@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import Loader from './Loader';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-const Gst3B = ({ access }) => {
+const GstR9 = ({ access }) => {
   const [activeTab, setActiveTab] = useState('tab1');
   const [dataUpload, setDataUpload] = useState([]);
   const [workingStage, setWorkingStage] = useState([]);
@@ -56,13 +56,28 @@ const Gst3B = ({ access }) => {
     'Client Name',
     'Past Note',
     'Admin Upload',
+    'Tax Amount',
     'Note',
     'Done',
   ];
 
   let paymentHeader = ['Sr No.', 'View', 'Client Name', 'Payment'];
-  let submitHeader = ['Sr No.', 'View', 'Client Name', 'ARN Number', 'Done'];
-  let completeHeader = ['Sr No.', 'View', 'Client Name', 'ARN Number'];
+
+  let submitHeader = [
+    'Sr No.',
+    'View',
+    'Client Name',
+    'R9 ARN No.',
+    'R9C ARN No.',
+    'Done',
+  ];
+  let completeHeader = [
+    'Sr No.',
+    'View',
+    'Client Name',
+    'R9 ARN No.',
+    'R9C ARN No.',
+  ];
 
   useEffect(() => {
     setLoading(true);
@@ -81,17 +96,19 @@ const Gst3B = ({ access }) => {
     setLoading(true);
 
     async function fetchData() {
-      let serviceRef = services.find(({ subheading }) => subheading == '3B');
+      let serviceRef = services.find(
+        ({ subheading }) => subheading == 'R9/R9C'
+      );
       try {
         if (userRole == 'admin' && serviceRef) {
           api
-            .getDataUploadStageDetails('', serviceRef?._id, entitiyId, 'gst3b')
+            .getDataUploadStageDetails('', serviceRef?._id, entitiyId, 'gstr9')
             .then(({ data }) => {
               setLoading(false);
               setDataUpload(data.data.orders);
             });
           api
-            .getWorkingStageDetails('', serviceRef?._id, entitiyId, 'gst3b')
+            .getWorkingStageDetails('', serviceRef?._id, entitiyId, 'gstr9')
             .then(({ data }) => {
               setLoading(false);
               setWorkingStage(data.data.orders);
@@ -104,13 +121,13 @@ const Gst3B = ({ access }) => {
             });
 
           api
-            .getSubmitStageDetails('', serviceRef?._id, entitiyId, 'gst3b')
+            .getSubmitStageDetails('', serviceRef?._id, entitiyId, 'gstr9')
             .then(({ data }) => {
               setLoading(false);
               setSubmitStage(data.data.orders);
             });
           api
-            .getCompleteStageDetails('', serviceRef?._id, entitiyId, 'gst3b')
+            .getCompleteStageDetails('', serviceRef?._id, entitiyId, 'gstr9')
             .then(({ data }) => {
               setLoading(false);
               setCompleteStage(data.data.orders);
@@ -125,16 +142,15 @@ const Gst3B = ({ access }) => {
     }
     if (services) fetchData();
   }, [services]);
-
   return (
     <>
-      <Sidebar activeTab='3b' access={access} />
+      <Sidebar activeTab='r9' access={access} />
       <div className='p-4 sm:ml-64 h-91vh'>
         <div
           className='flex justify-between items-center font-semibold h-16 p-4 border-2 border-dashed rounded-lg dark:border-gray-700 clients-container'
           style={{ borderColor: '#41506b' }}
         >
-          <div>GST - 3B</div>
+          <div>GST - R9 / R9C</div>
         </div>
         {loading ? (
           <Loader appendClass='h-[500px]' />
@@ -180,7 +196,7 @@ const Gst3B = ({ access }) => {
               <TableComponentService
                 headers={dataHeader}
                 data={dataUpload}
-                service='gst3b'
+                service='gstr9'
                 stage='data'
                 setServices={setServices}
                 services={services}
@@ -197,7 +213,7 @@ const Gst3B = ({ access }) => {
                 headers={workingHeader}
                 data={workingStage}
                 stage='working'
-                service='gst3b'
+                service='gstr9'
                 setServices={setServices}
                 services={services}
               />
@@ -212,7 +228,7 @@ const Gst3B = ({ access }) => {
               <TableComponentService
                 headers={paymentHeader}
                 data={paymentStage}
-                service='gst3b'
+                service='gstr9'
                 stage='payment'
                 setServices={setServices}
                 services={services}
@@ -228,7 +244,7 @@ const Gst3B = ({ access }) => {
               <TableComponentService
                 headers={submitHeader}
                 data={submitStage}
-                service='gst3b'
+                service='gstr9'
                 stage='submit'
                 setServices={setServices}
                 services={services}
@@ -244,7 +260,7 @@ const Gst3B = ({ access }) => {
               <TableComponentService
                 headers={completeHeader}
                 data={completeStage}
-                service='gst3b'
+                service='gstr9'
                 stage='completed'
                 setServices={setServices}
                 services={services}
@@ -257,4 +273,4 @@ const Gst3B = ({ access }) => {
   );
 };
 
-export default Gst3B;
+export default GstR9;

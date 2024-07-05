@@ -14,8 +14,14 @@ const TableComponentService = ({
   const [imgErrors, setImgErrors] = useState({});
   const [clientUploadErrors, setClientUploadErrors] = useState({});
   const [arnErrors, setArnErrors] = useState({});
-  const [noteValues, setNoteValues] = useState({});
   const [arnValues, setArnValues] = useState({});
+  const [r9ArnErrors, setr9ArnErrors] = useState({});
+  const [r9ArnValues, setr9ArnValues] = useState({});
+  const [r9cArnErrors, setr9cArnErrors] = useState({});
+  const [r9cArnValues, setr9cArnValues] = useState({});
+  const [noteValues, setNoteValues] = useState({});
+  const [taxErrors, setTaxErrors] = useState({});
+  const [taxValues, setTaxValues] = useState({});
 
   // Mapping headers to the keys in the data objects
   const keyMap = {
@@ -30,7 +36,11 @@ const TableComponentService = ({
     Working: 'currentNote',
     Note: 'currentNote',
     Done: 'currentNote',
+    Paid: 'paid',
     'ARN Number': 'arnNumber',
+    'Tax Amount': 'taxAmount',
+    'R9 ARN No.': 'r9arnNumber',
+    'R9C ARN No.': 'r9carnNumber',
   };
 
   const handleFileChange = (rowIndex, files) => {
@@ -49,14 +59,14 @@ const TableComponentService = ({
     }));
   };
 
-  const handleUpload = async (rowIndex, rowData) => {
+  const handleUpload = async (rowIndex, rowData, e) => {
     const files = selectedFiles[rowIndex];
-
     if (!files || !files.length) {
       console.log(files);
       setClientUploadErrors({ [rowIndex]: 'Please Upload Image' });
       return;
     }
+    e.target.innerText = 'Uploading...';
     const formData = new FormData();
     let { adminRef, agentRef, clientRef, serviceRef, _id } = rowData;
     formData.append('adminRef', adminRef);
@@ -86,20 +96,37 @@ const TableComponentService = ({
       console.log('Upload response:', response);
       setServices([...services]);
     } catch (error) {
+      e.target.innerText = 'Upload';
       console.error('Error uploading files:', error);
     }
   };
 
   const handleWorkDone = async (rowIndex, rowData, e) => {
     const files = adminSelectedFiles[rowIndex];
+
     if (!files || !files.length) {
       setImgErrors({ [rowIndex]: 'Please Upload Image' });
       return;
     }
     const formData = new FormData();
-    let { adminRef, _id } = rowData;
+
+    if (service == 'gstr9') {
+      if (!taxValues[rowIndex]) {
+        setTaxErrors({ [rowIndex]: 'Tax Amount is required' });
+        return;
+      } else {
+        formData.append('taxAmount', taxValues[rowIndex]);
+      }
+    }
+
+    let { adminRef, _id, clientRef, agentRef, serviceRef } = rowData;
+    if (service == 'gst2b' || service == 'gst2bpr') {
+      formData.append('clientRef', clientRef);
+      formData.append('serviceRef', serviceRef);
+      formData.append('agentRef', agentRef);
+    }
     formData.append('adminRef', adminRef);
-    formData.append('currentNote', noteValues[rowIndex]);
+    formData.append('currentNote', noteValues[rowIndex] || '');
     formData.append('orderRef', _id);
 
     // Append files
@@ -107,7 +134,10 @@ const TableComponentService = ({
       formData.append('files', files[i]);
     }
     try {
-      const response = await api.postWorkingStageDetails(formData, service);
+      const response =
+        service === 'gst2b' || service === 'gst2bpr'
+          ? await api.postDocSending(formData, service)
+          : await api.postWorkingStageDetails(formData, service);
       console.log('Work response:', response);
       setServices([...services]);
     } catch (error) {
@@ -119,13 +149,44 @@ const TableComponentService = ({
     const formData = {};
     let { _id } = rowData;
     formData.orderRef = _id;
-    formData.arnNumber = arnValues[rowIndex];
-    if (!arnValues[rowIndex]) {
+    switch (service) {
+      case 'gstr1':
+      case 'gst3b':
+        formData.arnNumber = arnValues[rowIndex];
+        break;
+      case 'gstr9':
+        formData.r9ArnNumber = r9ArnValues[rowIndex];
+        formData.r9cArnNumber = r9cArnValues[rowIndex];
+      default:
+        break;
+    }
+    if (!arnValues[rowIndex] && service != 'gstr9') {
       setArnErrors({ [rowIndex]: 'ARN Number is required' });
+      return;
+    }
+    if (service == 'gstr9' && !r9ArnValues[rowIndex]) {
+      setr9ArnErrors({ [rowIndex]: 'ARN Number is required' });
+      return;
+    }
+    if (service == 'gstr9' && !r9cArnValues[rowIndex]) {
+      setr9cArnErrors({ [rowIndex]: 'ARN Number is required' });
       return;
     }
     try {
       const response = await api.postSubmitStageDetails(formData, service);
+      console.log('Submit response:', response);
+      setServices([...services]);
+    } catch (error) {
+      console.error('Error :', error);
+    }
+  };
+
+  const handlePaymentDone = async (rowIndex, rowData) => {
+    const formData = {};
+    let { _id } = rowData;
+    formData.orderRef = _id;
+    try {
+      const response = await api.postPaymentStageDetails(formData, service);
       console.log('Submit response:', response);
       setServices([...services]);
     } catch (error) {
@@ -143,6 +204,30 @@ const TableComponentService = ({
   const handleArnChange = (rowIndex, value) => {
     setArnErrors({ [rowIndex]: '' });
     setArnValues((prev) => ({
+      ...prev,
+      [rowIndex]: value,
+    }));
+  };
+
+  const handler9ArnChange = (rowIndex, value) => {
+    setr9ArnErrors({ [rowIndex]: '' });
+    setr9ArnValues((prev) => ({
+      ...prev,
+      [rowIndex]: value,
+    }));
+  };
+
+  const handler9cArnChange = (rowIndex, value) => {
+    setr9cArnErrors({ [rowIndex]: '' });
+    setr9cArnValues((prev) => ({
+      ...prev,
+      [rowIndex]: value,
+    }));
+  };
+
+  const handleTaxChange = (rowIndex, value) => {
+    setTaxErrors({ [rowIndex]: '' });
+    setTaxValues((prev) => ({
       ...prev,
       [rowIndex]: value,
     }));
@@ -198,7 +283,7 @@ const TableComponentService = ({
                           }
                         />
                         <button
-                          onClick={() => handleUpload(rowIndex, rowData)}
+                          onClick={(e) => handleUpload(rowIndex, rowData, e)}
                           className='ml-2 text-sm px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600'
                         >
                           Upload
@@ -291,6 +376,38 @@ const TableComponentService = ({
                                 </p>
                               );
                             })}
+                          {rowData.clientDocumentSendArray &&
+                            rowData.clientDocumentSendArray.length > 0 &&
+                            rowData.clientDocumentSendArray.map(
+                              (file, fileIndex) => {
+                                const getFileNameFromURL = (url) => {
+                                  const parts = url.split('/');
+                                  return parts[parts.length - 1];
+                                };
+                                return (
+                                  <p key={fileIndex}>
+                                    <a
+                                      target='_blank'
+                                      className='text-sm text-blue-500 underline'
+                                      href={file}
+                                      title={getFileNameFromURL(file)}
+                                    >
+                                      {getFileNameFromURL(file).length > 30
+                                        ? getFileNameFromURL(file).substring(
+                                            0,
+                                            20
+                                          ) +
+                                          '...' +
+                                          getFileNameFromURL(file).substring(
+                                            getFileNameFromURL(file).length - 7,
+                                            getFileNameFromURL(file).length
+                                          )
+                                        : getFileNameFromURL(file)}
+                                    </a>
+                                  </p>
+                                );
+                              }
+                            )}
                         </>
                       ) : cellData && cellData.length > 0 ? (
                         cellData.map((file, fileIndex) => {
@@ -333,6 +450,13 @@ const TableComponentService = ({
                       >
                         Done
                       </button>
+                    ) : header === 'Payment' && stage == 'payment' ? (
+                      <button
+                        onClick={(e) => handlePaymentDone(rowIndex, rowData)}
+                        className='ml-2 px-4 py-1 bg-blue-500 text-white rounded'
+                      >
+                        Paid
+                      </button>
                     ) : header === 'ARN Number' && stage === 'submit' ? (
                       <input
                         type='text'
@@ -342,7 +466,7 @@ const TableComponentService = ({
                           handleArnChange(rowIndex, e.target.value)
                         }
                         placeholder='Enter ARN No.'
-                        className={`w-full mt-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-zinc-300 ${
+                        className={`w-[150px] mt-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-zinc-300 ${
                           arnErrors[rowIndex] ? 'border border-red-500' : ''
                         }`}
                       />
@@ -352,7 +476,43 @@ const TableComponentService = ({
                         name='arnNumber'
                         value={rowData.arnNumber}
                         disabled
-                        className='w-full mt-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-zinc-300'
+                        className='w-[150px] mt-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-zinc-300'
+                      />
+                    ) : header === 'R9 ARN No.' ? (
+                      <input
+                        type='text'
+                        name='arnNumber'
+                        value={
+                          stage == 'completed'
+                            ? rowData.r9ArnNumber
+                            : r9ArnValues[rowIndex] || ''
+                        }
+                        disabled={stage == 'completed' ? true : false}
+                        onChange={(e) =>
+                          handler9ArnChange(rowIndex, e.target.value)
+                        }
+                        placeholder='Enter R9 ARN No.'
+                        className={`w-[150px] mt-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-zinc-300 ${
+                          r9ArnErrors[rowIndex] ? 'border border-red-500' : ''
+                        }`}
+                      />
+                    ) : header === 'R9C ARN No.' ? (
+                      <input
+                        type='text'
+                        name='arnNumber'
+                        value={
+                          stage == 'completed'
+                            ? rowData.r9cArnNumber
+                            : r9cArnValues[rowIndex] || ''
+                        }
+                        disabled={stage == 'completed' ? true : false}
+                        onChange={(e) =>
+                          handler9cArnChange(rowIndex, e.target.value)
+                        }
+                        placeholder='Enter R9C ARN No.'
+                        className={`w-[150px] mt-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-zinc-300 ${
+                          r9cArnErrors[rowIndex] ? 'border border-red-500' : ''
+                        }`}
                       />
                     ) : header === 'Note' && stage === 'working' ? (
                       <textarea
@@ -363,6 +523,19 @@ const TableComponentService = ({
                           handleNoteChange(rowIndex, e.target.value)
                         }
                         className='w-52 mt-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-zinc-300'
+                      />
+                    ) : header === 'Tax Amount' ? (
+                      <input
+                        type='text'
+                        name='taxAmount'
+                        value={taxValues[rowIndex] || ''}
+                        onChange={(e) =>
+                          handleTaxChange(rowIndex, e.target.value)
+                        }
+                        placeholder='Enter Tax Amount'
+                        className={`w-[150px] mt-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-zinc-300 ${
+                          taxErrors[rowIndex] ? 'border border-red-500' : ''
+                        }`}
                       />
                     ) : (
                       (cellData && cellData) || ' - '

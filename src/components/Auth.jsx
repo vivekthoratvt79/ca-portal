@@ -41,10 +41,7 @@ const Auth = () => {
   };
 
   return (
-    <div
-      className='flex items-center justify-center'
-      style={{ minHeight: '90vh' }}
-    >
+    <div className='flex items-center justify-center h-[91vh]'>
       <div className='bg-white dark:bg-zinc-800 shadow-lg rounded-lg p-8 flex space-x-8 items-center max-w-xl'>
         <div className='hidden md:block'>
           <img

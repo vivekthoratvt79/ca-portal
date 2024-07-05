@@ -122,6 +122,35 @@ export const getCompleteStageDetails = (
         `/${service}/getCompleteStageDetails?serviceRef=${serviceRef}&adminRef=${adminRef}`
       );
 
+export const getPaymentStageDetails = (
+  agentRef,
+  serviceRef,
+  adminRef,
+  service
+) =>
+  agentRef
+    ? API.get(
+        `/${service}/getPaymentStageDetails?agentRef=${agentRef}serviceRef=${serviceRef}&adminRef=${adminRef}`
+      )
+    : API.get(
+        `/${service}/getPaymentStageDetails?serviceRef=${serviceRef}&adminRef=${adminRef}`
+      );
+
+export const getDocSendingDetails = (agentRef, serviceRef, adminRef, service) =>
+  agentRef
+    ? API.get(
+        `/${service}/getDocSendingDetails?agentRef=${agentRef}serviceRef=${serviceRef}&adminRef=${adminRef}`
+      )
+    : API.get(
+        `/${service}/getDocSendingDetails?serviceRef=${serviceRef}&adminRef=${adminRef}`
+      );
+
+export const postPaymentStageDetails = (formData, service) =>
+  API.post(`/${service}/postPaymentStageDetails`, formData);
+
+export const postDocSending = (formData, service) =>
+  API.post(`/${service}/postDocSending`, formData);
+
 export const postClientDataUpload = (formData, service) =>
   API.post(`/${service}/postClientDataUpload`, formData);
 
