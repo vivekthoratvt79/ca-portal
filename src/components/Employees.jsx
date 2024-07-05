@@ -22,7 +22,7 @@ const Employees = ({ access }) => {
   useEffect(() => {
     if (userRole == 'admin') {
       dispatch(fetchForAdmin('agent', entitiyId));
-    } else {
+    } else if (userRole == 'manager') {
       dispatch(fetchAgentsForManager(entitiyId));
     }
     try {

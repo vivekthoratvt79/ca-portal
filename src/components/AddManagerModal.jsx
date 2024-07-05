@@ -80,7 +80,7 @@ const AddManagerModal = ({ showModal, closeModal }) => {
         }`}
       >
         <div className='flex justify-between items-center'>
-          <div className='text-lg'>Employee Registration</div>
+          <div className='text-lg'>Manager Registration</div>
           <div className='cursor-pointer text-lg' onClick={closeModal}>
             x
           </div>

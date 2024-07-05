@@ -156,6 +156,7 @@ const TableComponentService = ({
 
   const handleDocUpload = async (rowIndex, rowData, e) => {
     const files = adminSelectedFiles[rowIndex];
+    const formData = new FormData();
 
     if (!files || !files.length) {
       setImgErrors({ [rowIndex]: 'Please Upload Image' });
@@ -173,7 +174,6 @@ const TableComponentService = ({
         );
       }
     }
-    const formData = new FormData();
 
     let { adminRef, _id, clientRef, agentRef, serviceRef } = rowData;
     formData.append('clientRef', clientRef);
@@ -652,7 +652,7 @@ const TableComponentService = ({
                           handleAcknowledgementChange(rowIndex, e.target.value)
                         }
                         placeholder='Enter Acknowledgement No.'
-                        className={`w-[150px] mt-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-zinc-300 ${
+                        className={`w-[200px] mt-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-zinc-300 ${
                           acknowledgementErrors[rowIndex]
                             ? 'border border-red-500'
                             : ''

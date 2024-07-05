@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: 'http://34.229.58.48:4000/api/',
+  baseURL: 'https://cabook.cc/api/',
 });
 
 export const notificationSubscribe = (data) =>

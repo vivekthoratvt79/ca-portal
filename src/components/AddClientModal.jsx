@@ -5,6 +5,8 @@ import Loader from './Loader';
 
 const AddClientModal = ({ showModal, closeModal, services }) => {
   const user = useSelector((state) => state.auth.authData);
+  const userRole = useSelector((state) => state.auth.authData.role);
+
   const windowWidth = window.innerWidth;
   const smallScreen = windowWidth <= 768;
   const modalDisplay = showModal ? 'block' : 'none hidden';
@@ -38,7 +40,7 @@ const AddClientModal = ({ showModal, closeModal, services }) => {
     ptecPassword: '',
     accountantName: '',
     accountantPhone: '',
-    adminRef: user.entityID,
+    adminRef: userRole == 'admin' ? user.entityID : user.entity.adminRef,
     serviceFreqMap: [],
     billType: '',
     billAmount: '',

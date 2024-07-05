@@ -28,6 +28,7 @@ import Gst2BPR from './components/Gst2BPR';
 import TDS from './components/TDS';
 import VAT from './components/VAT';
 import Consultancy from './components/Consultancy';
+import SuperAdmin from './components/SuperAdmin';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -132,7 +133,7 @@ const App = () => {
     <BrowserRouter>
       <Navbar user={user} />
       <Routes>
-        {user && userRole != 'client' ? (
+        {user && userRole != 'client' && userRole != 'superadmin' ? (
           <>
             <Route path='*' element={<NoPageFound />} />
             <Route path='/' element={<Home access={access} />}></Route>
@@ -186,6 +187,11 @@ const App = () => {
               path='/expenditure'
               element={<Expenditure access={access} />}
             ></Route> */}
+          </>
+        ) : userRole == 'superadmin' ? (
+          <>
+            <Route path='*' element={<NoPageFound />} />
+            <Route path='/' element={<SuperAdmin />}></Route>
           </>
         ) : userRole == 'client' ? (
           <>

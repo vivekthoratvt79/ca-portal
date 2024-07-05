@@ -7,7 +7,7 @@ import Loader from './Loader';
 const AddEmployeeModal = ({ showModal, closeModal, services }) => {
   const navigate = useNavigate();
   let user = useSelector((state) => state.auth.authData);
-
+  const userRole = useSelector((state) => state.auth.authData.role);
   const [error, setError] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [selectedServices, setSelectedServices] = useState([]);
@@ -35,7 +35,7 @@ const AddEmployeeModal = ({ showModal, closeModal, services }) => {
     panNumber: '',
     adhaarImage: '',
     panImage: '',
-    adminRef: user.entityID,
+    adminRef: userRole == 'admin' ? user.entityID : user.entity.adminRef,
   });
 
   const handleChange = (e) => {

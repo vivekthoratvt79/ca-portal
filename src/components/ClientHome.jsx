@@ -23,7 +23,10 @@ const ClientHome = ({ access }) => {
           style={{ borderColor: '#41506b' }}
         >
           <div>
-            Welcome, <span className='text-blue-400'>{userData.username}</span>
+            Welcome,{' '}
+            <span className='text-blue-400'>
+              {userData?.entity?.name || userData.username}
+            </span>
           </div>
         </div>
 

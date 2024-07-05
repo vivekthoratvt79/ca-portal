@@ -6,24 +6,16 @@ import { fetchClientsForAgent } from '../actions/clients';
 import { fetchForAdmin } from '../actions/managers';
 import TableComponent from './TableComponent';
 import * as api from '../api';
+import AddAdminModal from './AddAdminModal';
 
-const Clients = ({ access }) => {
+const SuperAdmin = ({ access }) => {
   const dispatch = useDispatch();
-  let user = useSelector((state) => state.auth.authData);
-  const userRole = useSelector((state) => state.auth.authData.role);
   const entitiyId = useSelector((state) => state.auth.authData.entityID);
+  const userData = useSelector((state) => state.auth.authData);
   const [services, setServices] = useState([]);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    if (userRole == 'admin') {
-      dispatch(fetchForAdmin('client', entitiyId));
-      dispatch(fetchForAdmin('agent', entitiyId));
-    } else if (userRole == 'agent') {
-      dispatch(fetchClientsForAgent(entitiyId));
-    } else if (userRole == 'manager') {
-      dispatch(fetchForAdmin('client', user.entity.adminRef));
-      dispatch(fetchForAdmin('agent', user.entity.adminRef));
-    }
     try {
       api.fetchAllServices().then(({ data }) => {
         data.statusCode == 200 && setServices(data.data.services);
@@ -32,9 +24,7 @@ const Clients = ({ access }) => {
       console.log(error);
     }
   }, [dispatch]);
-  const clients = useSelector((state) => state.clients);
 
-  const [showModal, setShowModal] = useState(false);
   const openModal = () => {
     setShowModal(true);
   };
@@ -44,43 +34,34 @@ const Clients = ({ access }) => {
 
   return (
     <>
-      <Sidebar activeTab='clients' access={access} />
-      <AddClientModal
+      <AddAdminModal
         showModal={showModal}
         services={services}
         closeModal={closeModal}
       />
-
-      <div className='p-4 sm:ml-64 h-91vh'>
+      <div className='p-4 h-91vh'>
         <div
           className='flex justify-between items-center font-semibold h-16 p-4 border-2 border-dashed rounded-lg dark:border-gray-700 clients-container'
           style={{ borderColor: '#41506b' }}
         >
-          <div>Clients</div>
+          <div>
+            Welcome,{' '}
+            <span className='text-blue-400'>
+              {userData?.entity?.name || userData.username}
+            </span>
+          </div>
           <div
             className='p-2 bg-green-300 hover:bg-green-400 cursor-pointer rounded-md text-xs'
             onClick={openModal}
           >
-            Add Client
+            Register Admin
           </div>
         </div>
-        {!clients.length ? (
-          <div className='p-4'>No Clients Yet</div>
-        ) : (
-          <div className='p-4'>
-            {clients && clients.length > 0 && (
-              <TableComponent
-                headers={['Sr No.', 'Name', 'Email', 'Number']}
-                data={clients}
-                type='client'
-                allServices={services}
-              />
-            )}
-          </div>
-        )}
+
+        <div className='p-4'></div>
       </div>
     </>
   );
 };
 
-export default Clients;
+export default SuperAdmin;

@@ -9,6 +9,8 @@ const AssignWork = ({ type, id, showModal, closeModal, allServices }) => {
   const dispatch = useDispatch();
 
   const user = useSelector((state) => state.auth.authData);
+  const userRole = useSelector((state) => state.auth.authData.role);
+
   const employees = useSelector((state) => state.employees);
   const managers = useSelector((state) => state.managers);
   const clients = useSelector((state) => state.clients);
