@@ -25,6 +25,9 @@ import NotificationForm from './components/NotificationForm';
 import InvoiceForm from './components/InvoiceForm';
 import ClientHome from './components/ClientHome';
 import Gst2BPR from './components/Gst2BPR';
+import TDS from './components/TDS';
+import VAT from './components/VAT';
+import Consultancy from './components/Consultancy';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -151,7 +154,12 @@ const App = () => {
               path='/tax/company'
               element={<CompanyTax access={access} />}
             ></Route>
-            <Route path='/loan' element={<Loan access={access} />}></Route>
+            <Route path='/tds' element={<TDS access={access} />}></Route>
+            <Route path='/vat' element={<VAT access={access} />}></Route>
+            <Route
+              path='/consultancy'
+              element={<Consultancy access={access} />}
+            ></Route>
             <Route
               path='/notification'
               element={<NotificationForm access={access} />}

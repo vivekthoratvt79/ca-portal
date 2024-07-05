@@ -6,10 +6,11 @@ import { useSelector } from 'react-redux';
 import Loader from './Loader';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-const GstR9 = ({ access }) => {
+const TDS = ({ access }) => {
   const [activeTab, setActiveTab] = useState('tab1');
   const [dataUpload, setDataUpload] = useState([]);
   const [workingStage, setWorkingStage] = useState([]);
+  const [docStage, setDocStage] = useState([]);
   const [paymentStage, setPaymentStage] = useState([]);
   const [submitStage, setSubmitStage] = useState([]);
   const [completeStage, setCompleteStage] = useState([]);
@@ -35,7 +36,7 @@ const GstR9 = ({ access }) => {
   }, [location.search]);
 
   let tabKeys = ['tab1', 'tab2', 'tab3', 'tab4', 'tab5'];
-  let tabValues = ['Data', 'Working', 'Payment', 'Submit', 'Completed'];
+  let tabValues = ['Data', 'Working', 'Document', 'Payment', 'Submit'];
 
   const handleDropdownChange = (event) => {
     const selectedTab = event.target.value;
@@ -61,22 +62,16 @@ const GstR9 = ({ access }) => {
     'Done',
   ];
 
+  let docSendingHeader = ['Sr No.', 'Client Name', 'Doc Upload', 'Done'];
   let paymentHeader = ['Sr No.', 'View', 'Client Name', 'Payment'];
 
   let submitHeader = [
     'Sr No.',
     'View',
     'Client Name',
-    'R9 ARN No.',
-    'R9C ARN No.',
+    'CIN No.',
+    'CIN',
     'Done',
-  ];
-  let completeHeader = [
-    'Sr No.',
-    'View',
-    'Client Name',
-    'R9 ARN No.',
-    'R9C ARN No.',
   ];
 
   useEffect(() => {
@@ -96,41 +91,39 @@ const GstR9 = ({ access }) => {
     setLoading(true);
 
     async function fetchData() {
-      let serviceRef = services.find(
-        ({ subheading }) => subheading == 'R9/R9C'
-      );
+      let serviceRef = services.find(({ subheading }) => subheading == 'TDS');
       try {
         if (userRole == 'admin' && serviceRef) {
           api
-            .getDataUploadStageDetails('', serviceRef?._id, entitiyId, 'gstr9')
+            .getDataUploadStageDetails('', serviceRef?._id, entitiyId, 'tds')
             .then(({ data }) => {
               setLoading(false);
               setDataUpload(data.data.orders);
             });
           api
-            .getWorkingStageDetails('', serviceRef?._id, entitiyId, 'gstr9')
+            .getWorkingStageDetails('', serviceRef?._id, entitiyId, 'tds')
             .then(({ data }) => {
               setLoading(false);
               setWorkingStage(data.data.orders);
             });
           api
-            .getPaymentStageDetails('', serviceRef?._id, entitiyId, 'gstr9')
+            .getDocSendingDetails('', serviceRef?._id, entitiyId, 'tds')
+            .then(({ data }) => {
+              setLoading(false);
+              setDocStage(data.data.orders);
+            });
+          api
+            .getPaymentStageDetails('', serviceRef?._id, entitiyId, 'tds')
             .then(({ data }) => {
               setLoading(false);
               setPaymentStage(data.data.orders);
             });
 
           api
-            .getSubmitStageDetails('', serviceRef?._id, entitiyId, 'gstr9')
+            .getSubmitStageDetails('', serviceRef?._id, entitiyId, 'tds')
             .then(({ data }) => {
               setLoading(false);
               setSubmitStage(data.data.orders);
-            });
-          api
-            .getCompleteStageDetails('', serviceRef?._id, entitiyId, 'gstr9')
-            .then(({ data }) => {
-              setLoading(false);
-              setCompleteStage(data.data.orders);
             });
         } else {
           setLoading(false);
@@ -144,13 +137,13 @@ const GstR9 = ({ access }) => {
   }, [services]);
   return (
     <>
-      <Sidebar activeTab='r9' access={access} />
+      <Sidebar activeTab='tds' access={access} />
       <div className='p-4 sm:ml-64 h-91vh'>
         <div
           className='flex justify-between items-center font-semibold h-16 p-4 border-2 border-dashed rounded-lg dark:border-gray-700 clients-container'
           style={{ borderColor: '#41506b' }}
         >
-          <div>GST - R9 / R9C</div>
+          <div>TDS / TCS</div>
         </div>
         {loading ? (
           <Loader appendClass='h-[500px]' />
@@ -193,10 +186,16 @@ const GstR9 = ({ access }) => {
                 activeTab === 'tab1' ? 'block' : 'hidden'
               }`}
             >
+              {dataUpload.length > 0 && (
+                <p className='mb-4 text-sm'>
+                  (Bank Statment, Deductions, , Investment, Shares, Interest
+                  certifite)
+                </p>
+              )}
               <TableComponentService
                 headers={dataHeader}
                 data={dataUpload}
-                service='gstr9'
+                service='tds'
                 stage='data'
                 setServices={setServices}
                 services={services}
@@ -213,7 +212,7 @@ const GstR9 = ({ access }) => {
                 headers={workingHeader}
                 data={workingStage}
                 stage='working'
-                service='gstr9'
+                service='tds'
                 setServices={setServices}
                 services={services}
               />
@@ -226,15 +225,14 @@ const GstR9 = ({ access }) => {
               }`}
             >
               <TableComponentService
-                headers={paymentHeader}
-                data={paymentStage}
-                service='gstr9'
-                stage='payment'
+                headers={docSendingHeader}
+                data={docStage}
+                service='tds'
+                stage='doc'
                 setServices={setServices}
                 services={services}
               />
             </div>
-
             <div
               id='tab4'
               className={`tabcontent ${
@@ -242,10 +240,10 @@ const GstR9 = ({ access }) => {
               }`}
             >
               <TableComponentService
-                headers={submitHeader}
-                data={submitStage}
-                service='gstr9'
-                stage='submit'
+                headers={paymentHeader}
+                data={paymentStage}
+                service='tds'
+                stage='payment'
                 setServices={setServices}
                 services={services}
               />
@@ -258,10 +256,10 @@ const GstR9 = ({ access }) => {
               }`}
             >
               <TableComponentService
-                headers={completeHeader}
-                data={completeStage}
-                service='gstr9'
-                stage='completed'
+                headers={submitHeader}
+                data={submitStage}
+                service='tds'
+                stage='submit'
                 setServices={setServices}
                 services={services}
               />
@@ -273,4 +271,4 @@ const GstR9 = ({ access }) => {
   );
 };
 
-export default GstR9;
+export default TDS;

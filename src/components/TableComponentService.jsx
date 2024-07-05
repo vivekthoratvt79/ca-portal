@@ -13,12 +13,16 @@ const TableComponentService = ({
   const [adminSelectedFiles, setAdminSelectedFiles] = useState({});
   const [imgErrors, setImgErrors] = useState({});
   const [clientUploadErrors, setClientUploadErrors] = useState({});
+  const [cinErrors, setCinErrors] = useState({});
+  const [cinValues, setCinValues] = useState({});
   const [arnErrors, setArnErrors] = useState({});
   const [arnValues, setArnValues] = useState({});
   const [r9ArnErrors, setr9ArnErrors] = useState({});
   const [r9ArnValues, setr9ArnValues] = useState({});
   const [r9cArnErrors, setr9cArnErrors] = useState({});
   const [r9cArnValues, setr9cArnValues] = useState({});
+  const [acknowledgementErrors, setAcknowledgementErrors] = useState({});
+  const [acknowledgementValues, setAcknowledgementValues] = useState({});
   const [noteValues, setNoteValues] = useState({});
   const [taxErrors, setTaxErrors] = useState({});
   const [taxValues, setTaxValues] = useState({});
@@ -41,6 +45,11 @@ const TableComponentService = ({
     'Tax Amount': 'taxAmount',
     'R9 ARN No.': 'r9arnNumber',
     'R9C ARN No.': 'r9carnNumber',
+    'Doc Upload': 'docUpload',
+    'CIN No.': 'CINNumber',
+    CIN: 'cinDocumentUploadArray',
+    'Acknowledgement No.': 'acknowledgementNumber',
+    Acknowledgement: 'acknowledgementUpload',
   };
 
   const handleFileChange = (rowIndex, files) => {
@@ -110,7 +119,7 @@ const TableComponentService = ({
     }
     const formData = new FormData();
 
-    if (service == 'gstr9') {
+    if (service == 'gstr9' || service == 'tds') {
       if (!taxValues[rowIndex]) {
         setTaxErrors({ [rowIndex]: 'Tax Amount is required' });
         return;
@@ -145,6 +154,80 @@ const TableComponentService = ({
     }
   };
 
+  const handleDocUpload = async (rowIndex, rowData, e) => {
+    const files = adminSelectedFiles[rowIndex];
+
+    if (!files || !files.length) {
+      setImgErrors({ [rowIndex]: 'Please Upload Image' });
+      return;
+    }
+
+    if (service == 'vat') {
+      if (!acknowledgementValues[rowIndex]) {
+        setAcknowledgementErrors({ [rowIndex]: 'Tax Amount is required' });
+        return;
+      } else {
+        formData.append(
+          'acknowledgementNumber',
+          acknowledgementValues[rowIndex]
+        );
+      }
+    }
+    const formData = new FormData();
+
+    let { adminRef, _id, clientRef, agentRef, serviceRef } = rowData;
+    formData.append('clientRef', clientRef);
+    formData.append('serviceRef', serviceRef);
+    formData.append('agentRef', agentRef);
+    formData.append('adminRef', adminRef);
+    formData.append('orderRef', _id);
+
+    // Append files
+    for (let i = 0; i < files.length; i++) {
+      formData.append('files', files[i]);
+    }
+    try {
+      const response = await api.postDocSending(formData, service);
+      console.log('Work response:', response);
+      setServices([...services]);
+    } catch (error) {
+      console.error('Error :', error);
+    }
+  };
+
+  const handleDocSubmit = async (rowIndex, rowData, e) => {
+    const files = adminSelectedFiles[rowIndex];
+
+    if (!files || !files.length) {
+      setImgErrors({ [rowIndex]: 'Please Upload Image' });
+      return;
+    }
+    const formData = new FormData();
+
+    if (!cinValues[rowIndex]) {
+      setCinErrors({ [rowIndex]: 'CIN No is required' });
+      return;
+    } else {
+      formData.append('CINNumber', cinValues[rowIndex]);
+    }
+
+    let { adminRef, _id, clientRef, agentRef, serviceRef } = rowData;
+
+    formData.append('adminRef', adminRef);
+    formData.append('orderRef', _id);
+    // Append files
+    for (let i = 0; i < files.length; i++) {
+      formData.append('files', files[i]);
+    }
+    try {
+      const response = await api.postSubmitStageDetails(formData, service);
+      console.log('Work response:', response);
+      setServices([...services]);
+    } catch (error) {
+      console.error('Error :', error);
+    }
+  };
+
   const handleSubmitDone = async (rowIndex, rowData) => {
     const formData = {};
     let { _id } = rowData;
@@ -157,6 +240,7 @@ const TableComponentService = ({
       case 'gstr9':
         formData.r9ArnNumber = r9ArnValues[rowIndex];
         formData.r9cArnNumber = r9cArnValues[rowIndex];
+        break;
       default:
         break;
     }
@@ -172,6 +256,7 @@ const TableComponentService = ({
       setr9cArnErrors({ [rowIndex]: 'ARN Number is required' });
       return;
     }
+
     try {
       const response = await api.postSubmitStageDetails(formData, service);
       console.log('Submit response:', response);
@@ -201,6 +286,14 @@ const TableComponentService = ({
     }));
   };
 
+  const handleCinChange = (rowIndex, value) => {
+    setCinErrors({ [rowIndex]: '' });
+    setCinValues((prev) => ({
+      ...prev,
+      [rowIndex]: value,
+    }));
+  };
+
   const handleArnChange = (rowIndex, value) => {
     setArnErrors({ [rowIndex]: '' });
     setArnValues((prev) => ({
@@ -220,6 +313,14 @@ const TableComponentService = ({
   const handler9cArnChange = (rowIndex, value) => {
     setr9cArnErrors({ [rowIndex]: '' });
     setr9cArnValues((prev) => ({
+      ...prev,
+      [rowIndex]: value,
+    }));
+  };
+
+  const handleAcknowledgementChange = (rowIndex, value) => {
+    setAcknowledgementErrors({ [rowIndex]: '' });
+    setAcknowledgementValues((prev) => ({
       ...prev,
       [rowIndex]: value,
     }));
@@ -289,7 +390,10 @@ const TableComponentService = ({
                           Upload
                         </button>
                       </div>
-                    ) : header === 'Admin Upload' ? (
+                    ) : header === 'Admin Upload' ||
+                      header === 'Doc Upload' ||
+                      header == 'CIN' ||
+                      header == 'Acknowledgement' ? (
                       <div
                         className={`flex items-center w-52 font-semibold ${
                           imgErrors[rowIndex]
@@ -337,6 +441,9 @@ const TableComponentService = ({
                                         )
                                       : getFileNameFromURL(file)}
                                   </a>
+                                  <span className='text-xs italic'>
+                                    &nbsp;(By Client)
+                                  </span>
                                 </p>
                               );
                             })}
@@ -443,6 +550,10 @@ const TableComponentService = ({
                         onClick={(e) =>
                           stage === 'working'
                             ? handleWorkDone(rowIndex, rowData, e)
+                            : stage == 'doc'
+                            ? handleDocUpload(rowIndex, rowData, e)
+                            : stage === 'submit' && service == 'tds'
+                            ? handleDocSubmit(rowIndex, rowData, e)
                             : stage === 'submit' &&
                               handleSubmitDone(rowIndex, rowData)
                         }
@@ -457,6 +568,19 @@ const TableComponentService = ({
                       >
                         Paid
                       </button>
+                    ) : header === 'CIN No.' && stage === 'submit' ? (
+                      <input
+                        type='text'
+                        name='cinNumber'
+                        value={cinValues[rowIndex] || ''}
+                        onChange={(e) =>
+                          handleCinChange(rowIndex, e.target.value)
+                        }
+                        placeholder='Enter CIN No.'
+                        className={`w-[150px] mt-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-zinc-300 ${
+                          cinErrors[rowIndex] ? 'border border-red-500' : ''
+                        }`}
+                      />
                     ) : header === 'ARN Number' && stage === 'submit' ? (
                       <input
                         type='text'
@@ -512,6 +636,26 @@ const TableComponentService = ({
                         placeholder='Enter R9C ARN No.'
                         className={`w-[150px] mt-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-zinc-300 ${
                           r9cArnErrors[rowIndex] ? 'border border-red-500' : ''
+                        }`}
+                      />
+                    ) : header === 'Acknowledgement No.' ? (
+                      <input
+                        type='text'
+                        name='acknowledgementNo'
+                        value={
+                          stage == 'completed'
+                            ? rowData.acknowledgementNumber
+                            : acknowledgementValues[rowIndex] || ''
+                        }
+                        disabled={stage == 'completed' ? true : false}
+                        onChange={(e) =>
+                          handleAcknowledgementChange(rowIndex, e.target.value)
+                        }
+                        placeholder='Enter Acknowledgement No.'
+                        className={`w-[150px] mt-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-zinc-300 ${
+                          acknowledgementErrors[rowIndex]
+                            ? 'border border-red-500'
+                            : ''
                         }`}
                       />
                     ) : header === 'Note' && stage === 'working' ? (
