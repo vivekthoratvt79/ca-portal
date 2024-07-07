@@ -22,7 +22,7 @@ const TableComponentBill = ({ headers, data }) => {
 
   return (
     <>
-      <div className='overflow-x-auto'>
+      <div className='overflow-x-auto max-h-[575px]'>
         <table className='table-auto w-full border-collapse'>
           <thead>
             <tr>

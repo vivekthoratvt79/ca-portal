@@ -29,6 +29,9 @@ import TDS from './components/TDS';
 import VAT from './components/VAT';
 import Consultancy from './components/Consultancy';
 import SuperAdmin from './components/SuperAdmin';
+import PTRC from './components/PTRC';
+import PTEC from './components/PTEC';
+import Accounting from './components/Accounting';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -157,6 +160,12 @@ const App = () => {
             ></Route>
             <Route path='/tds' element={<TDS access={access} />}></Route>
             <Route path='/vat' element={<VAT access={access} />}></Route>
+            <Route path='/ptrc' element={<PTRC access={access} />}></Route>
+            <Route path='/ptec' element={<PTEC access={access} />}></Route>
+            <Route
+              path='/accounting'
+              element={<Accounting access={access} />}
+            ></Route>
             <Route
               path='/consultancy'
               element={<Consultancy access={access} />}

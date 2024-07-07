@@ -4,12 +4,6 @@ const API = axios.create({
   baseURL: 'https://cabook.cc/api/',
 });
 
-export const notificationSubscribe = (data) =>
-  API.post('/notification/subscribe', data);
-
-export const sendNotification = (data) =>
-  API.post('/notification/sendNotification', data);
-
 // API.interceptors.request.use((req) => {
 //   if (localStorage.getItem('profile')) {
 //     req.headers.authorization = `Bearer ${
@@ -18,6 +12,12 @@ export const sendNotification = (data) =>
 //   }
 //   return req;
 // });
+
+export const notificationSubscribe = (data) =>
+  API.post('/notification/subscribe', data);
+
+export const sendNotification = (data) =>
+  API.post('/notification/sendNotification', data);
 
 export const fetchForAdmin = (role, adminId) =>
   API.get(`/list/${role}?adminRef=${adminId}`);
@@ -63,6 +63,32 @@ export const getAllBillsOfAdmin = (payload) =>
 
 export const getAllBillsOfClient = (payload) =>
   API.post(`/getAllBillsOfClient`, payload);
+
+// =================== BILLS ===============================
+
+export const getBillDetails = (billRef) =>
+  API.get(`/bills/getBillDetails?billRef=${billRef}`);
+
+export const getBillsInApprovalStage = (adminRef) =>
+  API.get(`/bills/getBillsInApprovalStage?adminRef=${adminRef}`);
+
+export const getBillsInPendingStage = (adminRef) =>
+  API.get(`/bills/getBillsInPendingStage?adminRef=${adminRef}`);
+
+export const getBillsInReceiptStage = (adminRef) =>
+  API.get(`/bills/getBillsInReceiptStage?adminRef=${adminRef}`);
+
+export const getClientBillsInPendingStage = (clientRef) =>
+  API.get(`/bills/getClientBillsInPendingStage?clientRef=${clientRef}`);
+
+export const getClientBillsInReceiptStage = (clientRef) =>
+  API.get(`/bills/getClientBillsInReceiptStage?clientRef=${clientRef}`);
+
+export const updateBillToPendingStage = (payload) =>
+  API.post(`/bills/getBillsInReceiptStage`, payload);
+
+export const updateInPendingStage = (payload) =>
+  API.post(`/bills/updateInPendingStage`, payload);
 
 // =====================   ORDERS  ============================
 

@@ -6,13 +6,13 @@ import { useSelector } from 'react-redux';
 import Loader from './Loader';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-const TDS = ({ access }) => {
+const PTEC = ({ access }) => {
   const [activeTab, setActiveTab] = useState('tab1');
   const [dataUpload, setDataUpload] = useState([]);
   const [workingStage, setWorkingStage] = useState([]);
+  const [submitStage, setSubmitStage] = useState([]);
   const [docStage, setDocStage] = useState([]);
   const [paymentStage, setPaymentStage] = useState([]);
-  const [submitStage, setSubmitStage] = useState([]);
   const [completeStage, setCompleteStage] = useState([]);
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -35,43 +35,16 @@ const TDS = ({ access }) => {
     }
   }, [location.search]);
 
-  let tabKeys = ['tab1', 'tab2', 'tab3', 'tab4', 'tab5', 'tab6'];
-  let tabValues = [
-    'Data',
-    'Working',
-    'Document',
-    'Payment',
-    'Submit',
-    'Completed',
-  ];
+  let tabKeys = ['tab1', 'tab2', 'tab3', 'tab4'];
+  let tabValues = ['Document', 'Payment', 'Submit', 'Completed'];
 
   const handleDropdownChange = (event) => {
     const selectedTab = event.target.value;
     openTab(event, selectedTab);
   };
 
-  let dataHeader = [
-    'Sr No.',
-    'Client Name',
-    'Data Provider Name',
-    'Number',
-    'Client Upload',
-  ];
-
-  let workingHeader = [
-    'Sr No.',
-    'View',
-    'Client Name',
-    'Past Note',
-    'Admin Upload',
-    'Tax Amount',
-    'Note',
-    'Done',
-  ];
-
   let docSendingHeader = ['Sr No.', 'Client Name', 'Doc Upload', 'Done'];
   let paymentHeader = ['Sr No.', 'View', 'Client Name', 'Payment'];
-
   let submitHeader = [
     'Sr No.',
     'View',
@@ -99,42 +72,30 @@ const TDS = ({ access }) => {
     setLoading(true);
 
     async function fetchData() {
-      let serviceRef = services.find(({ subheading }) => subheading == 'TDS');
+      let serviceRef = services.find(({ subheading }) => subheading == 'PTEC');
       try {
         if (userRole == 'admin' && serviceRef) {
           api
-            .getDataUploadStageDetails('', serviceRef?._id, entitiyId, 'tds')
-            .then(({ data }) => {
-              setLoading(false);
-              setDataUpload(data.data.orders);
-            });
-          api
-            .getWorkingStageDetails('', serviceRef?._id, entitiyId, 'tds')
-            .then(({ data }) => {
-              setLoading(false);
-              setWorkingStage(data.data.orders);
-            });
-          api
-            .getDocSendingDetails('', serviceRef?._id, entitiyId, 'tds')
+            .getDocSendingDetails('', serviceRef?._id, entitiyId, 'ptec')
             .then(({ data }) => {
               setLoading(false);
               setDocStage(data.data.orders);
             });
           api
-            .getPaymentStageDetails('', serviceRef?._id, entitiyId, 'tds')
+            .getPaymentStageDetails('', serviceRef?._id, entitiyId, 'ptec')
             .then(({ data }) => {
               setLoading(false);
               setPaymentStage(data.data.orders);
             });
 
           api
-            .getSubmitStageDetails('', serviceRef?._id, entitiyId, 'tds')
+            .getSubmitStageDetails('', serviceRef?._id, entitiyId, 'ptec')
             .then(({ data }) => {
               setLoading(false);
               setSubmitStage(data.data.orders);
             });
           api
-            .getCompleteStageDetails('', serviceRef?._id, entitiyId, 'tds')
+            .getCompleteStageDetails('', serviceRef?._id, entitiyId, 'ptec')
             .then(({ data }) => {
               setLoading(false);
               setCompleteStage(data.data.orders);
@@ -151,13 +112,13 @@ const TDS = ({ access }) => {
   }, [services]);
   return (
     <>
-      <Sidebar activeTab='tds' access={access} />
+      <Sidebar activeTab='ptec' access={access} />
       <div className='p-4 sm:ml-64 h-91vh'>
         <div
           className='flex justify-between items-center font-semibold h-16 p-4 border-2 border-dashed rounded-lg dark:border-gray-700 clients-container'
           style={{ borderColor: '#41506b' }}
         >
-          <div>TDS / TCS</div>
+          <div>PTEC</div>
         </div>
         {loading ? (
           <Loader appendClass='h-[500px]' />
@@ -181,7 +142,7 @@ const TDS = ({ access }) => {
                 {tabKeys.map((tab, index) => (
                   <button
                     key={index}
-                    className={`w-1/2 md:w-1/6 py-4 px-6 block leading-normal border-l border-t border-r rounded-t-lg focus:outline-none focus:shadow-outline ${
+                    className={`w-1/2 md:w-1/4 py-4 px-6 block leading-normal border-l border-t border-r rounded-t-lg focus:outline-none focus:shadow-outline ${
                       activeTab === tab
                         ? 'border-b-0 font-semibold bg-slate-50'
                         : 'border-b border-gray-200 bg-gray-100'
@@ -200,22 +161,15 @@ const TDS = ({ access }) => {
                 activeTab === 'tab1' ? 'block' : 'hidden'
               }`}
             >
-              {dataUpload.length > 0 && (
-                <p className='mb-4 text-sm'>
-                  (Bank Statment, Deductions, , Investment, Shares, Interest
-                  certifite)
-                </p>
-              )}
               <TableComponentService
-                headers={dataHeader}
-                data={dataUpload}
-                service='tds'
-                stage='data'
+                headers={docSendingHeader}
+                data={docStage}
+                service='ptec'
+                stage='doc'
                 setServices={setServices}
                 services={services}
               />
             </div>
-
             <div
               id='tab2'
               className={`tabcontent ${
@@ -223,15 +177,14 @@ const TDS = ({ access }) => {
               }`}
             >
               <TableComponentService
-                headers={workingHeader}
-                data={workingStage}
-                stage='working'
-                service='tds'
+                headers={paymentHeader}
+                data={paymentStage}
+                service='ptec'
+                stage='payment'
                 setServices={setServices}
                 services={services}
               />
             </div>
-
             <div
               id='tab3'
               className={`tabcontent ${
@@ -239,10 +192,10 @@ const TDS = ({ access }) => {
               }`}
             >
               <TableComponentService
-                headers={docSendingHeader}
-                data={docStage}
-                service='tds'
-                stage='doc'
+                headers={submitHeader}
+                data={submitStage}
+                service='ptec'
+                stage='submit'
                 setServices={setServices}
                 services={services}
               />
@@ -254,40 +207,9 @@ const TDS = ({ access }) => {
               }`}
             >
               <TableComponentService
-                headers={paymentHeader}
-                data={paymentStage}
-                service='tds'
-                stage='payment'
-                setServices={setServices}
-                services={services}
-              />
-            </div>
-
-            <div
-              id='tab5'
-              className={`tabcontent ${
-                activeTab === 'tab5' ? 'block' : 'hidden'
-              }`}
-            >
-              <TableComponentService
-                headers={submitHeader}
-                data={submitStage}
-                service='tds'
-                stage='submit'
-                setServices={setServices}
-                services={services}
-              />
-            </div>
-            <div
-              id='tab6'
-              className={`tabcontent ${
-                activeTab === 'tab6' ? 'block' : 'hidden'
-              }`}
-            >
-              <TableComponentService
                 headers={completeHeader}
                 data={completeStage}
-                service='tds'
+                service='ptec'
                 stage='completed'
                 setServices={setServices}
                 services={services}
@@ -300,4 +222,4 @@ const TDS = ({ access }) => {
   );
 };
 
-export default TDS;
+export default PTEC;

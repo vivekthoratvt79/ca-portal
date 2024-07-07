@@ -6,9 +6,13 @@ import { useDispatch } from 'react-redux';
 const Navbar = ({ user }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  let windowWidth = window.innerWidth;
+  let smallScreen = windowWidth <= 768;
   return (
     <nav
-      className='custom-bg-color navbar-container bg-gray-50 py-2 h-[7vh]'
+      className={`${
+        smallScreen ? 'h-[6vh]' : 'h-[7vh]'
+      } custom-bg-color navbar-container bg-gray-50 py-2 `}
       style={{ borderBottom: '1px solid #d9f2ff' }}
     >
       <div className='mx-auto px-4'>

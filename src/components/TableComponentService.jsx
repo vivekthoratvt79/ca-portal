@@ -47,6 +47,7 @@ const TableComponentService = ({
     'R9C ARN No.': 'r9carnNumber',
     'Doc Upload': 'docUpload',
     'CIN No.': 'CINNumber',
+    'CIN Number': 'CINNumber',
     CIN: 'cinDocumentUploadArray',
     'Acknowledgement No.': 'acknowledgementNumber',
     Acknowledgement: 'acknowledgementUpload',
@@ -119,7 +120,7 @@ const TableComponentService = ({
     }
     const formData = new FormData();
 
-    if (service == 'gstr9' || service == 'tds') {
+    if (service == 'gstr9' || service == 'tds' || service == 'ptrc') {
       if (!taxValues[rowIndex]) {
         setTaxErrors({ [rowIndex]: 'Tax Amount is required' });
         return;
@@ -339,7 +340,7 @@ const TableComponentService = ({
       <p className='text-red-400 text-sm'>No data found in this stage!</p>
     </div>
   ) : (
-    <div className='overflow-x-auto'>
+    <div className='overflow-x-auto max-h-[575px]'>
       <table className='table-auto w-full border-collapse'>
         <thead>
           <tr>
@@ -552,7 +553,10 @@ const TableComponentService = ({
                             ? handleWorkDone(rowIndex, rowData, e)
                             : stage == 'doc'
                             ? handleDocUpload(rowIndex, rowData, e)
-                            : stage === 'submit' && service == 'tds'
+                            : stage === 'submit' &&
+                              (service == 'tds' ||
+                                service == 'ptrc' ||
+                                service == 'ptec')
                             ? handleDocSubmit(rowIndex, rowData, e)
                             : stage === 'submit' &&
                               handleSubmitDone(rowIndex, rowData)
