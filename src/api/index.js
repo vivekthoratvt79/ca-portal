@@ -85,7 +85,7 @@ export const getClientBillsInReceiptStage = (clientRef) =>
   API.get(`/bills/getClientBillsInReceiptStage?clientRef=${clientRef}`);
 
 export const updateBillToPendingStage = (payload) =>
-  API.post(`/bills/getBillsInReceiptStage`, payload);
+  API.post(`/bills/updateBillToPendingStage`, payload);
 
 export const updateInPendingStage = (payload) =>
   API.post(`/bills/updateInPendingStage`, payload);

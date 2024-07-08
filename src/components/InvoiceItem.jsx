@@ -1,62 +1,58 @@
 import React from 'react';
 import InvoiceField from './InvoiceField';
 
-const InvoiceItem = ({ id, name, qty, price, onDeleteItem, onEdtiItem }) => {
+const InvoiceItem = ({
+  _id,
+  particular,
+  hsn,
+  amount,
+  onDeleteItem,
+  onEdtiItem,
+}) => {
   const deleteItemHandler = () => {
-    onDeleteItem(id);
+    onDeleteItem(_id);
+  };
+
+  const handleEdit = (event) => {
+    const { name, value } = event.target;
+    onEdtiItem(_id, name, value);
   };
 
   return (
     <tr>
       <td className='w-full'>
         <InvoiceField
-          onEditItem={(event) => onEdtiItem(event)}
+          onEditItem={handleEdit}
           cellData={{
-            placeholder: 'Item name',
+            placeholder: 'Service name',
             type: 'text',
-            name: 'name',
-            id: id,
-            value: name,
+            name: 'particular',
+            id: _id,
+            value: particular,
           }}
         />
       </td>
-      <td className='min-w-[65px] md:min-w-[80px]'>
+      <td className=''>
         <InvoiceField
-          onEditItem={(event) => onEdtiItem(event)}
+          onEditItem={handleEdit}
           cellData={{
-            type: 'number',
+            type: 'text',
             min: '1',
-            name: 'qty',
-            id: id,
-            value: qty,
+            name: 'hsn',
+            id: _id,
+            value: hsn,
           }}
         />
       </td>
-      <td className='relative min-w-[100px] md:min-w-[150px]'>
-        <svg
-          xmlns='http://www.w3.org/2000/svg'
-          className='absolute left-2 top-1/2 h-6 w-6 -translate-y-1/2 text-gray-400 sm:left-4'
-          fill='none'
-          viewBox='0 0 24 24'
-          stroke='currentColor'
-        >
-          <path
-            strokeLinecap='round'
-            strokeLinejoin='round'
-            strokeWidth={2}
-            d='M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z'
-          />
-        </svg>
+      <td className='relative w-[50px]'>
         <InvoiceField
-          onEditItem={(event) => onEdtiItem(event)}
+          onEditItem={handleEdit}
           cellData={{
-            className: 'text-right',
+            className: 'text-center',
             type: 'number',
-            min: '0.01',
-            step: '0.01',
-            name: 'price',
-            id: id,
-            value: price,
+            name: 'amount',
+            id: _id,
+            value: amount,
           }}
         />
       </td>

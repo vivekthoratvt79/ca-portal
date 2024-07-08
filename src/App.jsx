@@ -71,11 +71,9 @@ const App = () => {
         const registration = await navigator.serviceWorker.register('/sw.js', {
           scope: '/',
         });
-        console.log('Service Worker registered:', registration);
 
         // Wait until the service worker is active
         await navigator.serviceWorker.ready;
-        console.log('Service Worker is ready.');
 
         // Check if the user is already subscribed
         const existingSubscription =

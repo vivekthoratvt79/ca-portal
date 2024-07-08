@@ -1,26 +1,101 @@
 import React from 'react';
 
-const InvoiceTemplate = () => {
+const InvoiceTemplate = ({ billDetails }) => {
+  console.log(billDetails);
+  let { admin, bill, client, order, service } = billDetails;
+
+  function getDate(createdDate) {
+    const date = new Date(createdDate);
+    const formattedDate = date.toISOString().split('T')[0];
+    return formattedDate;
+  }
+
+  function numberToWords(num) {
+    const units = [
+      '',
+      'One',
+      'Two',
+      'Three',
+      'Four',
+      'Five',
+      'Six',
+      'Seven',
+      'Eight',
+      'Nine',
+    ];
+    const teens = [
+      'Ten',
+      'Eleven',
+      'Twelve',
+      'Thirteen',
+      'Fourteen',
+      'Fifteen',
+      'Sixteen',
+      'Seventeen',
+      'Eighteen',
+      'Nineteen',
+    ];
+    const tens = [
+      '',
+      '',
+      'Twenty',
+      'Thirty',
+      'Forty',
+      'Fifty',
+      'Sixty',
+      'Seventy',
+      'Eighty',
+      'Ninety',
+    ];
+    const hundred = 'Hundred';
+
+    if (num === 0) return 'Zero';
+
+    let words = '';
+
+    if (Math.floor(num / 100) > 0) {
+      words += units[Math.floor(num / 100)] + ' ' + hundred;
+      num %= 100;
+    }
+
+    if (num > 0) {
+      if (words !== '') words += ' and ';
+
+      if (num < 10) {
+        words += units[num];
+      } else if (num < 20) {
+        words += teens[num - 10];
+      } else {
+        words += tens[Math.floor(num / 10)];
+        if (num % 10 > 0) {
+          words += '-' + units[num % 10];
+        }
+      }
+    }
+
+    return words.trim();
+  }
+
   return (
     <div className='border-2 border-gray-300 p-4 rounded-md max-w-3xl mx-auto'>
-      <div className='flex justify-between'>
+      <div className='flex gap-4 justify-between'>
         <div>
           <div className='text-sm'>
-            <p className='font-bold text-md'>ABC Ltd.</p>
-            <p>Shivranjini Shyamal Road, Satellite, AHMEDABAD 380015</p>
-            <p>9985567355, (079) 40056523</p>
-            <p>abc@abc.com</p>
+            <p className='font-bold text-md'>{admin.name}</p>
+            <p>{admin.address}</p>
+            <p>{admin.phone}</p>
+            <p>{admin.email}</p>
           </div>
         </div>
-        <div className='text-sm'>
+        <div className='text-sm text-end whitespace-nowrap'>
           <p>
-            Invoice No.: <span className='font-bold'>aipi00013</span>
+            Invoice No.: <span className='font-bold'>{bill.invoiceNumber}</span>
           </p>
           <p>
-            Date: <span className='font-bold'>27-Jun-2019</span>
+            Date: <span className='font-bold'>{getDate(bill.createdDate)}</span>
           </p>
           <p>
-            Due Date: <span className='font-bold'>05-Jul-2019</span>
+            Due Date: <span className='font-bold'>{getDate(bill.dueDate)}</span>
           </p>
           <p>
             Currency: <span className='font-bold'>INR</span>
@@ -30,22 +105,60 @@ const InvoiceTemplate = () => {
 
       <div className='mt-4 border-t-2 border-gray-300 pt-2'>
         <p className='font-bold'>Invoiced To,</p>
-        <p>Adani Enterprise</p>
-        <p>
-          12-B, Radhe Society, Nr. Ankur Cross Road, Ankur, AHMEDABAD 380048
+        <p>{client.accountantName}</p>
+        <p>{client.address}</p>
+        <p>GSTIN - {client.gstNumber}</p>
+        <p className='flex gap-2'>
+          <svg
+            className='w-6 h-6 text-gray-800 dark:text-white'
+            aria-hidden='true'
+            xmlns='http://www.w3.org/2000/svg'
+            width='24'
+            height='24'
+            fill='none'
+            viewBox='0 0 24 24'
+          >
+            <path
+              stroke='currentColor'
+              strokeLinecap='round'
+              strokeLinejoin='round'
+              strokeWidth='2'
+              d='M11 16v-5.5A3.5 3.5 0 0 0 7.5 7m3.5 9H4v-5.5A3.5 3.5 0 0 1 7.5 7m3.5 9v4M7.5 7H14m0 0V4h2.5M14 7v3m-3.5 6H20v-6a3 3 0 0 0-3-3m-2 9v4m-8-6.5h1'
+            />
+          </svg>
+
+          {client.email}
         </p>
-        <p>GUJARAT (State Code - 24)</p>
-        <p>Mo.1234567895</p>
+        <p className='flex gap-2'>
+          <svg
+            className='w-6 h-6 text-gray-800 dark:text-white'
+            aria-hidden='true'
+            xmlns='http://www.w3.org/2000/svg'
+            width='24'
+            height='24'
+            fill='none'
+            viewBox='0 0 24 24'
+          >
+            <path
+              stroke='currentColor'
+              strokeLinecap='round'
+              strokeLinejoin='round'
+              strokeWidth='2'
+              d='M18.427 14.768 17.2 13.542a1.733 1.733 0 0 0-2.45 0l-.613.613a1.732 1.732 0 0 1-2.45 0l-1.838-1.84a1.735 1.735 0 0 1 0-2.452l.612-.613a1.735 1.735 0 0 0 0-2.452L9.237 5.572a1.6 1.6 0 0 0-2.45 0c-3.223 3.2-1.702 6.896 1.519 10.117 3.22 3.221 6.914 4.745 10.12 1.535a1.601 1.601 0 0 0 0-2.456Z'
+            />
+          </svg>
+          {client.phone}
+        </p>
       </div>
 
       <div className='mt-4 border-t-2 border-gray-300 pt-2'>
-        <div className='flex justify-between text-sm'>
+        <div className='flex gap-4 justify-between text-sm'>
           <p>
             Tax is payable on reverse charge.(Yes/No):{' '}
             <span className='font-bold'>No</span>
           </p>
-          <p>
-            GSTIN: <span className='font-bold'>ASD12355MNGP</span>
+          <p className='text-end'>
+            GSTIN: <span className='font-bold'>{admin.gstNumber}</span>
           </p>
         </div>
       </div>
@@ -60,42 +173,44 @@ const InvoiceTemplate = () => {
           </tr>
         </thead>
         <tbody>
-          <tr className='border-b-2 border-gray-300'>
-            <td className='py-2'>1</td>
-            <td className='py-2'>INTERNAL AUDIT - Yearly - 2018-2019</td>
-            <td className='py-2'>123455</td>
-            <td className='py-2 text-right'>5,500.00</td>
-          </tr>
-          <tr className='border-b-2 border-gray-300'>
-            <td className='py-2'>2</td>
-            <td className='py-2'>
-              BUSINESS MENTORING SERVICES - First Half (Apr - Sep) - 2019-2020
-            </td>
-            <td className='py-2'>123455</td>
-            <td className='py-2 text-right'>3,500.00</td>
-          </tr>
+          {bill.billDetails.map(({ particular, amount, hsn, _id }, i) => (
+            <tr className='border-b-2 border-gray-300' key={_id}>
+              <td className='py-2'>{i + 1}</td>
+              <td className='py-2'>{particular}</td>
+              <td className='py-2'>{hsn}</td>
+              <td className='py-2 text-right'>{amount}</td>
+            </tr>
+          ))}
         </tbody>
       </table>
 
       <div className='mt-4'>
         <div className='flex justify-between text-sm'>
-          <p>CGST @ 9%(9.00%)</p>
-          <p>810.00</p>
-        </div>
-        <div className='flex justify-between text-sm'>
-          <p>SGST @ 9%(9.00%)</p>
-          <p>810.00</p>
+          <p>Discount</p>
+          <p>Rs. {bill.discount}</p>
         </div>
       </div>
+      {!admin?.reverseCharge && (
+        <div className='mt-4'>
+          <div className='flex justify-between text-sm'>
+            <p>CGST @ 9%(9.00%)</p>
+            <p>810.00</p>
+          </div>
+          <div className='flex justify-between text-sm'>
+            <p>SGST @ 9%(9.00%)</p>
+            <p>810.00</p>
+          </div>
+        </div>
+      )}
 
       <div className='mt-4 border-t-2 border-gray-300 pt-2 text-sm'>
         <div className='flex justify-between'>
           <p>Total</p>
-          <p className='font-bold'>INR 10,620.00</p>
+          <p className='font-bold'>Rs. {bill.finalAmount}</p>
         </div>
       </div>
 
-      <div className='mt-4 overflow-auto'>
+      {/* <div className='mt-4 overflow-auto'>
         <table className='w-full border-collapse text-sm'>
           <thead>
             <tr className='border-b-2 border-gray-300'>
@@ -129,10 +244,12 @@ const InvoiceTemplate = () => {
             </tr>
           </tbody>
         </table>
-      </div>
+      </div> */}
 
       <div className='mt-4 text-sm'>
-        <p className='font-bold'>TAX: ONE THOUSAND SIX HUNDRED TWENTY ONLY</p>
+        <p className='font-bold'>
+          AMOUNT: {numberToWords(bill.finalAmount).toUpperCase()} RUPEES ONLY
+        </p>
       </div>
     </div>
   );

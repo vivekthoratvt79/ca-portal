@@ -210,7 +210,7 @@ const Sidebar = ({ activeTab, access }) => {
                 </ul>
               </li>
             )}
-            {userRole != 'client' && (
+            {/* {userRole != 'client' && (
               <li>
                 <button
                   type='button'
@@ -280,7 +280,7 @@ const Sidebar = ({ activeTab, access }) => {
                   </li>
                 </ul>
               </li>
-            )}
+            )} */}
             {userRole != 'client' && (
               <>
                 <li>

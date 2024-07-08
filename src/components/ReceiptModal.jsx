@@ -1,27 +1,26 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { toPng } from 'html-to-image';
 import { jsPDF } from 'jspdf';
-import InvoiceTemplate from './InvoiceTemplate';
+import ReceiptTemplate from './ReceiptTemplate';
 import * as api from '../api';
 import Loader from './Loader';
 
-const InvoiceModal = ({ showModal, closeModal, invoiceData, adminData }) => {
+const ReceiptModal = ({ showModal, closeModal, receiptData, adminData }) => {
   if (!showModal) return null;
-
+  console.log(receiptData);
   const [billDetails, setBillDetails] = useState({});
   const [loading, setLoading] = useState(false);
   const windowWidth = window.innerWidth;
   const smallScreen = windowWidth <= 768;
 
   const SaveAsPDFHandler = () => {
-    const dom = document.getElementById('print');
+    const dom = document.getElementById('printR');
 
     if (!dom) {
       console.error('Element with id "print" not found!');
       return;
     }
-
-    const fixedWidth = 800; // Set a fixed width for the image capture
+    const fixedWidth = 550; // Set a fixed width for the image capture
     dom.style.width = `${fixedWidth}px`;
 
     toPng(dom)
@@ -32,9 +31,9 @@ const InvoiceModal = ({ showModal, closeModal, invoiceData, adminData }) => {
         img.onload = () => {
           // Initialize the PDF with padding settings.
           const pdf = new jsPDF({
-            orientation: 'portrait',
+            orientation: 'landscape',
             unit: 'in',
-            format: [5.5, 8.5],
+            format: [5.5, 6.5],
           });
 
           const padding = 0.1; // 0.1 inches padding
@@ -91,7 +90,7 @@ const InvoiceModal = ({ showModal, closeModal, invoiceData, adminData }) => {
             );
           }
           // Output / Save
-          pdf.save(`invoice-${billDetails.bill.invoiceNumber}.pdf`);
+          pdf.save(`receipt-${'test'}.pdf`);
         };
       })
       .catch((error) => {
@@ -106,7 +105,7 @@ const InvoiceModal = ({ showModal, closeModal, invoiceData, adminData }) => {
   useEffect(() => {
     function fetchBillDetails() {
       setLoading(true);
-      api.getBillDetails(invoiceData._id).then(({ data }) => {
+      api.getBillDetails(receiptData._id).then(({ data }) => {
         if (data.statusCode === 200) {
           console.log('data', data);
           setBillDetails(data.data);
@@ -116,8 +115,8 @@ const InvoiceModal = ({ showModal, closeModal, invoiceData, adminData }) => {
         setLoading(false);
       });
     }
-    if (Object.keys(invoiceData).length) fetchBillDetails();
-  }, [invoiceData]);
+    if (Object.keys(receiptData).length) fetchBillDetails();
+  }, [receiptData]);
 
   return (
     <div className='fixed z-40 inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50'>
@@ -132,19 +131,22 @@ const InvoiceModal = ({ showModal, closeModal, invoiceData, adminData }) => {
         ) : !Object.keys(billDetails).length ? (
           <div className='p-4' id='print'>
             <h1 className='text-center text-lg mb-2 font-bold text-gray-900'>
-              INVOICE
+              RECEIPT
             </h1>
             <p className='text-center text-sm mt-4 text-red-500 font-bold text-gray-900'>
-              Failed to fetch invoice data!
+              Failed to fetch receipt data!
             </p>
           </div>
         ) : (
           <>
-            <div className='p-4' id='print'>
+            <div className='p-4' id='printR'>
               <h1 className='text-center text-lg mb-2 font-bold text-gray-900'>
-                INVOICE
+                RECEIPT
               </h1>
-              <InvoiceTemplate billDetails={billDetails} />
+              <ReceiptTemplate
+                billDetails={billDetails}
+                receiptData={receiptData}
+              />
             </div>
             <div className='mt-2 flex space-x-2 px-4 pb-6'>
               <button
@@ -175,4 +177,4 @@ const InvoiceModal = ({ showModal, closeModal, invoiceData, adminData }) => {
   );
 };
 
-export default InvoiceModal;
+export default ReceiptModal;

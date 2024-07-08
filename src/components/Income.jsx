@@ -7,17 +7,49 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import Loader from './Loader';
 
 const Income = ({ access }) => {
+  let user = useSelector((state) => state.auth.authData);
   const userRole = useSelector((state) => state.auth.authData.role);
-  const entitiyId = useSelector((state) => state.auth.authData.entityID);
   const [bills, setBills] = useState([]);
+  const [pendingBills, setPendingBills] = useState([]);
+  const [receipt, setReceipt] = useState([]);
+  const [refresh, setRefresh] = useState(0);
   const [activeTab, setActiveTab] = useState('tab1');
   const [loading, setLoading] = useState(false);
+
+  console.log('refresf', refresh);
 
   const location = useLocation();
   const navigate = useNavigate();
 
   let tabKeys = ['tab1', 'tab2', 'tab3'];
-  let tabValues = ['Bills', 'Pending', 'Completed'];
+  let tabValues = ['Bills', 'Pending', 'Receipt'];
+
+  let billHeaders = [
+    'Sr No.',
+    'Client Name',
+    'Details',
+    'Discount',
+    'Final Amount',
+    'Edit',
+  ];
+  let pendingBillHeaders = [
+    'Sr No.',
+    'Client Name',
+    'Details',
+    'Discount',
+    'Final Amount',
+    'Pending Amount',
+    'Invoice',
+    'Payment',
+  ];
+  let receiptHeaders = [
+    'Sr No.',
+    'Client Name',
+    'Details',
+    'Final Amount',
+    'Received Amount',
+    'Receipt',
+  ];
 
   const handleDropdownChange = (event) => {
     const selectedTab = event.target.value;
@@ -40,13 +72,27 @@ const Income = ({ access }) => {
   useEffect(() => {
     function fetchBills() {
       try {
-        let payload = {};
-        api.getAllBillsOfAdmin(payload).then((data) => console.log(data));
+        setLoading(true);
+        let id = userRole == 'admin' ? user.entityID : user.entity.adminRef;
+        api.getBillsInApprovalStage(id).then(({ data }) => {
+          setBills(data.data);
+          setLoading(false);
+        });
+        api.getBillsInPendingStage(id).then(({ data }) => {
+          setPendingBills(data.data.bills);
+          setLoading(false);
+        });
+        api.getBillsInReceiptStage(id).then(({ data }) => {
+          setReceipt(data.data.bills);
+          setLoading(false);
+        });
       } catch (error) {
         console.log(error);
+        setLoading(false);
       }
     }
-  }, [entitiyId, userRole]);
+    if (user) fetchBills();
+  }, [user, userRole, refresh]);
   return (
     <>
       <Sidebar activeTab='income' access={access} />
@@ -100,15 +146,10 @@ const Income = ({ access }) => {
               }`}
             >
               <TableComponentBill
-                headers={[
-                  'Sr No.',
-                  'Name',
-                  'Bill Amount',
-                  'Discount',
-                  'View Invoice',
-                  'Status'
-                ]}
+                headers={billHeaders}
                 data={bills}
+                setRefresh={setRefresh}
+                stage='bills'
               />
             </div>
 
@@ -119,14 +160,10 @@ const Income = ({ access }) => {
               }`}
             >
               <TableComponentBill
-                headers={[
-                  'Sr No.',
-                  'Name',
-                  'Bill Amount',
-                  'Discount',
-                  'Status',
-                ]}
-                data={bills}
+                headers={pendingBillHeaders}
+                data={pendingBills}
+                setRefresh={setRefresh}
+                stage='pending'
               />
             </div>
 
@@ -137,14 +174,9 @@ const Income = ({ access }) => {
               }`}
             >
               <TableComponentBill
-                headers={[
-                  'Sr No.',
-                  'Name',
-                  'Bill Amount',
-                  'Discount',
-                  'Status',
-                ]}
-                data={bills}
+                headers={receiptHeaders}
+                data={receipt}
+                setRefresh={setRefresh}
               />
             </div>
           </div>
