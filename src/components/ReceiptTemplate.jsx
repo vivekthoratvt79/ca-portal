@@ -46,30 +46,52 @@ const ReceiptTemplate = ({ billDetails, receiptData }) => {
       'Eighty',
       'Ninety',
     ];
+    const scales = ['', 'Thousand', 'Million', 'Billion', 'Trillion'];
     const hundred = 'Hundred';
 
     if (num === 0) return 'Zero';
 
     let words = '';
 
-    if (Math.floor(num / 100) > 0) {
-      words += units[Math.floor(num / 100)] + ' ' + hundred;
-      num %= 100;
-    }
+    function getBelowThousand(n) {
+      let result = '';
 
-    if (num > 0) {
-      if (words !== '') words += ' and ';
+      if (Math.floor(n / 100) > 0) {
+        result += units[Math.floor(n / 100)] + ' ' + hundred;
+        n %= 100;
+      }
 
-      if (num < 10) {
-        words += units[num];
-      } else if (num < 20) {
-        words += teens[num - 10];
-      } else {
-        words += tens[Math.floor(num / 10)];
-        if (num % 10 > 0) {
-          words += '-' + units[num % 10];
+      if (n > 0) {
+        if (result !== '') result += ' and ';
+
+        if (n < 10) {
+          result += units[n];
+        } else if (n < 20) {
+          result += teens[n - 10];
+        } else {
+          result += tens[Math.floor(n / 10)];
+          if (n % 10 > 0) {
+            result += '-' + units[n % 10];
+          }
         }
       }
+
+      return result;
+    }
+
+    let scaleIndex = 0;
+
+    while (num > 0) {
+      const chunk = num % 1000;
+      if (chunk > 0) {
+        const chunkWords = getBelowThousand(chunk);
+        words =
+          chunkWords +
+          (scales[scaleIndex] ? ' ' + scales[scaleIndex] : '') +
+          (words ? ' ' + words : '');
+      }
+      num = Math.floor(num / 1000);
+      scaleIndex++;
     }
 
     return words.trim();
@@ -121,7 +143,7 @@ const ReceiptTemplate = ({ billDetails, receiptData }) => {
         <p>
           a sum of Rupees{' '}
           <span className='font-bold'>
-            {numberToWords(receiptData.receivedAmount).toUpperCase()}
+            {numberToWords(receiptData.receivedAmount).toUpperCase()} ONLY
           </span>
         </p>
 
