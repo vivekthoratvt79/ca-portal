@@ -36,24 +36,22 @@ const TableComponent = ({ headers, data, type, allServices }) => {
 
   return (
     <>
-      {type != 'manager' && (
-        <>
-          <ViewDetailsModal
-            type={type}
-            id={id}
-            showModal={showDetailsModal}
-            closeModal={closeDetailsModal}
-            allServices={allServices}
-          />
-          <AssignWork
-            type={type}
-            id={id}
-            showModal={showWorkModal}
-            closeModal={closeWorkModal}
-            allServices={allServices}
-          />
-        </>
-      )}
+      <>
+        <ViewDetailsModal
+          type={type}
+          id={id}
+          showModal={showDetailsModal}
+          closeModal={closeDetailsModal}
+          allServices={allServices}
+        />
+        <AssignWork
+          type={type}
+          id={id}
+          showModal={showWorkModal}
+          closeModal={closeWorkModal}
+          allServices={allServices}
+        />
+      </>
       <div className='overflow-x-auto max-h-[575px]'>
         <table className='table-auto w-full border-collapse'>
           <thead>
@@ -73,7 +71,7 @@ const TableComponent = ({ headers, data, type, allServices }) => {
                     Assign Work
                   </th>
                 )}
-              {(type == 'agent' || type == 'client') && (
+              {(type == 'agent' || type == 'client' || type == 'manager') && (
                 <th className='px-4 py-2 bg-gray-200 text-gray-700 border border-gray-300'>
                   View Details
                 </th>
@@ -140,7 +138,7 @@ const TableComponent = ({ headers, data, type, allServices }) => {
                       </button>
                     </td>
                   )}
-                {(type == 'agent' || type == 'client') && (
+                {(type == 'agent' || type == 'client' || type == 'manager') && (
                   <td className='px-4 py-2 border border-gray-300 text-center'>
                     <button
                       className='px-3 py-1 text-white rounded'

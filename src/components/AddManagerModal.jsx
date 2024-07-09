@@ -11,6 +11,8 @@ const AddManagerModal = ({ showModal, closeModal }) => {
   let smallScreen = windowWidth <= 768;
   const modalDisplay = showModal ? 'block' : 'none hidden';
   let user = useSelector((state) => state.auth.authData);
+  const userRole = useSelector((state) => state.auth.authData.role);
+
   const [successMsg, setSuccessMsg] = useState('');
   const [loading, setLoading] = useState(false);
   const [failMsg, setFailMsg] = useState('');
@@ -21,7 +23,7 @@ const AddManagerModal = ({ showModal, closeModal }) => {
     name: '',
     email: '',
     phone: '',
-    adminRef: user.entityID,
+    adminRef: userRole == 'admin' ? user.entityID : user.entity.adminRef,
   };
   const [formData, setFormData] = useState(initailState);
 

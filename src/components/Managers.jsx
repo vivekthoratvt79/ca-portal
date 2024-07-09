@@ -4,15 +4,36 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchForAdmin, getManagers } from '../actions/managers';
 import AddManagerModal from './AddManagerModal';
 import TableComponent from './TableComponent';
+import * as api from '../api';
+import { fetchAgentsForManager } from '../actions/employees';
 
 const Managers = ({ access }) => {
   const dispatch = useDispatch();
   const userRole = useSelector((state) => state.auth.authData.role);
+  const user = useSelector((state) => state.auth.authData);
   const entitiyId = useSelector((state) => state.auth.authData.entityID);
+  const [services, setServices] = useState([]);
 
   useEffect(() => {
-    if (userRole == 'admin') dispatch(fetchForAdmin('manager', entitiyId));
+    if (userRole == 'admin' || userRole == 'manager') {
+      let id = userRole == 'admin' ? entitiyId : user.entity.adminRef;
+      dispatch(fetchForAdmin('manager', id));
+    }
   }, [entitiyId]);
+
+  useEffect(() => {
+    let id = userRole == 'admin' ? entitiyId : user.entity.adminRef;
+    if (userRole == 'admin' || userRole == 'manager' || userRole == 'agent') {
+      dispatch(fetchForAdmin('agent', id));
+    }
+    try {
+      api.fetchAllServices().then(({ data }) => {
+        data.statusCode == 200 && setServices(data.data.services);
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }, [dispatch]);
   const managers = useSelector((state) => state.managers);
 
   const [showModal, setShowModal] = useState(false);
@@ -50,6 +71,7 @@ const Managers = ({ access }) => {
                 headers={['Sr No.', 'Name', 'Email', 'Number']}
                 data={managers}
                 type='manager'
+                allServices={services}
               />
             )}
           </div>

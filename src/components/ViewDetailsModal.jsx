@@ -5,13 +5,14 @@ import * as api from '../api';
 import Loader from './Loader';
 
 const ViewDetailsModal = ({ showModal, closeModal, type, id, allServices }) => {
+  console.log('all', allServices);
   const [selectedServices, setSelectedServices] = useState([]);
   const [loading, setLoading] = useState(false);
   const [accessUpdated, setAccessUpdated] = useState('');
   const [access, setAccess] = useState([]);
 
   const allAccess =
-    type == 'agent'
+    type == 'agent' || type == 'manager'
       ? ['clients', 'agents', 'dashboard', 'settings', 'billings', 'managers']
       : [];
 
@@ -32,6 +33,7 @@ const ViewDetailsModal = ({ showModal, closeModal, type, id, allServices }) => {
   const user = useSelector((state) => state.auth.authData);
   const employees = useSelector((state) => state.employees);
   const clients = useSelector((state) => state.clients);
+  const managers = useSelector((state) => state.managers);
 
   // Function to get agent name from Redux store based on agent ID
   const getAgentName = (agentId) => {
@@ -42,6 +44,8 @@ const ViewDetailsModal = ({ showModal, closeModal, type, id, allServices }) => {
   const formData =
     type === 'client'
       ? clients.find(({ _id }) => _id === id)
+      : type === 'manager'
+      ? managers.find(({ _id }) => _id === id)
       : employees.find(({ _id }) => _id === id);
 
   useEffect(() => {
@@ -139,32 +143,34 @@ const ViewDetailsModal = ({ showModal, closeModal, type, id, allServices }) => {
             </div>
           </div>
           <form className='space-y-6 text-sm mt-4'>
-            <div className='max-w-lg mx-auto p-4 bg-cyan-50 shadow-md rounded'>
-              <h2 className='font-bold text-center'>Selected Services</h2>
-              <hr className=' mb-2' />
-              <div className='flex justify-evenly text-center flex-wrap'>
-                {selectedServices.length > 0 ? (
-                  selectedServices.map((service) => (
-                    <div key={service._id} className='p-2'>
-                      <label className='block font-semibold mb-1'>
-                        {service.heading} - {service.subheading}
-                      </label>
-                      <p className='text-gray-500 italic'>
-                        {service.description}
-                      </p>
-                      {type === 'client' && service.agentRef && (
-                        <p className='text-gray-600'>
-                          Agent: {getAgentName(service.agentRef)}
+            {type !== 'manager' && (
+              <div className='max-w-lg mx-auto p-4 bg-cyan-50 shadow-md rounded'>
+                <h2 className='font-bold text-center'>Selected Services</h2>
+                <hr className=' mb-2' />
+                <div className='flex justify-evenly text-center flex-wrap'>
+                  {selectedServices.length > 0 ? (
+                    selectedServices.map((service) => (
+                      <div key={service._id} className='p-2'>
+                        <label className='block font-semibold mb-1'>
+                          {service.heading} - {service.subheading}
+                        </label>
+                        <p className='text-gray-500 italic'>
+                          {service.description}
                         </p>
-                      )}
-                    </div>
-                  ))
-                ) : (
-                  <p>No services selected.</p>
-                )}
+                        {type === 'client' && service.agentRef && (
+                          <p className='text-gray-600'>
+                            Agent: {getAgentName(service.agentRef)}
+                          </p>
+                        )}
+                      </div>
+                    ))
+                  ) : (
+                    <p>No services selected.</p>
+                  )}
+                </div>
               </div>
-            </div>
-            {type == 'agent' && (
+            )}
+            {(type == 'agent' || type == 'manager') && (
               <div className='max-w-lg mx-auto p-4 bg-cyan-50 shadow-md rounded'>
                 <h2 className='font-bold text-center'>Manage Access</h2>
                 <hr className=' mb-2' />
@@ -211,18 +217,21 @@ const ViewDetailsModal = ({ showModal, closeModal, type, id, allServices }) => {
                 { label: 'Username', name: 'username', type: 'text' },
                 { label: 'Email', name: 'email', type: 'email' },
                 { label: 'Phone Number', name: 'phone', type: 'text' },
-                { label: 'Alternate Phone', name: 'altPhone', type: 'text' },
-                { label: 'Address', name: 'address', type: 'text' },
-                { label: 'Date of Birth', name: 'dob', type: 'date' },
-                {
-                  label: 'Adhaar Number',
-                  name: 'adhaarNumber',
-                  type: 'text',
-                },
-                { label: 'PAN Number', name: 'panNumber', type: 'text' },
-
                 ...(type === 'client'
                   ? [
+                      {
+                        label: 'Alternate Phone',
+                        name: 'altPhone',
+                        type: 'text',
+                      },
+                      { label: 'Address', name: 'address', type: 'text' },
+                      { label: 'Date of Birth', name: 'dob', type: 'date' },
+                      {
+                        label: 'Adhaar Number',
+                        name: 'adhaarNumber',
+                        type: 'text',
+                      },
+                      { label: 'PAN Number', name: 'panNumber', type: 'text' },
                       {
                         label: 'GST Number',
                         name: 'gstNumber',
@@ -265,7 +274,22 @@ const ViewDetailsModal = ({ showModal, closeModal, type, id, allServices }) => {
                         type: 'text',
                       },
                     ]
-                  : [
+                  : []),
+                ...(type === 'agent'
+                  ? [
+                      {
+                        label: 'Alternate Phone',
+                        name: 'altPhone',
+                        type: 'text',
+                      },
+                      { label: 'Address', name: 'address', type: 'text' },
+                      { label: 'Date of Birth', name: 'dob', type: 'date' },
+                      {
+                        label: 'Adhaar Number',
+                        name: 'adhaarNumber',
+                        type: 'text',
+                      },
+                      { label: 'PAN Number', name: 'panNumber', type: 'text' },
                       { label: 'Bank Name', name: 'bankName', type: 'text' },
                       {
                         label: 'Account Number',
@@ -283,7 +307,8 @@ const ViewDetailsModal = ({ showModal, closeModal, type, id, allServices }) => {
                         type: 'text',
                       },
                       { label: 'IFSC Code', name: 'bankCode', type: 'text' },
-                    ]),
+                    ]
+                  : []),
               ].map(({ label, name, type }) => (
                 <div key={name}>
                   <label className='block text-zinc-700 dark:text-zinc-300'>
@@ -300,28 +325,30 @@ const ViewDetailsModal = ({ showModal, closeModal, type, id, allServices }) => {
                 </div>
               ))}
             </div>
-            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
-              <div>
-                <label className='block text-zinc-700 dark:text-zinc-300'>
-                  Adhaar Image
-                </label>
-                <img
-                  alt='Adhaar Card'
-                  src={formData.adhaarImage}
-                  className='w-full h-52 object-contain mt-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-zinc-300'
-                />
+            {type != 'manager' && (
+              <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
+                <div>
+                  <label className='block text-zinc-700 dark:text-zinc-300'>
+                    Adhaar Image
+                  </label>
+                  <img
+                    alt='Adhaar Card'
+                    src={formData.adhaarImage}
+                    className='w-full h-52 object-contain mt-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-zinc-300'
+                  />
+                </div>
+                <div>
+                  <label className='block text-zinc-700 dark:text-zinc-300'>
+                    PAN Image
+                  </label>
+                  <img
+                    alt='Pan Card'
+                    src={formData.panImage}
+                    className='w-full h-52 object-contain mt-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-zinc-300'
+                  />
+                </div>
               </div>
-              <div>
-                <label className='block text-zinc-700 dark:text-zinc-300'>
-                  PAN Image
-                </label>
-                <img
-                  alt='Pan Card'
-                  src={formData.panImage}
-                  className='w-full h-52 object-contain mt-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-zinc-300'
-                />
-              </div>
-            </div>
+            )}
             <div className='flex justify-center mt-6'>
               <button
                 className='bg-blue-400 text-black px-4 py-2 rounded-md hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-blue-600 dark:hover:bg-blue-700'

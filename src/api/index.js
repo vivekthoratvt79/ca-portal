@@ -100,7 +100,7 @@ export const getDataUploadStageDetails = (
 ) =>
   agentRef
     ? API.get(
-        `/${service}/getDataUploadStageDetails?agentRef=${agentRef}serviceRef=${serviceRef}&adminRef=${adminRef}`
+        `/${service}/getDataUploadStageDetails?agentRef=${agentRef}&serviceRef=${serviceRef}&adminRef=${adminRef}`
       )
     : API.get(
         `/${service}/getDataUploadStageDetails?serviceRef=${serviceRef}&adminRef=${adminRef}`
@@ -114,7 +114,7 @@ export const getWorkingStageDetails = (
 ) =>
   agentRef
     ? API.get(
-        `/${service}/getWorkingStageDetails?agentRef=${agentRef}serviceRef=${serviceRef}&adminRef=${adminRef}`
+        `/${service}/getWorkingStageDetails?agentRef=${agentRef}&serviceRef=${serviceRef}&adminRef=${adminRef}`
       )
     : API.get(
         `/${service}/getWorkingStageDetails?serviceRef=${serviceRef}&adminRef=${adminRef}`
@@ -128,7 +128,7 @@ export const getSubmitStageDetails = (
 ) =>
   agentRef
     ? API.get(
-        `/${service}/getSubmitStageDetails?agentRef=${agentRef}serviceRef=${serviceRef}&adminRef=${adminRef}`
+        `/${service}/getSubmitStageDetails?agentRef=${agentRef}&serviceRef=${serviceRef}&adminRef=${adminRef}`
       )
     : API.get(
         `/${service}/getSubmitStageDetails?serviceRef=${serviceRef}&adminRef=${adminRef}`
@@ -142,7 +142,7 @@ export const getCompleteStageDetails = (
 ) =>
   agentRef
     ? API.get(
-        `/${service}/getCompleteStageDetails?agentRef=${agentRef}serviceRef=${serviceRef}&adminRef=${adminRef}`
+        `/${service}/getCompleteStageDetails?agentRef=${agentRef}&serviceRef=${serviceRef}&adminRef=${adminRef}`
       )
     : API.get(
         `/${service}/getCompleteStageDetails?serviceRef=${serviceRef}&adminRef=${adminRef}`
@@ -156,7 +156,7 @@ export const getPaymentStageDetails = (
 ) =>
   agentRef
     ? API.get(
-        `/${service}/getPaymentStageDetails?agentRef=${agentRef}serviceRef=${serviceRef}&adminRef=${adminRef}`
+        `/${service}/getPaymentStageDetails?agentRef=${agentRef}&serviceRef=${serviceRef}&adminRef=${adminRef}`
       )
     : API.get(
         `/${service}/getPaymentStageDetails?serviceRef=${serviceRef}&adminRef=${adminRef}`
@@ -165,7 +165,7 @@ export const getPaymentStageDetails = (
 export const getDocSendingDetails = (agentRef, serviceRef, adminRef, service) =>
   agentRef
     ? API.get(
-        `/${service}/getDocSendingDetails?agentRef=${agentRef}serviceRef=${serviceRef}&adminRef=${adminRef}`
+        `/${service}/getDocSendingDetails?agentRef=${agentRef}&serviceRef=${serviceRef}&adminRef=${adminRef}`
       )
     : API.get(
         `/${service}/getDocSendingDetails?serviceRef=${serviceRef}&adminRef=${adminRef}`

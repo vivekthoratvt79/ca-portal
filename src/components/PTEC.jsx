@@ -17,6 +17,7 @@ const PTEC = ({ access }) => {
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const userRole = useSelector((state) => state.auth.authData.role);
+  const user = useSelector((state) => state.auth.authData);
   const entitiyId = useSelector((state) => state.auth.authData.entityID);
 
   const location = useLocation();
@@ -74,28 +75,61 @@ const PTEC = ({ access }) => {
     async function fetchData() {
       let serviceRef = services.find(({ subheading }) => subheading == 'PTEC');
       try {
-        if (userRole == 'admin' && serviceRef) {
+        if ((userRole == 'admin' || userRole == 'manager') && serviceRef) {
+          let id = userRole == 'admin' ? entitiyId : user.entity.adminRef;
           api
-            .getDocSendingDetails('', serviceRef?._id, entitiyId, 'ptec')
+            .getDocSendingDetails('', serviceRef?._id, id, 'ptec')
             .then(({ data }) => {
               setLoading(false);
               setDocStage(data.data.orders);
             });
           api
-            .getPaymentStageDetails('', serviceRef?._id, entitiyId, 'ptec')
+            .getPaymentStageDetails('', serviceRef?._id, id, 'ptec')
             .then(({ data }) => {
               setLoading(false);
               setPaymentStage(data.data.orders);
             });
 
           api
-            .getSubmitStageDetails('', serviceRef?._id, entitiyId, 'ptec')
+            .getSubmitStageDetails('', serviceRef?._id, id, 'ptec')
             .then(({ data }) => {
               setLoading(false);
               setSubmitStage(data.data.orders);
             });
           api
-            .getCompleteStageDetails('', serviceRef?._id, entitiyId, 'ptec')
+            .getCompleteStageDetails('', serviceRef?._id, id, 'ptec')
+            .then(({ data }) => {
+              setLoading(false);
+              setCompleteStage(data.data.orders);
+            });
+        } else if (userRole == 'agent' && serviceRef) {
+          let adminId = user.entity.adminRef;
+          api
+            .getDocSendingDetails(entitiyId, serviceRef?._id, adminId, 'ptec')
+            .then(({ data }) => {
+              setLoading(false);
+              setDocStage(data.data.orders);
+            });
+          api
+            .getPaymentStageDetails(entitiyId, serviceRef?._id, adminId, 'ptec')
+            .then(({ data }) => {
+              setLoading(false);
+              setPaymentStage(data.data.orders);
+            });
+
+          api
+            .getSubmitStageDetails(entitiyId, serviceRef?._id, adminId, 'ptec')
+            .then(({ data }) => {
+              setLoading(false);
+              setSubmitStage(data.data.orders);
+            });
+          api
+            .getCompleteStageDetails(
+              entitiyId,
+              serviceRef?._id,
+              adminId,
+              'ptec'
+            )
             .then(({ data }) => {
               setLoading(false);
               setCompleteStage(data.data.orders);

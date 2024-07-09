@@ -28,6 +28,20 @@ const Sidebar = ({ activeTab, access }) => {
   }, []);
 
   const userRole = useSelector((state) => state.auth.authData.role);
+  const user = useSelector((state) => state.auth.authData);
+
+  let serviceMap = {
+    r1: '667483e2609dcd4a40b05c64',
+    '3b': '667483d2609dcd4a40b05c62',
+    '2b': '66858c3035f53ae42ba97581',
+    '2bpr': '6685951f91d157c517a367bb',
+    r9: '6686f4a7c5d5e071b4bdf6aa',
+    vat: '66879aa59e1857d85d16eb6b',
+    consul: '66879ea69e1857d85d16eb6f',
+    ptrc: '668991319a14ed912d5d0eb8',
+    ptec: '66899bcc9a14ed912d5d0ec0',
+    accounting: '6689a6369a14ed912d5d0ec3',
+  };
 
   return (
     <>
@@ -147,66 +161,95 @@ const Sidebar = ({ activeTab, access }) => {
                 </button>
 
                 <ul id='dropdown-gst' className='hidden py-2 space-y-2'>
-                  <li>
-                    <NavLink
-                      to='/gst/r1'
-                      className={`flex items-center w-full p-2 transition duration-75 rounded-lg pl-11 group dark:text-white ${
-                        activeTab == 'r1'
-                          ? 'bg-gray-300'
-                          : 'hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-black custom-txt-color'
-                      }`}
-                    >
-                      R1
-                    </NavLink>
-                  </li>
-                  <li>
-                    <NavLink
-                      to='/gst/3b'
-                      className={`flex items-center w-full p-2 transition duration-75 rounded-lg pl-11 group dark:text-white ${
-                        activeTab == '3b'
-                          ? 'bg-gray-300'
-                          : 'hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-black custom-txt-color'
-                      }`}
-                    >
-                      3B
-                    </NavLink>
-                  </li>
-                  <li>
-                    <NavLink
-                      to='/gst/r9'
-                      className={`flex items-center w-full p-2 transition duration-75 rounded-lg pl-11 group dark:text-white ${
-                        activeTab == 'r9'
-                          ? 'bg-gray-300'
-                          : 'hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-black custom-txt-color'
-                      }`}
-                    >
-                      R9 / R9C
-                    </NavLink>
-                  </li>
-                  <li>
-                    <NavLink
-                      to='/gst/2b'
-                      className={`flex items-center w-full p-2 transition duration-75 rounded-lg pl-11 group dark:text-white ${
-                        activeTab == '2b'
-                          ? 'bg-gray-300'
-                          : 'hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-black custom-txt-color'
-                      }`}
-                    >
-                      2B
-                    </NavLink>
-                  </li>
-                  <li>
-                    <NavLink
-                      to='/gst/2bpr'
-                      className={`flex items-center w-full p-2 transition duration-75 rounded-lg pl-11 group dark:text-white ${
-                        activeTab == '2bpr'
-                          ? 'bg-gray-300'
-                          : 'hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-black custom-txt-color'
-                      }`}
-                    >
-                      2B vs Purchase Register
-                    </NavLink>
-                  </li>
+                  {userRole != 'agent' ||
+                  user.entity.serviceRefs.includes(serviceMap.r1) ? (
+                    <li>
+                      <NavLink
+                        to='/gst/r1'
+                        className={`flex items-center w-full p-2 transition duration-75 rounded-lg pl-11 group dark:text-white ${
+                          activeTab == 'r1'
+                            ? 'bg-gray-300'
+                            : 'hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-black custom-txt-color'
+                        }`}
+                      >
+                        R1
+                      </NavLink>
+                    </li>
+                  ) : (
+                    ''
+                  )}
+
+                  {userRole != 'agent' ||
+                  user.entity.serviceRefs.includes(serviceMap['3b']) ? (
+                    <li>
+                      <NavLink
+                        to='/gst/3b'
+                        className={`flex items-center w-full p-2 transition duration-75 rounded-lg pl-11 group dark:text-white ${
+                          activeTab == '3b'
+                            ? 'bg-gray-300'
+                            : 'hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-black custom-txt-color'
+                        }`}
+                      >
+                        3B
+                      </NavLink>
+                    </li>
+                  ) : (
+                    ''
+                  )}
+
+                  {userRole != 'agent' ||
+                  user.entity.serviceRefs.includes(serviceMap.r9) ? (
+                    <li>
+                      <NavLink
+                        to='/gst/r9'
+                        className={`flex items-center w-full p-2 transition duration-75 rounded-lg pl-11 group dark:text-white ${
+                          activeTab == 'r9'
+                            ? 'bg-gray-300'
+                            : 'hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-black custom-txt-color'
+                        }`}
+                      >
+                        R9 / R9C
+                      </NavLink>
+                    </li>
+                  ) : (
+                    ''
+                  )}
+
+                  {userRole != 'agent' ||
+                  user.entity.serviceRefs.includes(serviceMap['2b']) ? (
+                    <li>
+                      <NavLink
+                        to='/gst/2b'
+                        className={`flex items-center w-full p-2 transition duration-75 rounded-lg pl-11 group dark:text-white ${
+                          activeTab == '2b'
+                            ? 'bg-gray-300'
+                            : 'hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-black custom-txt-color'
+                        }`}
+                      >
+                        2B
+                      </NavLink>
+                    </li>
+                  ) : (
+                    ''
+                  )}
+
+                  {userRole != 'agent' ||
+                  user.entity.serviceRefs.includes(serviceMap['2bpr']) ? (
+                    <li>
+                      <NavLink
+                        to='/gst/2bpr'
+                        className={`flex items-center w-full p-2 transition duration-75 rounded-lg pl-11 group dark:text-white ${
+                          activeTab == '2bpr'
+                            ? 'bg-gray-300'
+                            : 'hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-black custom-txt-color'
+                        }`}
+                      >
+                        2B vs Purchase Register
+                      </NavLink>
+                    </li>
+                  ) : (
+                    ''
+                  )}
                 </ul>
               </li>
             )}
@@ -283,138 +326,177 @@ const Sidebar = ({ activeTab, access }) => {
             )} */}
             {userRole != 'client' && (
               <>
-                <li>
-                  <NavLink
-                    className={`flex items-center p-2 rounded-lg dark:text-white group ${
-                      activeTab == 'tds'
-                        ? 'bg-gray-300'
-                        : 'hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-black custom-txt-color'
-                    }`}
-                    to='/tds'
-                  >
-                    <svg
-                      className='flex-shrink-0 w-5 h-5  transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white'
-                      aria-hidden='true'
-                      xmlns='http://www.w3.org/2000/svg'
-                      fill='currentColor'
-                      viewBox='0 0 20 20'
+                {userRole != 'agent' ||
+                user.entity.serviceRefs.includes(serviceMap.tds) ? (
+                  <li>
+                    <NavLink
+                      className={`flex items-center p-2 rounded-lg dark:text-white group ${
+                        activeTab == 'tds'
+                          ? 'bg-gray-300'
+                          : 'hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-black custom-txt-color'
+                      }`}
+                      to='/tds'
                     >
-                      <path d='m17.418 3.623-.018-.008a6.713 6.713 0 0 0-2.4-.569V2h1a1 1 0 1 0 0-2h-2a1 1 0 0 0-1 1v2H9.89A6.977 6.977 0 0 1 12 8v5h-2V8A5 5 0 1 0 0 8v6a1 1 0 0 0 1 1h8v4a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-4h6a1 1 0 0 0 1-1V8a5 5 0 0 0-2.582-4.377ZM6 12H4a1 1 0 0 1 0-2h2a1 1 0 0 1 0 2Z' />
-                    </svg>
-                    <span className='flex-1 ms-3 whitespace-nowrap'>
-                      TDS / TCS
-                    </span>
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    className={`flex items-center p-2 rounded-lg dark:text-white group ${
-                      activeTab == 'vat'
-                        ? 'bg-gray-300'
-                        : 'hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-black custom-txt-color'
-                    }`}
-                    to='/vat'
-                  >
-                    <svg
-                      className='flex-shrink-0 w-5 h-5  transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white'
-                      aria-hidden='true'
-                      xmlns='http://www.w3.org/2000/svg'
-                      fill='currentColor'
-                      viewBox='0 0 20 20'
+                      <svg
+                        className='flex-shrink-0 w-5 h-5  transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white'
+                        aria-hidden='true'
+                        xmlns='http://www.w3.org/2000/svg'
+                        fill='currentColor'
+                        viewBox='0 0 20 20'
+                      >
+                        <path d='m17.418 3.623-.018-.008a6.713 6.713 0 0 0-2.4-.569V2h1a1 1 0 1 0 0-2h-2a1 1 0 0 0-1 1v2H9.89A6.977 6.977 0 0 1 12 8v5h-2V8A5 5 0 1 0 0 8v6a1 1 0 0 0 1 1h8v4a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-4h6a1 1 0 0 0 1-1V8a5 5 0 0 0-2.582-4.377ZM6 12H4a1 1 0 0 1 0-2h2a1 1 0 0 1 0 2Z' />
+                      </svg>
+                      <span className='flex-1 ms-3 whitespace-nowrap'>
+                        TDS / TCS
+                      </span>
+                    </NavLink>
+                  </li>
+                ) : (
+                  ''
+                )}
+
+                {userRole != 'agent' ||
+                user.entity.serviceRefs.includes(serviceMap.vat) ? (
+                  <li>
+                    <NavLink
+                      className={`flex items-center p-2 rounded-lg dark:text-white group ${
+                        activeTab == 'vat'
+                          ? 'bg-gray-300'
+                          : 'hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-black custom-txt-color'
+                      }`}
+                      to='/vat'
                     >
-                      <path d='m17.418 3.623-.018-.008a6.713 6.713 0 0 0-2.4-.569V2h1a1 1 0 1 0 0-2h-2a1 1 0 0 0-1 1v2H9.89A6.977 6.977 0 0 1 12 8v5h-2V8A5 5 0 1 0 0 8v6a1 1 0 0 0 1 1h8v4a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-4h6a1 1 0 0 0 1-1V8a5 5 0 0 0-2.582-4.377ZM6 12H4a1 1 0 0 1 0-2h2a1 1 0 0 1 0 2Z' />
-                    </svg>
-                    <span className='flex-1 ms-3 whitespace-nowrap'>VAT</span>
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    className={`flex items-center p-2 rounded-lg dark:text-white group ${
-                      activeTab == 'consultancy'
-                        ? 'bg-gray-300'
-                        : 'hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-black custom-txt-color'
-                    }`}
-                    to='/consultancy'
-                  >
-                    <svg
-                      className='flex-shrink-0 w-5 h-5  transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white'
-                      aria-hidden='true'
-                      xmlns='http://www.w3.org/2000/svg'
-                      fill='currentColor'
-                      viewBox='0 0 20 20'
+                      <svg
+                        className='flex-shrink-0 w-5 h-5  transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white'
+                        aria-hidden='true'
+                        xmlns='http://www.w3.org/2000/svg'
+                        fill='currentColor'
+                        viewBox='0 0 20 20'
+                      >
+                        <path d='m17.418 3.623-.018-.008a6.713 6.713 0 0 0-2.4-.569V2h1a1 1 0 1 0 0-2h-2a1 1 0 0 0-1 1v2H9.89A6.977 6.977 0 0 1 12 8v5h-2V8A5 5 0 1 0 0 8v6a1 1 0 0 0 1 1h8v4a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-4h6a1 1 0 0 0 1-1V8a5 5 0 0 0-2.582-4.377ZM6 12H4a1 1 0 0 1 0-2h2a1 1 0 0 1 0 2Z' />
+                      </svg>
+                      <span className='flex-1 ms-3 whitespace-nowrap'>VAT</span>
+                    </NavLink>
+                  </li>
+                ) : (
+                  ''
+                )}
+
+                {userRole != 'agent' ||
+                user.entity.serviceRefs.includes(serviceMap.consul) ? (
+                  <li>
+                    <NavLink
+                      className={`flex items-center p-2 rounded-lg dark:text-white group ${
+                        activeTab == 'consultancy'
+                          ? 'bg-gray-300'
+                          : 'hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-black custom-txt-color'
+                      }`}
+                      to='/consultancy'
                     >
-                      <path d='m17.418 3.623-.018-.008a6.713 6.713 0 0 0-2.4-.569V2h1a1 1 0 1 0 0-2h-2a1 1 0 0 0-1 1v2H9.89A6.977 6.977 0 0 1 12 8v5h-2V8A5 5 0 1 0 0 8v6a1 1 0 0 0 1 1h8v4a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-4h6a1 1 0 0 0 1-1V8a5 5 0 0 0-2.582-4.377ZM6 12H4a1 1 0 0 1 0-2h2a1 1 0 0 1 0 2Z' />
-                    </svg>
-                    <span className='flex-1 ms-3 whitespace-nowrap'>
-                      Consultancy
-                    </span>
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    className={`flex items-center p-2 rounded-lg dark:text-white group ${
-                      activeTab == 'ptrc'
-                        ? 'bg-gray-300'
-                        : 'hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-black custom-txt-color'
-                    }`}
-                    to='/ptrc'
-                  >
-                    <svg
-                      className='flex-shrink-0 w-5 h-5  transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white'
-                      aria-hidden='true'
-                      xmlns='http://www.w3.org/2000/svg'
-                      fill='currentColor'
-                      viewBox='0 0 20 20'
+                      <svg
+                        className='flex-shrink-0 w-5 h-5  transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white'
+                        aria-hidden='true'
+                        xmlns='http://www.w3.org/2000/svg'
+                        fill='currentColor'
+                        viewBox='0 0 20 20'
+                      >
+                        <path d='m17.418 3.623-.018-.008a6.713 6.713 0 0 0-2.4-.569V2h1a1 1 0 1 0 0-2h-2a1 1 0 0 0-1 1v2H9.89A6.977 6.977 0 0 1 12 8v5h-2V8A5 5 0 1 0 0 8v6a1 1 0 0 0 1 1h8v4a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-4h6a1 1 0 0 0 1-1V8a5 5 0 0 0-2.582-4.377ZM6 12H4a1 1 0 0 1 0-2h2a1 1 0 0 1 0 2Z' />
+                      </svg>
+                      <span className='flex-1 ms-3 whitespace-nowrap'>
+                        Consultancy
+                      </span>
+                    </NavLink>
+                  </li>
+                ) : (
+                  ''
+                )}
+
+                {userRole != 'agent' ||
+                user.entity.serviceRefs.includes(serviceMap.ptrc) ? (
+                  <li>
+                    <NavLink
+                      className={`flex items-center p-2 rounded-lg dark:text-white group ${
+                        activeTab == 'ptrc'
+                          ? 'bg-gray-300'
+                          : 'hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-black custom-txt-color'
+                      }`}
+                      to='/ptrc'
                     >
-                      <path d='m17.418 3.623-.018-.008a6.713 6.713 0 0 0-2.4-.569V2h1a1 1 0 1 0 0-2h-2a1 1 0 0 0-1 1v2H9.89A6.977 6.977 0 0 1 12 8v5h-2V8A5 5 0 1 0 0 8v6a1 1 0 0 0 1 1h8v4a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-4h6a1 1 0 0 0 1-1V8a5 5 0 0 0-2.582-4.377ZM6 12H4a1 1 0 0 1 0-2h2a1 1 0 0 1 0 2Z' />
-                    </svg>
-                    <span className='flex-1 ms-3 whitespace-nowrap'>PTRC</span>
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    className={`flex items-center p-2 rounded-lg dark:text-white group ${
-                      activeTab == 'ptec'
-                        ? 'bg-gray-300'
-                        : 'hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-black custom-txt-color'
-                    }`}
-                    to='/ptec'
-                  >
-                    <svg
-                      className='flex-shrink-0 w-5 h-5  transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white'
-                      aria-hidden='true'
-                      xmlns='http://www.w3.org/2000/svg'
-                      fill='currentColor'
-                      viewBox='0 0 20 20'
+                      <svg
+                        className='flex-shrink-0 w-5 h-5  transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white'
+                        aria-hidden='true'
+                        xmlns='http://www.w3.org/2000/svg'
+                        fill='currentColor'
+                        viewBox='0 0 20 20'
+                      >
+                        <path d='m17.418 3.623-.018-.008a6.713 6.713 0 0 0-2.4-.569V2h1a1 1 0 1 0 0-2h-2a1 1 0 0 0-1 1v2H9.89A6.977 6.977 0 0 1 12 8v5h-2V8A5 5 0 1 0 0 8v6a1 1 0 0 0 1 1h8v4a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-4h6a1 1 0 0 0 1-1V8a5 5 0 0 0-2.582-4.377ZM6 12H4a1 1 0 0 1 0-2h2a1 1 0 0 1 0 2Z' />
+                      </svg>
+                      <span className='flex-1 ms-3 whitespace-nowrap'>
+                        PTRC
+                      </span>
+                    </NavLink>
+                  </li>
+                ) : (
+                  ''
+                )}
+
+                {userRole != 'agent' ||
+                user.entity.serviceRefs.includes(serviceMap.ptec) ? (
+                  <li>
+                    <NavLink
+                      className={`flex items-center p-2 rounded-lg dark:text-white group ${
+                        activeTab == 'ptec'
+                          ? 'bg-gray-300'
+                          : 'hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-black custom-txt-color'
+                      }`}
+                      to='/ptec'
                     >
-                      <path d='m17.418 3.623-.018-.008a6.713 6.713 0 0 0-2.4-.569V2h1a1 1 0 1 0 0-2h-2a1 1 0 0 0-1 1v2H9.89A6.977 6.977 0 0 1 12 8v5h-2V8A5 5 0 1 0 0 8v6a1 1 0 0 0 1 1h8v4a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-4h6a1 1 0 0 0 1-1V8a5 5 0 0 0-2.582-4.377ZM6 12H4a1 1 0 0 1 0-2h2a1 1 0 0 1 0 2Z' />
-                    </svg>
-                    <span className='flex-1 ms-3 whitespace-nowrap'>PTEC</span>
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    className={`flex items-center p-2 rounded-lg dark:text-white group ${
-                      activeTab == 'accounting'
-                        ? 'bg-gray-300'
-                        : 'hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-black custom-txt-color'
-                    }`}
-                    to='/accounting'
-                  >
-                    <svg
-                      className='flex-shrink-0 w-5 h-5  transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white'
-                      aria-hidden='true'
-                      xmlns='http://www.w3.org/2000/svg'
-                      fill='currentColor'
-                      viewBox='0 0 20 20'
+                      <svg
+                        className='flex-shrink-0 w-5 h-5  transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white'
+                        aria-hidden='true'
+                        xmlns='http://www.w3.org/2000/svg'
+                        fill='currentColor'
+                        viewBox='0 0 20 20'
+                      >
+                        <path d='m17.418 3.623-.018-.008a6.713 6.713 0 0 0-2.4-.569V2h1a1 1 0 1 0 0-2h-2a1 1 0 0 0-1 1v2H9.89A6.977 6.977 0 0 1 12 8v5h-2V8A5 5 0 1 0 0 8v6a1 1 0 0 0 1 1h8v4a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-4h6a1 1 0 0 0 1-1V8a5 5 0 0 0-2.582-4.377ZM6 12H4a1 1 0 0 1 0-2h2a1 1 0 0 1 0 2Z' />
+                      </svg>
+                      <span className='flex-1 ms-3 whitespace-nowrap'>
+                        PTEC
+                      </span>
+                    </NavLink>
+                  </li>
+                ) : (
+                  ''
+                )}
+
+                {userRole != 'agent' ||
+                user.entity.serviceRefs.includes(serviceMap.accounting) ? (
+                  <li>
+                    <NavLink
+                      className={`flex items-center p-2 rounded-lg dark:text-white group ${
+                        activeTab == 'accounting'
+                          ? 'bg-gray-300'
+                          : 'hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-black custom-txt-color'
+                      }`}
+                      to='/accounting'
                     >
-                      <path d='m17.418 3.623-.018-.008a6.713 6.713 0 0 0-2.4-.569V2h1a1 1 0 1 0 0-2h-2a1 1 0 0 0-1 1v2H9.89A6.977 6.977 0 0 1 12 8v5h-2V8A5 5 0 1 0 0 8v6a1 1 0 0 0 1 1h8v4a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-4h6a1 1 0 0 0 1-1V8a5 5 0 0 0-2.582-4.377ZM6 12H4a1 1 0 0 1 0-2h2a1 1 0 0 1 0 2Z' />
-                    </svg>
-                    <span className='flex-1 ms-3 whitespace-nowrap'>
-                      Accounting
-                    </span>
-                  </NavLink>
-                </li>
+                      <svg
+                        className='flex-shrink-0 w-5 h-5  transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white'
+                        aria-hidden='true'
+                        xmlns='http://www.w3.org/2000/svg'
+                        fill='currentColor'
+                        viewBox='0 0 20 20'
+                      >
+                        <path d='m17.418 3.623-.018-.008a6.713 6.713 0 0 0-2.4-.569V2h1a1 1 0 1 0 0-2h-2a1 1 0 0 0-1 1v2H9.89A6.977 6.977 0 0 1 12 8v5h-2V8A5 5 0 1 0 0 8v6a1 1 0 0 0 1 1h8v4a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-4h6a1 1 0 0 0 1-1V8a5 5 0 0 0-2.582-4.377ZM6 12H4a1 1 0 0 1 0-2h2a1 1 0 0 1 0 2Z' />
+                      </svg>
+                      <span className='flex-1 ms-3 whitespace-nowrap'>
+                        Accounting
+                      </span>
+                    </NavLink>
+                  </li>
+                ) : (
+                  ''
+                )}
               </>
             )}
 

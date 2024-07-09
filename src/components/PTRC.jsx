@@ -17,6 +17,7 @@ const PTRC = ({ access }) => {
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const userRole = useSelector((state) => state.auth.authData.role);
+  const user = useSelector((state) => state.auth.authData);
   const entitiyId = useSelector((state) => state.auth.authData.entityID);
 
   const location = useLocation();
@@ -99,41 +100,92 @@ const PTRC = ({ access }) => {
     async function fetchData() {
       let serviceRef = services.find(({ subheading }) => subheading == 'PTRC');
       try {
-        if (userRole == 'admin' && serviceRef) {
+        if ((userRole == 'admin' || userRole == 'manager') && serviceRef) {
+          let id = userRole == 'admin' ? entitiyId : user.entity.adminRef;
           api
-            .getDataUploadStageDetails('', serviceRef?._id, entitiyId, 'ptrc')
+            .getDataUploadStageDetails('', serviceRef?._id, id, 'ptrc')
             .then(({ data }) => {
               setLoading(false);
               setDataUpload(data.data.orders);
             });
           api
-            .getWorkingStageDetails('', serviceRef?._id, entitiyId, 'ptrc')
+            .getWorkingStageDetails('', serviceRef?._id, id, 'ptrc')
             .then(({ data }) => {
               setLoading(false);
               setWorkingStage(data.data.orders);
             });
 
           api
-            .getDocSendingDetails('', serviceRef?._id, entitiyId, 'ptrc')
+            .getDocSendingDetails('', serviceRef?._id, id, 'ptrc')
             .then(({ data }) => {
               setLoading(false);
               setDocStage(data.data.orders);
             });
           api
-            .getPaymentStageDetails('', serviceRef?._id, entitiyId, 'ptrc')
+            .getPaymentStageDetails('', serviceRef?._id, id, 'ptrc')
             .then(({ data }) => {
               setLoading(false);
               setPaymentStage(data.data.orders);
             });
 
           api
-            .getSubmitStageDetails('', serviceRef?._id, entitiyId, 'ptrc')
+            .getSubmitStageDetails('', serviceRef?._id, id, 'ptrc')
             .then(({ data }) => {
               setLoading(false);
               setSubmitStage(data.data.orders);
             });
           api
-            .getCompleteStageDetails('', serviceRef?._id, entitiyId, 'ptrc')
+            .getCompleteStageDetails('', serviceRef?._id, id, 'ptrc')
+            .then(({ data }) => {
+              setLoading(false);
+              setCompleteStage(data.data.orders);
+            });
+        } else if (userRole == 'agent' && serviceRef) {
+          let adminId = user.entity.adminRef;
+          api
+            .getDataUploadStageDetails(
+              entitiyId,
+              serviceRef?._id,
+              adminId,
+              'ptrc'
+            )
+            .then(({ data }) => {
+              setLoading(false);
+              setDataUpload(data.data.orders);
+            });
+          api
+            .getWorkingStageDetails(entitiyId, serviceRef?._id, adminId, 'ptrc')
+            .then(({ data }) => {
+              setLoading(false);
+              setWorkingStage(data.data.orders);
+            });
+
+          api
+            .getDocSendingDetails(entitiyId, serviceRef?._id, adminId, 'ptrc')
+            .then(({ data }) => {
+              setLoading(false);
+              setDocStage(data.data.orders);
+            });
+          api
+            .getPaymentStageDetails(entitiyId, serviceRef?._id, adminId, 'ptrc')
+            .then(({ data }) => {
+              setLoading(false);
+              setPaymentStage(data.data.orders);
+            });
+
+          api
+            .getSubmitStageDetails(entitiyId, serviceRef?._id, adminId, 'ptrc')
+            .then(({ data }) => {
+              setLoading(false);
+              setSubmitStage(data.data.orders);
+            });
+          api
+            .getCompleteStageDetails(
+              entitiyId,
+              serviceRef?._id,
+              adminId,
+              'ptrc'
+            )
             .then(({ data }) => {
               setLoading(false);
               setCompleteStage(data.data.orders);

@@ -16,8 +16,6 @@ const Income = ({ access }) => {
   const [activeTab, setActiveTab] = useState('tab1');
   const [loading, setLoading] = useState(false);
 
-  console.log('refresf', refresh);
-
   const location = useLocation();
   const navigate = useNavigate();
 

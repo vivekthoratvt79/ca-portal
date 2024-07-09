@@ -15,6 +15,7 @@ const GstR1 = ({ access }) => {
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const userRole = useSelector((state) => state.auth.authData.role);
+  const user = useSelector((state) => state.auth.authData);
   const entitiyId = useSelector((state) => state.auth.authData.entityID);
 
   const location = useLocation();
@@ -81,28 +82,72 @@ const GstR1 = ({ access }) => {
     async function fetchData() {
       let serviceRef = services.find(({ subheading }) => subheading == 'R1');
       try {
-        if (userRole == 'admin' && serviceRef) {
+        if ((userRole == 'admin' || userRole == 'manager') && serviceRef) {
+          let id = userRole == 'admin' ? entitiyId : user.entity.adminRef;
+
           api
-            .getDataUploadStageDetails('', serviceRef?._id, entitiyId, 'gstr1')
+            .getDataUploadStageDetails('', serviceRef?._id, id, 'gstr1')
             .then(({ data }) => {
               setLoading(false);
               setDataUpload(data.data.orders);
             });
           api
-            .getWorkingStageDetails('', serviceRef?._id, entitiyId, 'gstr1')
+            .getWorkingStageDetails('', serviceRef?._id, id, 'gstr1')
             .then(({ data }) => {
               setLoading(false);
               setWorkingStage(data.data.orders);
             });
 
           api
-            .getSubmitStageDetails('', serviceRef?._id, entitiyId, 'gstr1')
+            .getSubmitStageDetails('', serviceRef?._id, id, 'gstr1')
             .then(({ data }) => {
               setLoading(false);
               setSubmitStage(data.data.orders);
             });
           api
-            .getCompleteStageDetails('', serviceRef?._id, entitiyId, 'gstr1')
+            .getCompleteStageDetails('', serviceRef?._id, id, 'gstr1')
+            .then(({ data }) => {
+              setLoading(false);
+              setCompleteStage(data.data.orders);
+            });
+        } else if (userRole == 'agent' && serviceRef) {
+          let adminId = user.entity.adminRef;
+          api
+            .getDataUploadStageDetails(
+              entitiyId,
+              serviceRef?._id,
+              adminId,
+              'gstr1'
+            )
+            .then(({ data }) => {
+              setLoading(false);
+              setDataUpload(data.data.orders);
+            });
+          api
+            .getWorkingStageDetails(
+              entitiyId,
+              serviceRef?._id,
+              adminId,
+              'gstr1'
+            )
+            .then(({ data }) => {
+              setLoading(false);
+              setWorkingStage(data.data.orders);
+            });
+
+          api
+            .getSubmitStageDetails(entitiyId, serviceRef?._id, adminId, 'gstr1')
+            .then(({ data }) => {
+              setLoading(false);
+              setSubmitStage(data.data.orders);
+            });
+          api
+            .getCompleteStageDetails(
+              entitiyId,
+              serviceRef?._id,
+              adminId,
+              'gstr1'
+            )
             .then(({ data }) => {
               setLoading(false);
               setCompleteStage(data.data.orders);
@@ -111,6 +156,7 @@ const GstR1 = ({ access }) => {
           setLoading(false);
         }
       } catch (error) {
+        setLoading(false);
         console.log('Error: ', error);
       } finally {
       }

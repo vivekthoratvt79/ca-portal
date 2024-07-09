@@ -15,6 +15,7 @@ const Gst2BPR = ({ access }) => {
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const userRole = useSelector((state) => state.auth.authData.role);
+  const user = useSelector((state) => state.auth.authData);
   const entitiyId = useSelector((state) => state.auth.authData.entityID);
 
   const location = useLocation();
@@ -74,12 +75,34 @@ const Gst2BPR = ({ access }) => {
         ({ subheading }) => subheading == '2B vs Purchase Register'
       );
       try {
-        if (userRole == 'admin' && serviceRef) {
+        if ((userRole == 'admin' || userRole == 'manager') && serviceRef) {
+          let id = userRole == 'admin' ? entitiyId : user.entity.adminRef;
+          api
+            .getDataUploadStageDetails('', serviceRef?._id, id, 'gst2bpr')
+            .then(({ data }) => {
+              setLoading(false);
+              setDataUpload(data.data.orders);
+            });
+          api
+            .getDocSendingDetails('', serviceRef?._id, id, 'gst2bpr')
+            .then(({ data }) => {
+              setLoading(false);
+              setWorkingStage(data.data.orders);
+            });
+
+          api
+            .getCompleteStageDetails('', serviceRef?._id, id, 'gst2bpr')
+            .then(({ data }) => {
+              setLoading(false);
+              setCompleteStage(data.data.orders);
+            });
+        } else if (userRole == 'agent' && serviceRef) {
+          let adminId = user.entity.adminRef;
           api
             .getDataUploadStageDetails(
-              '',
-              serviceRef?._id,
               entitiyId,
+              serviceRef?._id,
+              adminId,
               'gst2bpr'
             )
             .then(({ data }) => {
@@ -87,14 +110,24 @@ const Gst2BPR = ({ access }) => {
               setDataUpload(data.data.orders);
             });
           api
-            .getDocSendingDetails('', serviceRef?._id, entitiyId, 'gst2bpr')
+            .getDocSendingDetails(
+              entitiyId,
+              serviceRef?._id,
+              adminId,
+              'gst2bpr'
+            )
             .then(({ data }) => {
               setLoading(false);
               setWorkingStage(data.data.orders);
             });
 
           api
-            .getCompleteStageDetails('', serviceRef?._id, entitiyId, 'gst2bpr')
+            .getCompleteStageDetails(
+              entitiyId,
+              serviceRef?._id,
+              adminId,
+              'gst2bpr'
+            )
             .then(({ data }) => {
               setLoading(false);
               setCompleteStage(data.data.orders);
@@ -103,6 +136,7 @@ const Gst2BPR = ({ access }) => {
           setLoading(false);
         }
       } catch (error) {
+        setLoading(false);
         console.log('Error: ', error);
       } finally {
       }

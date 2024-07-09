@@ -16,6 +16,7 @@ const Gst3B = ({ access }) => {
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const userRole = useSelector((state) => state.auth.authData.role);
+  const user = useSelector((state) => state.auth.authData);
   const entitiyId = useSelector((state) => state.auth.authData.entityID);
 
   const location = useLocation();
@@ -83,34 +84,89 @@ const Gst3B = ({ access }) => {
     async function fetchData() {
       let serviceRef = services.find(({ subheading }) => subheading == '3B');
       try {
-        if (userRole == 'admin' && serviceRef) {
+        if ((userRole == 'admin' || userRole == 'manager') && serviceRef) {
+          let id = userRole == 'admin' ? entitiyId : user.entity.adminRef;
+
           api
-            .getDataUploadStageDetails('', serviceRef?._id, entitiyId, 'gst3b')
+            .getDataUploadStageDetails('', serviceRef?._id, id, 'gst3b')
             .then(({ data }) => {
               setLoading(false);
               setDataUpload(data.data.orders);
             });
           api
-            .getWorkingStageDetails('', serviceRef?._id, entitiyId, 'gst3b')
+            .getWorkingStageDetails('', serviceRef?._id, id, 'gst3b')
             .then(({ data }) => {
               setLoading(false);
               setWorkingStage(data.data.orders);
             });
           api
-            .getPaymentStageDetails('', serviceRef?._id, entitiyId, 'gst3b')
+            .getPaymentStageDetails('', serviceRef?._id, id, 'gst3b')
             .then(({ data }) => {
               setLoading(false);
               setPaymentStage(data.data.orders);
             });
 
           api
-            .getSubmitStageDetails('', serviceRef?._id, entitiyId, 'gst3b')
+            .getSubmitStageDetails('', serviceRef?._id, id, 'gst3b')
             .then(({ data }) => {
               setLoading(false);
               setSubmitStage(data.data.orders);
             });
           api
-            .getCompleteStageDetails('', serviceRef?._id, entitiyId, 'gst3b')
+            .getCompleteStageDetails('', serviceRef?._id, id, 'gst3b')
+            .then(({ data }) => {
+              setLoading(false);
+              setCompleteStage(data.data.orders);
+            });
+        } else if (userRole == 'agent' && serviceRef) {
+          let adminId = user.entity.adminRef;
+          api
+            .getDataUploadStageDetails(
+              entitiyId,
+              serviceRef?._id,
+              adminId,
+              'gst3b'
+            )
+            .then(({ data }) => {
+              setLoading(false);
+              setDataUpload(data.data.orders);
+            });
+          api
+            .getWorkingStageDetails(
+              entitiyId,
+              serviceRef?._id,
+              adminId,
+              'gst3b'
+            )
+            .then(({ data }) => {
+              setLoading(false);
+              setWorkingStage(data.data.orders);
+            });
+          api
+            .getPaymentStageDetails(
+              entitiyId,
+              serviceRef?._id,
+              adminId,
+              'gst3b'
+            )
+            .then(({ data }) => {
+              setLoading(false);
+              setPaymentStage(data.data.orders);
+            });
+
+          api
+            .getSubmitStageDetails(entitiyId, serviceRef?._id, adminId, 'gst3b')
+            .then(({ data }) => {
+              setLoading(false);
+              setSubmitStage(data.data.orders);
+            });
+          api
+            .getCompleteStageDetails(
+              entitiyId,
+              serviceRef?._id,
+              adminId,
+              'gst3b'
+            )
             .then(({ data }) => {
               setLoading(false);
               setCompleteStage(data.data.orders);
@@ -119,6 +175,7 @@ const Gst3B = ({ access }) => {
           setLoading(false);
         }
       } catch (error) {
+        setLoading(false);
         console.log('Error: ', error);
       } finally {
       }

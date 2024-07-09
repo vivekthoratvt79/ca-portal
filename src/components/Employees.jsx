@@ -10,21 +10,28 @@ import * as api from '../api';
 const Employees = ({ access }) => {
   const dispatch = useDispatch();
   const userRole = useSelector((state) => state.auth.authData.role);
+  const user = useSelector((state) => state.auth.authData);
   const entitiyId = useSelector((state) => state.auth.authData.entityID);
   const userId = useSelector((state) => state.auth.authData.userid);
 
   useEffect(() => {
-    if (userRole == 'admin') dispatch(fetchForAdmin('manager', entitiyId));
+    if (userRole == 'admin' || userRole == 'manager' || userRole == 'agent') {
+      let id = userRole == 'admin' ? entitiyId : user.entity.adminRef;
+      dispatch(fetchForAdmin('manager', id));
+    }
   }, [entitiyId]);
 
   const [services, setServices] = useState([]);
 
   useEffect(() => {
-    if (userRole == 'admin') {
-      dispatch(fetchForAdmin('agent', entitiyId));
-    } else if (userRole == 'manager') {
-      dispatch(fetchAgentsForManager(entitiyId));
+    if (userRole == 'admin' || userRole == 'manager' || userRole == 'agent') {
+      let id = userRole == 'admin' ? entitiyId : user.entity.adminRef;
+
+      dispatch(fetchForAdmin('agent', id));
     }
+    // else if (userRole == 'manager') {
+    // dispatch(fetchAgentsForManager(entitiyId));
+    // }
     try {
       api.fetchAllServices().then(({ data }) => {
         data.statusCode == 200 && setServices(data.data.services);

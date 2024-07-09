@@ -16,6 +16,7 @@ const Accounting = ({ access }) => {
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const userRole = useSelector((state) => state.auth.authData.role);
+  const user = useSelector((state) => state.auth.authData);
   const entitiyId = useSelector((state) => state.auth.authData.entityID);
 
   const location = useLocation();
@@ -83,12 +84,34 @@ const Accounting = ({ access }) => {
         ({ subheading }) => subheading == 'Accounting'
       );
       try {
-        if (userRole == 'admin' && serviceRef) {
+        if ((userRole == 'admin' || userRole == 'manager') && serviceRef) {
+          let id = userRole == 'admin' ? entitiyId : user.entity.adminRef;
+          api
+            .getDataUploadStageDetails('', serviceRef?._id, id, 'accounting')
+            .then(({ data }) => {
+              setLoading(false);
+              setDataUpload(data.data.orders);
+            });
+          api
+            .getWorkingStageDetails('', serviceRef?._id, id, 'accounting')
+            .then(({ data }) => {
+              setLoading(false);
+              setWorkingStage(data.data.orders);
+            });
+
+          api
+            .getDocSendingDetails('', serviceRef?._id, id, 'accounting')
+            .then(({ data }) => {
+              setLoading(false);
+              setDocStage(data.data.orders);
+            });
+        } else if (userRole == 'agent') {
+          let adminId = user.entity.adminRef;
           api
             .getDataUploadStageDetails(
-              '',
-              serviceRef?._id,
               entitiyId,
+              serviceRef?._id,
+              adminId,
               'accounting'
             )
             .then(({ data }) => {
@@ -97,9 +120,9 @@ const Accounting = ({ access }) => {
             });
           api
             .getWorkingStageDetails(
-              '',
-              serviceRef?._id,
               entitiyId,
+              serviceRef?._id,
+              adminId,
               'accounting'
             )
             .then(({ data }) => {
@@ -108,7 +131,12 @@ const Accounting = ({ access }) => {
             });
 
           api
-            .getDocSendingDetails('', serviceRef?._id, entitiyId, 'accounting')
+            .getDocSendingDetails(
+              entitiyId,
+              serviceRef?._id,
+              adminId,
+              'accounting'
+            )
             .then(({ data }) => {
               setLoading(false);
               setDocStage(data.data.orders);
@@ -121,7 +149,7 @@ const Accounting = ({ access }) => {
       } finally {
       }
     }
-    if (services) fetchData();
+    if (services.length) fetchData();
   }, [services]);
   return (
     <>

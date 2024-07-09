@@ -138,7 +138,7 @@ const InvoiceForm = ({
           setErrorMsg('');
           closeModal();
           setRefresh(Date.now() + Math.random());
-        }, 5000);
+        }, 4000);
       })
       .catch((err) => {
         setLoading(false);
@@ -149,7 +149,7 @@ const InvoiceForm = ({
           setErrorMsg('');
           closeModal();
           setRefresh(Date.now() + Math.random());
-        }, 5000);
+        }, 4000);
       });
   };
 

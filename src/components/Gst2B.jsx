@@ -14,7 +14,9 @@ const Gst2B = ({ access }) => {
   const [completeStage, setCompleteStage] = useState([]);
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
+
   const userRole = useSelector((state) => state.auth.authData.role);
+  const user = useSelector((state) => state.auth.authData);
   const entitiyId = useSelector((state) => state.auth.authData.entityID);
 
   const location = useLocation();
@@ -63,16 +65,37 @@ const Gst2B = ({ access }) => {
     async function fetchData() {
       let serviceRef = services.find(({ subheading }) => subheading == '2B');
       try {
-        if (userRole == 'admin' && serviceRef) {
+        if ((userRole == 'admin' || userRole == 'manager') && serviceRef) {
+          let id = userRole == 'admin' ? entitiyId : user.entity.adminRef;
           api
-            .getDocSendingDetails('', serviceRef?._id, entitiyId, 'gst2b')
+            .getDocSendingDetails('', serviceRef?._id, id, 'gst2b')
             .then(({ data }) => {
               setLoading(false);
               setWorkingStage(data.data.orders);
             });
 
           api
-            .getCompleteStageDetails('', serviceRef?._id, entitiyId, 'gst2b')
+            .getCompleteStageDetails('', serviceRef?._id, id, 'gst2b')
+            .then(({ data }) => {
+              setLoading(false);
+              setCompleteStage(data.data.orders);
+            });
+        } else if (userRole == 'agent' && serviceRef) {
+          let adminId = user.entity.adminRef;
+          api
+            .getDocSendingDetails(entitiyId, serviceRef?._id, adminId, 'gst2b')
+            .then(({ data }) => {
+              setLoading(false);
+              setWorkingStage(data.data.orders);
+            });
+
+          api
+            .getCompleteStageDetails(
+              entitiyId,
+              serviceRef?._id,
+              adminId,
+              'gst2b'
+            )
             .then(({ data }) => {
               setLoading(false);
               setCompleteStage(data.data.orders);
@@ -81,6 +104,7 @@ const Gst2B = ({ access }) => {
           setLoading(false);
         }
       } catch (error) {
+        setLoading(false);
         console.log('Error: ', error);
       } finally {
       }
