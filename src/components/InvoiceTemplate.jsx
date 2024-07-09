@@ -216,11 +216,11 @@ const InvoiceTemplate = ({ billDetails }) => {
         <div className='mt-4'>
           <div className='flex justify-between text-sm'>
             <p>CGST @ 9%(9.00%)</p>
-            <p>810.00</p>
+            <p>{bill.taxAmount / 2}</p>
           </div>
           <div className='flex justify-between text-sm'>
             <p>SGST @ 9%(9.00%)</p>
-            <p>810.00</p>
+            <p>{bill.taxAmount / 2}</p>
           </div>
         </div>
       )}

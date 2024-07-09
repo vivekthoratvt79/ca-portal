@@ -107,7 +107,9 @@ const InvoiceForm = ({
     else return prev;
   }, 0);
   const discountRate = parseInt(discount) || 0;
-  const taxRate = (tax * (subtotal - discountRate)) / 100;
+  const taxRate = adminData?.reverseCharge
+    ? 0
+    : (tax * (subtotal - discountRate)) / 100;
   const total = adminData?.reverseCharge
     ? subtotal - discountRate
     : subtotal + taxRate - discountRate;
@@ -120,8 +122,7 @@ const InvoiceForm = ({
     payload.billRef = invoiceData._id;
     payload.discount = discountRate;
     payload.billDetails = items;
-    console.log('pp', payload);
-    // return;
+    payload.taxAmount = taxRate;
     api
       .updateBillToPendingStage(payload)
       .then(({ data }) => {

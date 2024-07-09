@@ -142,8 +142,10 @@ const NotificationSettings = ({ services, adminServices, loading }) => {
 
   const getServiceName = (serviceRef) => {
     const service = services.find((service) => service._id === serviceRef);
-    return service
+    return service && service.heading != service.subheading
       ? `${service.heading} ${service.subheading}`
+      : service
+      ? service.subheading
       : 'Unknown Service';
   };
 
