@@ -65,7 +65,45 @@ const Clients = ({ access }) => {
           </div>
         </div>
         {!clients.length ? (
-          <div className='p-4'>No Clients Yet</div>
+          <div className='p-4'>
+            <div className='overflow-x-auto max-h-[575px]'>
+              <table className='table-auto w-full border-collapse'>
+                <thead>
+                  <tr>
+                    {[
+                      'Sr No.',
+                      'Name',
+                      'Email',
+                      'Number',
+                      'Assign Work',
+                      'ViewDetails',
+                    ].map((header, index) => (
+                      <th
+                        key={index}
+                        className='px-4 py-2 bg-gray-200 text-gray-700 border border-gray-300'
+                      >
+                        {header}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    {['Sr No.', 'Name', 'Email', 'Number', '', ''].map(
+                      (header, index) => (
+                        <td
+                          key={index}
+                          className={`px-4 py-2 border border-gray-300 text-center`}
+                        >
+                          -
+                        </td>
+                      )
+                    )}
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
         ) : (
           <div className='p-4'>
             {clients && clients.length > 0 && (
