@@ -22,6 +22,11 @@ export const sendNotification = (data) =>
 export const fetchForAdmin = (role, adminId) =>
   API.get(`/list/${role}?adminRef=${adminId}`);
 
+export const fetchAllForSuperAdmin = (role) => API.get(`/listAll/${role}`);
+
+export const getAdminDetailsWithUsername = (username) =>
+  API.get(`/getAdminDetailsWithUsername?username=${username}`);
+
 export const fetchAdminServices = (adminId) =>
   API.get(`/getAdminServiceData?adminRef=${adminId}`);
 

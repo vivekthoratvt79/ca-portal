@@ -100,7 +100,7 @@ const ReceiptTemplate = ({ billDetails, receiptData }) => {
   return (
     <div className='max-w-md mx-auto bg-blue-100 p-6 rounded-md shadow-md mt-4'>
       <div className='text-center'>
-        <h1 className='text-xl font-bold'>Adv. {admin.name}</h1>
+        <h1 className='text-xl font-bold'>CA. {admin.name}</h1>
         <p className='text-sm'>GST & INCOME TAX PRACTITIONER</p>
         <p className='text-sm'>{admin.address}</p>
         <p className='text-sm flex gap-2 items-center justify-center'>
@@ -157,7 +157,7 @@ const ReceiptTemplate = ({ billDetails, receiptData }) => {
         <p>
           Rs. <span className='font-bold'>{receiptData.receivedAmount}</span>
         </p>
-        <p className='text-right'>For Adv. {admin.name}</p>
+        <p className='text-right'>For CA. {admin.name}</p>
       </div>
     </div>
   );

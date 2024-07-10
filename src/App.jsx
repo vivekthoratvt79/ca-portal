@@ -32,6 +32,7 @@ import SuperAdmin from './components/SuperAdmin';
 import PTRC from './components/PTRC';
 import PTEC from './components/PTEC';
 import Accounting from './components/Accounting';
+import LandingPage from './components/LandingPage';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -130,85 +131,109 @@ const App = () => {
     if (userId) fetchAccessKeys();
   }, [userId]);
 
+  const host = window.location.hostname;
+  const subdomain = host.split('.')[0];
+  let showLandingPage =
+    subdomain == 'localhost' || subdomain == 'cabook' ? false : true;
+
   return (
     <BrowserRouter>
-      <Navbar user={user} />
-      <Routes>
-        {user && userRole != 'client' && userRole != 'superadmin' ? (
-          <>
-            <Route path='*' element={<NoPageFound />} />
-            <Route path='/' element={<Home access={access} />}></Route>
-            <Route path='/invoice' element={<InvoiceForm />}></Route>
-            <Route path='/home' element={<Home access={access} />}></Route>
-            <Route path='/gst/r1' element={<GstR1 access={access} />}></Route>
-            <Route path='/gst/3b' element={<Gst3B access={access} />}></Route>
-            <Route path='/gst/r9' element={<GstR9 access={access} />}></Route>
-            <Route path='/gst/2b' element={<Gst2B access={access} />}></Route>
-            <Route
-              path='/gst/2bpr'
-              element={<Gst2BPR access={access} />}
-            ></Route>
-            <Route
-              path='/tax/individual'
-              element={<IndividualTax access={access} />}
-            ></Route>
-            <Route
-              path='/tax/company'
-              element={<CompanyTax access={access} />}
-            ></Route>
-            <Route path='/tds' element={<TDS access={access} />}></Route>
-            <Route path='/vat' element={<VAT access={access} />}></Route>
-            <Route path='/ptrc' element={<PTRC access={access} />}></Route>
-            <Route path='/ptec' element={<PTEC access={access} />}></Route>
-            <Route
-              path='/accounting'
-              element={<Accounting access={access} />}
-            ></Route>
-            <Route
-              path='/consultancy'
-              element={<Consultancy access={access} />}
-            ></Route>
-            <Route
-              path='/notification'
-              element={<NotificationForm access={access} />}
-            ></Route>
-            <Route
-              path='/managers'
-              element={<Managers access={access} />}
-            ></Route>
+      {showLandingPage ? (
+        <LandingPage subdomain={subdomain} />
+      ) : (
+        <>
+          <Navbar user={user} />
+          <Routes>
+            {user && userRole != 'client' && userRole != 'superadmin' ? (
+              <>
+                <Route path='*' element={<NoPageFound />} />
+                <Route path='/' element={<Home access={access} />}></Route>
+                <Route path='/invoice' element={<InvoiceForm />}></Route>
+                <Route path='/home' element={<Home access={access} />}></Route>
+                <Route
+                  path='/gst/r1'
+                  element={<GstR1 access={access} />}
+                ></Route>
+                <Route
+                  path='/gst/3b'
+                  element={<Gst3B access={access} />}
+                ></Route>
+                <Route
+                  path='/gst/r9'
+                  element={<GstR9 access={access} />}
+                ></Route>
+                <Route
+                  path='/gst/2b'
+                  element={<Gst2B access={access} />}
+                ></Route>
+                <Route
+                  path='/gst/2bpr'
+                  element={<Gst2BPR access={access} />}
+                ></Route>
+                <Route
+                  path='/tax/individual'
+                  element={<IndividualTax access={access} />}
+                ></Route>
+                <Route
+                  path='/tax/company'
+                  element={<CompanyTax access={access} />}
+                ></Route>
+                <Route path='/tds' element={<TDS access={access} />}></Route>
+                <Route path='/vat' element={<VAT access={access} />}></Route>
+                <Route path='/ptrc' element={<PTRC access={access} />}></Route>
+                <Route path='/ptec' element={<PTEC access={access} />}></Route>
+                <Route
+                  path='/accounting'
+                  element={<Accounting access={access} />}
+                ></Route>
+                <Route
+                  path='/consultancy'
+                  element={<Consultancy access={access} />}
+                ></Route>
+                <Route
+                  path='/notification'
+                  element={<NotificationForm access={access} />}
+                ></Route>
+                <Route
+                  path='/managers'
+                  element={<Managers access={access} />}
+                ></Route>
 
-            <Route
-              path='/employees'
-              element={<Employees access={access} />}
-            ></Route>
-            <Route
-              path='/clients'
-              element={<Clients access={access} />}
-            ></Route>
-            <Route
-              path='/settings'
-              element={<Settings access={access} />}
-            ></Route>
-            <Route path='/income' element={<Income access={access} />}></Route>
-            {/* <Route
+                <Route
+                  path='/employees'
+                  element={<Employees access={access} />}
+                ></Route>
+                <Route
+                  path='/clients'
+                  element={<Clients access={access} />}
+                ></Route>
+                <Route
+                  path='/settings'
+                  element={<Settings access={access} />}
+                ></Route>
+                <Route
+                  path='/income'
+                  element={<Income access={access} />}
+                ></Route>
+                {/* <Route
               path='/expenditure'
               element={<Expenditure access={access} />}
             ></Route> */}
-          </>
-        ) : userRole == 'superadmin' ? (
-          <>
-            <Route path='*' element={<NoPageFound />} />
-            <Route path='/' element={<SuperAdmin />}></Route>
-          </>
-        ) : userRole == 'client' ? (
-          <>
-            <Route path='*' element={<NoPageFound />} />
-            <Route path='/' element={<ClientHome />}></Route>
-          </>
-        ) : (
-          <>
-            <Route path='*' element={<Auth />}></Route>
-            {/* <Route path='/gst/r1' element={<Auth />}></Route>
+              </>
+            ) : userRole == 'superadmin' ? (
+              <>
+                <Route path='*' element={<NoPageFound />} />
+                <Route path='/' element={<SuperAdmin />}></Route>
+              </>
+            ) : userRole == 'client' ? (
+              <>
+                <Route path='*' element={<NoPageFound />} />
+                <Route path='/' element={<ClientHome />}></Route>
+              </>
+            ) : (
+              <>
+                <Route path='*' element={<Auth />}></Route>
+                {/* <Route path='/gst/r1' element={<Auth />}></Route>
             <Route path='/gst/3b' element={<Auth />}></Route>
             <Route path='/gst/9r' element={<Auth />}></Route>
             <Route path='/gst/9rc' element={<Auth />}></Route>
@@ -222,9 +247,11 @@ const App = () => {
             <Route path='/income' element={<Auth />}></Route>
             <Route path='/expenditure' element={<Auth />}></Route>
             <Route path='/auth' element={<Auth />}></Route> */}
-          </>
-        )}
-      </Routes>
+              </>
+            )}
+          </Routes>
+        </>
+      )}
     </BrowserRouter>
   );
 };
