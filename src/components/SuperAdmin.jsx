@@ -42,6 +42,7 @@ const SuperAdmin = ({ access }) => {
   const handleFilterChange = (e) => {
     const value = e.target.value || '';
     setFilterInput(value);
+    setCurrentPage(0);
   };
 
   const filteredData = useMemo(
