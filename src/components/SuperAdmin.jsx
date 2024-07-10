@@ -2,19 +2,14 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTable, usePagination, useFilters } from 'react-table';
 import ReactPaginate from 'react-paginate';
-import Sidebar from './Sidebar';
-import AddClientModal from './AddClientModal';
 import AddAdminModal from './AddAdminModal';
 import * as api from '../api';
-import { fetchClientsForAgent } from '../actions/clients';
-import { fetchForAdmin } from '../actions/managers';
 
 const SuperAdmin = ({ access }) => {
   const dispatch = useDispatch();
   const entitiyId = useSelector((state) => state.auth.authData.entityID);
   const userData = useSelector((state) => state.auth.authData);
   const [services, setServices] = useState([]);
-
   const [adminData, setAdminData] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [pageCount, setPageCount] = useState(0);
@@ -29,8 +24,8 @@ const SuperAdmin = ({ access }) => {
       });
       api.fetchAllForSuperAdmin('admin').then(({ data }) => {
         data.statusCode == 200 && setAdminData(data.data.admins);
-
-        setPageCount(Math.ceil(adminData.length / itemsPerPage));
+        const admins = data.data.admins;
+        setPageCount(Math.ceil(admins.length / itemsPerPage));
       });
     } catch (error) {
       console.log(error);
