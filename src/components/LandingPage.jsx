@@ -243,7 +243,6 @@ function LandingPage({ subdomain }) {
                 src={landingPageImg}
                 alt='CA'
                 className='w-[200px] rounded-lg shadow-md'
-                style={{ mixBlendMode: 'multiply' }}
               />
             </div>
           </div>
