@@ -336,8 +336,33 @@ const TableComponentService = ({
   };
 
   return !data.length ? (
-    <div className='flex justify-center h-full'>
-      <p className='text-red-400 text-sm'>No data found in this stage!</p>
+    <div className='overflow-x-auto max-h-[575px]'>
+      <table className='table-auto w-full border-collapse'>
+        <thead>
+          <tr>
+            {headers.map((header, index) => (
+              <th
+                key={index}
+                className='px-4 py-2 bg-gray-200 text-gray-700 border border-gray-300'
+              >
+                {header}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            {headers.map((header, index) => (
+              <td
+                key={index}
+                className={`px-4 py-2 border border-gray-300 text-center`}
+              >
+                -
+              </td>
+            ))}
+          </tr>
+        </tbody>
+      </table>
     </div>
   ) : (
     <div className='overflow-x-auto max-h-[575px]'>
