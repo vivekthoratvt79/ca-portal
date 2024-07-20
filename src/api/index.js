@@ -53,6 +53,21 @@ export const assignAgentToManager = (data) =>
 
 export const register = (userData) => API.post('/register', userData);
 
+export const editClientDetails = (userData) =>
+  API.post(`/editClientDetails`, userData);
+
+export const editAgentDetails = (userData) =>
+  API.post(`/editAgentDetails`, userData);
+
+export const editManagerDetails = (userData) =>
+  API.post(`/editManagerDetails`, userData);
+
+export const sendNotificationBill = (payload) =>
+  API.post(`/order/sendNotificationBill`, payload);
+
+export const sendNotificationsOrder = (payload) =>
+  API.post(`/order/sendNotificationsOrder`, payload);
+
 export const fetchClients = () => API.get('/clients');
 export const fetchAllServices = () => API.get('/getAllServices');
 

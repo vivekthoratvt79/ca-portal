@@ -3,6 +3,8 @@ import React from 'react';
 const ReceiptTemplate = ({ billDetails, receiptData }) => {
   let { admin, bill, client, order, service } = billDetails;
 
+  console.log('billDetails', billDetails);
+  console.log('receiptData', receiptData);
   function getDate(createdDate) {
     const date = new Date(createdDate);
     const formattedDate = date.toISOString().split('T')[0];
@@ -98,66 +100,114 @@ const ReceiptTemplate = ({ billDetails, receiptData }) => {
   }
 
   return (
-    <div className='max-w-md mx-auto bg-blue-100 p-6 rounded-md shadow-md mt-4'>
-      <div className='text-center'>
-        <h1 className='text-xl font-bold'>CA. {admin.name}</h1>
-        <p className='text-sm'>GST & INCOME TAX PRACTITIONER</p>
-        <p className='text-sm'>{admin.address}</p>
-        <p className='text-sm flex gap-2 items-center justify-center'>
-          <svg
-            className='w-6 h-6 text-gray-800 dark:text-white'
-            aria-hidden='true'
-            xmlns='http://www.w3.org/2000/svg'
-            width='24'
-            height='24'
-            fill='none'
-            viewBox='0 0 24 24'
-          >
-            <path
-              stroke='currentColor'
-              strokeLinecap='round'
-              strokeLinejoin='round'
-              strokeWidth='2'
-              d='M18.427 14.768 17.2 13.542a1.733 1.733 0 0 0-2.45 0l-.613.613a1.732 1.732 0 0 1-2.45 0l-1.838-1.84a1.735 1.735 0 0 1 0-2.452l.612-.613a1.735 1.735 0 0 0 0-2.452L9.237 5.572a1.6 1.6 0 0 0-2.45 0c-3.223 3.2-1.702 6.896 1.519 10.117 3.22 3.221 6.914 4.745 10.12 1.535a1.601 1.601 0 0 0 0-2.456Z'
-            />
-          </svg>
-          {admin.phone}
-        </p>
+    <div className='max-w-md mx-auto bg-blue-100 p-2 rounded-md shadow-md mt-4'>
+      <div className='flex justify-between items-center border-b-2 border-gray-300 pb-2 mb-4'>
+        <div>
+          <p className='font-bold'>CA. {admin.name}</p>
+          <p className='text-xs'>GST & INCOME TAX PRACTITIONER</p>
+          <p className='text-xs'>{admin.address}</p>
+        </div>
+        <div className='text-right'>
+          <h1 className='text-md font-bold'>Receipt No.</h1>
+          <input
+            type='text'
+            className='border-b-2 border-dotted w-[110px] focus:outline-none text-right'
+            value={receiptData.billNumber}
+            disabled
+            readOnly
+          />
+        </div>
       </div>
-      <div className='flex justify-between mt-6'>
-        <p>
-          Bill No. : <span className='font-bold'>{receiptData.billNumber}</span>
-        </p>
-        <p>
-          Date:{' '}
-          <span className='font-bold'>
-            {getDate(receiptData.receiptDetails[0].dateOfPayment)}
-          </span>
-        </p>
+      <div className='flex justify-between mb-4'>
+        <div className='w-1/2'>
+          <p>From</p>
+          <input
+            type='text'
+            className='w-full border-b-2 p-2 border-dotted focus:outline-none'
+            value={client.name.toUpperCase()}
+            readOnly
+          />
+        </div>
+        <div className='w-1/2'>
+          <p>Date</p>
+          <input
+            type='text'
+            className='w-full border-b-2 p-2 border-dotted focus:outline-none'
+            value={getDate(receiptData.receiptDetails[0].dateOfPayment)}
+            readOnly
+          />
+        </div>
       </div>
-      <div className='mt-4'>
-        <p>
-          Received with thanks from M/s./Shri.{' '}
-          <span className='font-bold'>{client.name.toUpperCase()}</span>
-        </p>
-        <p>
-          a sum of Rupees{' '}
-          <span className='font-bold'>
-            {numberToWords(receiptData.receivedAmount).toUpperCase()} ONLY
-          </span>
-        </p>
+      <div className='mb-4'>
+        <p>Amount</p>
+        <input
+          type='text'
+          className='w-full p-2 border-b-2 border-dotted focus:outline-none'
+          value={`${receiptData.receivedAmount} /-`}
+          readOnly
+        />
+      </div>
+      <div className='mb-4'>
+        <p>In word</p>
+        <input
+          type='text'
+          className='w-full border-b-2 p-2 border-dotted focus:outline-none'
+          value={`${numberToWords(
+            receiptData.receivedAmount
+          ).toUpperCase()} ONLY`}
+          readOnly
+        />
+      </div>
+      <div className='mb-4'>
+        <p>In payment against the invoice number,</p>
+        <input
+          type='text'
+          className='w-full border-b-2 border-dotted p-2 focus:outline-none'
+          value={receiptData.invoiceNumber}
+          readOnly
+        />
+      </div>
+      <div className='flex justify-between mb-4'>
+        <div className='w-1/3'>
+          <p>ACCT.</p>
+          <input
+            type='text'
+            className='w-full border-b-2 p-2 border-dotted focus:outline-none'
+            value={receiptData.finalAmount}
+            readOnly
+          />
+        </div>
+        <div className='w-1/3'>
+          <p>PAID</p>
+          <input
+            type='text'
+            className='w-full border-b-2 p-2 border-dotted focus:outline-none'
+            value={receiptData.receivedAmount}
+            readOnly
+          />
+        </div>
+        <div className='w-1/3'>
+          <p>DUE</p>
+          <input
+            type='text'
+            className='w-full border-b-2 p-2 border-dotted focus:outline-none'
+            value={receiptData.pendingAmount}
+            readOnly
+          />
+        </div>
+      </div>
 
-        <p>
-          in payment against the bill No.{' '}
-          <span className='font-bold'>{receiptData.invoiceNumber}</span>
-          <span className='font-bold'>NEFT</span>
-        </p>
-      </div>
-      <div className='flex justify-between mt-6'>
-        <p>
-          Rs. <span className='font-bold'>{receiptData.receivedAmount}</span>
-        </p>
-        <p className='text-right'>For CA. {admin.name}</p>
+      <div className='flex justify-between items-center mt-4 border-t-2 border-gray-300 pt-2'>
+        <div className='text-left text-sm w-1/2'>
+          <p>{admin.email}</p>
+          <p>+91 {admin.phone}</p>
+          <p>{admin.address}</p>
+        </div>
+        <div className='text-right'>
+          <p className='border-b-2 font-bold text-sm border-dotted p-2 focus:outline-none'>
+            For : <br></br>CA. {admin.name}
+          </p>
+        </div>
       </div>
     </div>
   );

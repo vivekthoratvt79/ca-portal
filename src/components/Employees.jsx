@@ -13,13 +13,14 @@ const Employees = ({ access }) => {
   const user = useSelector((state) => state.auth.authData);
   const entitiyId = useSelector((state) => state.auth.authData.entityID);
   const userId = useSelector((state) => state.auth.authData.userid);
+  const [refresh, setRefresh] = useState(0);
 
   useEffect(() => {
     if (userRole == 'admin' || userRole == 'manager' || userRole == 'agent') {
       let id = userRole == 'admin' ? entitiyId : user.entity.adminRef;
       dispatch(fetchForAdmin('manager', id));
     }
-  }, [entitiyId]);
+  }, [entitiyId, refresh]);
 
   const [services, setServices] = useState([]);
 
@@ -39,7 +40,7 @@ const Employees = ({ access }) => {
     } catch (error) {
       console.log(error);
     }
-  }, [dispatch]);
+  }, [dispatch, refresh]);
   const employees = useSelector((state) => state.employees);
 
   const [showModal, setShowModal] = useState(false);
@@ -120,6 +121,7 @@ const Employees = ({ access }) => {
                 data={employees}
                 type='agent'
                 allServices={services}
+                setRefresh={setRefresh}
               />
             )}
           </div>

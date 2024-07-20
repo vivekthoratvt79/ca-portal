@@ -10,13 +10,7 @@ const Sidebar = ({ activeTab, access }) => {
       activeTab == '3b' ||
       activeTab == 'r9' ||
       activeTab == '2b' ||
-      activeTab == '2bpr' ||
-      activeTab == 'tds' ||
-      activeTab == 'vat' ||
-      activeTab == 'consultancy' ||
-      activeTab == 'ptrc' ||
-      activeTab == 'ptec' ||
-      activeTab == 'accounting'
+      activeTab == '2bpr'
     ) {
       let el = document.getElementById('dropdown-gst');
       el.classList.remove('hidden');

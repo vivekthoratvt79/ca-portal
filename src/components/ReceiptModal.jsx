@@ -31,9 +31,9 @@ const ReceiptModal = ({ showModal, closeModal, receiptData, adminData }) => {
         img.onload = () => {
           // Initialize the PDF with padding settings.
           const pdf = new jsPDF({
-            orientation: 'landscape',
+            orientation: 'portrait',
             unit: 'in',
-            format: [5.5, 6.5],
+            format: [5.5, 8.5],
           });
 
           const padding = 0.1; // 0.1 inches padding
@@ -90,7 +90,7 @@ const ReceiptModal = ({ showModal, closeModal, receiptData, adminData }) => {
             );
           }
           // Output / Save
-          pdf.save(`receipt-${'test'}.pdf`);
+          pdf.save(`receipt-${receiptData.billNumber}.pdf`);
         };
       })
       .catch((error) => {

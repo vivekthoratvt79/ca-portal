@@ -4,12 +4,23 @@ import { useNavigate } from 'react-router-dom';
 import * as api from '../api';
 import Loader from './Loader';
 
-const ViewDetailsModal = ({ showModal, closeModal, type, id, allServices }) => {
-  console.log('all', allServices);
+const ViewDetailsModal = ({
+  showModal,
+  closeModal,
+  type,
+  id,
+  allServices,
+  setRefresh,
+}) => {
   const [selectedServices, setSelectedServices] = useState([]);
   const [loading, setLoading] = useState(false);
   const [accessUpdated, setAccessUpdated] = useState('');
   const [access, setAccess] = useState([]);
+
+  const [loadingSave, setLoadingSave] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [error, setError] = useState('');
 
   const allAccess =
     type == 'agent' || type == 'manager'
@@ -35,18 +46,23 @@ const ViewDetailsModal = ({ showModal, closeModal, type, id, allServices }) => {
   const clients = useSelector((state) => state.clients);
   const managers = useSelector((state) => state.managers);
 
+  const [formData, setFormData] = useState({});
+
   // Function to get agent name from Redux store based on agent ID
   const getAgentName = (agentId) => {
     const agent = employees.find((emp) => emp._id === agentId);
     return agent ? agent.name : 'Unknown';
   };
 
-  const formData =
-    type === 'client'
-      ? clients.find(({ _id }) => _id === id)
-      : type === 'manager'
-      ? managers.find(({ _id }) => _id === id)
-      : employees.find(({ _id }) => _id === id);
+  useEffect(() => {
+    setFormData(
+      type === 'client'
+        ? clients.find(({ _id }) => _id === id)
+        : type === 'manager'
+        ? managers.find(({ _id }) => _id === id)
+        : employees.find(({ _id }) => _id === id)
+    );
+  }, [type, id]);
 
   useEffect(() => {
     async function fetchData() {
@@ -122,6 +138,63 @@ const ViewDetailsModal = ({ showModal, closeModal, type, id, allServices }) => {
     }
   };
 
+  const handleFileChange = (e) => {
+    const { name, files } = e.target;
+    if (files[0]) {
+      convertToBase64(name, files[0]);
+    }
+  };
+
+  const convertToBase64 = (key, file) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onloadend = () => {
+      setFormData({
+        ...formData,
+        [key]: reader.result,
+      });
+    };
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+
+  const saveChanges = async (e) => {
+    e.preventDefault();
+    setLoadingSave(true);
+    console.log(formData);
+    console.log(type);
+
+    try {
+      if (type == 'agent') {
+        formData.agentRef = id;
+        await api.editAgentDetails(formData).then((data) => {
+          setLoadingSave(false);
+          setIsSubmitted(true);
+        });
+      } else if (type == 'manager') {
+        formData.managerRef = id;
+        await api.editManagerDetails(formData).then((data) => {
+          setLoadingSave(false);
+          setIsSubmitted(true);
+        });
+      }
+    } catch (error) {
+      setLoadingSave(false);
+      setError('Failed! Please try again later.');
+      setIsSubmitted(false);
+    }
+    setTimeout(() => {
+      setIsSubmitted(false);
+      setError('');
+    }, 5000);
+  };
+
   return (
     <div
       className={`fixed z-40 inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50`}
@@ -142,7 +215,11 @@ const ViewDetailsModal = ({ showModal, closeModal, type, id, allServices }) => {
               x
             </div>
           </div>
-          <form className='space-y-6 text-sm mt-4'>
+
+          <form
+            className='space-y-6 text-sm mt-4'
+            onSubmit={(e) => saveChanges(e)}
+          >
             {type !== 'manager' && (
               <div className='max-w-lg mx-auto p-4 bg-cyan-50 shadow-md rounded'>
                 <h2 className='font-bold text-center'>Selected Services</h2>
@@ -200,7 +277,7 @@ const ViewDetailsModal = ({ showModal, closeModal, type, id, allServices }) => {
                             className='bg-teal-300 text-xs text-black px-3 py-2 rounded-md hover:bg-teal-500 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-blue-600 dark:hover:bg-blue-700'
                             onClick={(e) => saveAccess(e)}
                           >
-                            Update
+                            Update Access
                           </button>
                         )}
                       </div>
@@ -214,7 +291,12 @@ const ViewDetailsModal = ({ showModal, closeModal, type, id, allServices }) => {
             <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
               {[
                 { label: 'Name', name: 'name', type: 'text' },
-                { label: 'Username', name: 'username', type: 'text' },
+                {
+                  label: 'Username',
+                  name: 'username',
+                  type: 'text',
+                  disabled: true,
+                },
                 { label: 'Email', name: 'email', type: 'email' },
                 { label: 'Phone Number', name: 'phone', type: 'text' },
                 ...(type === 'client'
@@ -225,7 +307,11 @@ const ViewDetailsModal = ({ showModal, closeModal, type, id, allServices }) => {
                         type: 'text',
                       },
                       { label: 'Address', name: 'address', type: 'text' },
-                      { label: 'Date of Birth', name: 'dob', type: 'date' },
+                      {
+                        label: 'Date of Incorporation',
+                        name: 'dob',
+                        type: 'date',
+                      },
                       {
                         label: 'Adhaar Number',
                         name: 'adhaarNumber',
@@ -283,7 +369,11 @@ const ViewDetailsModal = ({ showModal, closeModal, type, id, allServices }) => {
                         type: 'text',
                       },
                       { label: 'Address', name: 'address', type: 'text' },
-                      { label: 'Date of Birth', name: 'dob', type: 'date' },
+                      {
+                        label: 'Date of Birth',
+                        name: 'dob',
+                        type: 'date',
+                      },
                       {
                         label: 'Adhaar Number',
                         name: 'adhaarNumber',
@@ -309,7 +399,7 @@ const ViewDetailsModal = ({ showModal, closeModal, type, id, allServices }) => {
                       { label: 'IFSC Code', name: 'bankCode', type: 'text' },
                     ]
                   : []),
-              ].map(({ label, name, type }) => (
+              ].map(({ label, name, type, disabled }) => (
                 <div key={name}>
                   <label className='block text-zinc-700 dark:text-zinc-300'>
                     {label}
@@ -318,8 +408,10 @@ const ViewDetailsModal = ({ showModal, closeModal, type, id, allServices }) => {
                     type={type}
                     name={name}
                     value={formData[name] || ''}
-                    disabled
+                    onChange={type === 'file' ? handleFileChange : handleChange}
                     placeholder={label}
+                    disabled={disabled ? true : false}
+                    required
                     className='w-full mt-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-zinc-300'
                   />
                 </div>
@@ -331,6 +423,12 @@ const ViewDetailsModal = ({ showModal, closeModal, type, id, allServices }) => {
                   <label className='block text-zinc-700 dark:text-zinc-300'>
                     Adhaar Image
                   </label>
+                  <input
+                    type='file'
+                    name='adhaarImage'
+                    onChange={handleFileChange}
+                    className='w-full mt-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-zinc-300'
+                  />
                   <img
                     alt='Adhaar Card'
                     src={formData.adhaarImage}
@@ -341,6 +439,12 @@ const ViewDetailsModal = ({ showModal, closeModal, type, id, allServices }) => {
                   <label className='block text-zinc-700 dark:text-zinc-300'>
                     PAN Image
                   </label>
+                  <input
+                    type='file'
+                    name='panImage'
+                    onChange={handleFileChange}
+                    className='w-full mt-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-zinc-300'
+                  />
                   <img
                     alt='Pan Card'
                     src={formData.panImage}
@@ -349,17 +453,45 @@ const ViewDetailsModal = ({ showModal, closeModal, type, id, allServices }) => {
                 </div>
               </div>
             )}
-            <div className='flex justify-center mt-6'>
-              <button
-                className='bg-blue-400 text-black px-4 py-2 rounded-md hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-blue-600 dark:hover:bg-blue-700'
-                onClick={(e) => {
-                  e.preventDefault();
-                  closeModal();
-                }}
-              >
-                Close
-              </button>
+
+            <div className='flex justify-center gap-4 text-center mt-6'>
+              {loadingSave ? (
+                <Loader />
+              ) : (
+                !isSubmitted &&
+                !error && (
+                  <>
+                    <button
+                      className='bg-blue-400 text-black px-4 py-2 rounded-md hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-blue-600 dark:hover:bg-blue-700'
+                      onClick={(e) => {
+                        e.preventDefault();
+                        closeModal();
+                      }}
+                    >
+                      Close
+                    </button>
+
+                    <button
+                      type='submit'
+                      className={`bg-green-400 text-black px-4 py-2 rounded-md hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-blue-600 dark:hover:bg-blue-700`}
+                    >
+                      Save Changes
+                    </button>
+                  </>
+                )
+              )}
             </div>
+
+            {error && (
+              <div className='text-red-500 mt-2 flex justify-center text-center'>
+                {error}
+              </div>
+            )}
+            {isSubmitted && !error && (
+              <div className='text-green-500 mt-2 flex justify-center text-center'>
+                Edited successfully!
+              </div>
+            )}
           </form>
         </div>
       )}

@@ -38,6 +38,7 @@ const Income = ({ access }) => {
     'Final Amount',
     'Pending Amount',
     'Invoice',
+    'Reminder',
     'Payment',
   ];
   let receiptHeaders = [

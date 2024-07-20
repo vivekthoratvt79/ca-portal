@@ -5,7 +5,7 @@ import Auth from './components/Auth';
 import Home from './components/Home';
 import Navbar from './components/Navbar';
 import Clients from './components/Clients';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useParams } from 'react-router-dom';
 import Loan from './components/Loan';
 import Employees from './components/Employees';
 import Settings from './components/Settings';
@@ -33,6 +33,7 @@ import PTRC from './components/PTRC';
 import PTEC from './components/PTEC';
 import Accounting from './components/Accounting';
 import LandingPage from './components/LandingPage';
+import ClientDetails from './components/ClientDetails';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -215,6 +216,7 @@ const App = () => {
                   path='/income'
                   element={<Income access={access} />}
                 ></Route>
+                <Route path='/client/:id' element={<ClientDetails />}></Route>
                 {/* <Route
               path='/expenditure'
               element={<Expenditure access={access} />}

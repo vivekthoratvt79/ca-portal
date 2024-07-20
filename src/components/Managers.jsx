@@ -13,13 +13,14 @@ const Managers = ({ access }) => {
   const user = useSelector((state) => state.auth.authData);
   const entitiyId = useSelector((state) => state.auth.authData.entityID);
   const [services, setServices] = useState([]);
+  const [refresh, setRefresh] = useState(0);
 
   useEffect(() => {
     if (userRole == 'admin' || userRole == 'manager') {
       let id = userRole == 'admin' ? entitiyId : user.entity.adminRef;
       dispatch(fetchForAdmin('manager', id));
     }
-  }, [entitiyId]);
+  }, [entitiyId, refresh]);
 
   useEffect(() => {
     let id = userRole == 'admin' ? entitiyId : user.entity.adminRef;
@@ -33,7 +34,7 @@ const Managers = ({ access }) => {
     } catch (error) {
       console.log(error);
     }
-  }, [dispatch]);
+  }, [dispatch, refresh]);
   const managers = useSelector((state) => state.managers);
 
   const [showModal, setShowModal] = useState(false);
@@ -105,6 +106,7 @@ const Managers = ({ access }) => {
                 data={managers}
                 type='manager'
                 allServices={services}
+                setRefresh={setRefresh}
               />
             )}
           </div>

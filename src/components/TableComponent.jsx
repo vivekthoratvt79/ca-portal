@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import ViewDetailsModal from './ViewDetailsModal';
 import AssignWork from './AssignWork';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
-const TableComponent = ({ headers, data, type, allServices }) => {
+const TableComponent = ({ headers, data, type, allServices, setRefresh }) => {
   let user = useSelector((state) => state.auth.authData);
   const userRole = useSelector((state) => state.auth.authData.role);
+  const navigate = useNavigate();
   // Mapping headers to the keys in the data objects
   const keyMap = {
     'Sr No.': 'index',
@@ -23,8 +25,8 @@ const TableComponent = ({ headers, data, type, allServices }) => {
     setShowDetailsModal(true);
   };
   const closeDetailsModal = () => {
-    console.log('called');
     setShowDetailsModal(false);
+    setRefresh(Date.now() + Math.random());
   };
 
   const openWorkModal = () => {
@@ -43,6 +45,7 @@ const TableComponent = ({ headers, data, type, allServices }) => {
           showModal={showDetailsModal}
           closeModal={closeDetailsModal}
           allServices={allServices}
+          setRefresh={setRefresh}
         />
         <AssignWork
           type={type}
@@ -142,10 +145,14 @@ const TableComponent = ({ headers, data, type, allServices }) => {
                   <td className='px-4 py-2 border border-gray-300 text-center'>
                     <button
                       className='px-3 py-1 text-white rounded'
-                      onClick={() => {
-                        setId(rowData._id);
-                        openDetailsModal();
-                      }}
+                      onClick={
+                        type == 'client'
+                          ? () => navigate(`/client/${rowData._id}`)
+                          : () => {
+                              setId(rowData._id);
+                              openDetailsModal();
+                            }
+                      }
                       title='View Details'
                     >
                       <svg

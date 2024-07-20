@@ -572,24 +572,36 @@ const TableComponentService = ({
                         'NA'
                       )
                     ) : header === 'Done' ? (
-                      <button
-                        onClick={(e) =>
-                          stage === 'working'
-                            ? handleWorkDone(rowIndex, rowData, e)
-                            : stage == 'doc'
-                            ? handleDocUpload(rowIndex, rowData, e)
-                            : stage === 'submit' &&
-                              (service == 'tds' ||
-                                service == 'ptrc' ||
-                                service == 'ptec')
-                            ? handleDocSubmit(rowIndex, rowData, e)
-                            : stage === 'submit' &&
-                              handleSubmitDone(rowIndex, rowData)
-                        }
-                        className='ml-2 px-4 py-1 bg-blue-500 text-white rounded'
-                      >
-                        Done
-                      </button>
+                      <>
+                        <button
+                          onClick={(e) =>
+                            stage === 'working'
+                              ? handleWorkDone(rowIndex, rowData, e)
+                              : stage == 'doc'
+                              ? handleDocUpload(rowIndex, rowData, e)
+                              : stage === 'submit' &&
+                                (service == 'tds' ||
+                                  service == 'ptrc' ||
+                                  service == 'ptec')
+                              ? handleDocSubmit(rowIndex, rowData, e)
+                              : stage === 'submit' &&
+                                handleSubmitDone(rowIndex, rowData)
+                          }
+                          className='ml-2 px-4 py-0.5 bg-blue-500 text-sm text-white rounded'
+                        >
+                          Done
+                        </button>
+                        {stage === 'working' && (
+                          <button
+                            onClick={(e) =>
+                              handleWorkDone(rowIndex, rowData, e)
+                            }
+                            className='ml-2 px-4 mt-1 py-0.5 bg-blue-500 text-sm text-white rounded'
+                          >
+                            Approve
+                          </button>
+                        )}
+                      </>
                     ) : header === 'Payment' && stage == 'payment' ? (
                       <button
                         onClick={(e) => handlePaymentDone(rowIndex, rowData)}
@@ -662,7 +674,7 @@ const TableComponentService = ({
                         onChange={(e) =>
                           handler9cArnChange(rowIndex, e.target.value)
                         }
-                        placeholder='Enter R9C ARN No.'
+                        placeholder='R9C ARN No.'
                         className={`w-[150px] mt-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-zinc-300 ${
                           r9cArnErrors[rowIndex] ? 'border border-red-500' : ''
                         }`}
@@ -691,11 +703,19 @@ const TableComponentService = ({
                       <textarea
                         type='text'
                         name='currentNote'
-                        value={noteValues[rowIndex] || cellData}
+                        value={noteValues[rowIndex] || cellData || ''}
                         onChange={(e) =>
                           handleNoteChange(rowIndex, e.target.value)
                         }
                         className='w-52 mt-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-zinc-300'
+                      />
+                    ) : header === 'Tax Amount' && stage == 'completed' ? (
+                      <input
+                        type='text'
+                        name='taxAmount'
+                        value={rowData.taxAmount || ''}
+                        disabled
+                        className={`w-[150px] mt-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-zinc-300 `}
                       />
                     ) : header === 'Tax Amount' ? (
                       <input

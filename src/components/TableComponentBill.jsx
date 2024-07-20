@@ -6,17 +6,21 @@ import InvoiceForm from './InvoiceForm';
 import Loader from './Loader';
 import * as api from '../api';
 import ReceiptModal from './ReceiptModal';
+import ConfirmationModal from './ConfirmationModal'; // Import the ConfirmationModal
 
 const TableComponentBill = ({ headers, data, setRefresh, stage }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showReceiptModal, setShowReceiptModal] = useState(false);
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false); // State for confirmation modal
   const [invoiceData, setInvoiceData] = useState({});
   const [receiptData, setReceiptData] = useState({});
   const [paidAmount, setPaidAmount] = useState({});
   const [paymentErrors, setPaymentErrors] = useState({});
+  const [buttonText, setButtonText] = useState({});
   const [loading, setLoading] = useState(false);
+  const [currentPaymentRow, setCurrentPaymentRow] = useState(null); // Track current row for payment
 
   const keyMap = {
     'Sr No.': 'index',
@@ -26,6 +30,7 @@ const TableComponentBill = ({ headers, data, setRefresh, stage }) => {
     'Final Amount': 'finalAmount',
     Edit: 'edit',
     Invoice: 'invoice',
+    Reminder: 'reminder',
     'Pending Amount': 'pendingAmount',
     Payment: 'payment',
     'Received Amount': 'receivedAmount',
@@ -51,6 +56,15 @@ const TableComponentBill = ({ headers, data, setRefresh, stage }) => {
   };
   const closeReceiptModal = () => {
     setShowReceiptModal(false);
+  };
+
+  const openConfirmationModal = (rowIndex) => {
+    setCurrentPaymentRow(rowIndex);
+    setShowConfirmationModal(true);
+  };
+
+  const closeConfirmationModal = () => {
+    setShowConfirmationModal(false);
   };
 
   const viewInvoiceModal = (rowIndex, rowData) => {
@@ -80,7 +94,10 @@ const TableComponentBill = ({ headers, data, setRefresh, stage }) => {
     }));
   };
 
-  const handlePaymentDone = async (rowIndex, rowData, e) => {
+  const handlePaymentDone = async () => {
+    const rowIndex = currentPaymentRow;
+    const rowData = data.bills[rowIndex];
+
     if (!paidAmount[rowIndex]) {
       setPaymentErrors({ [rowIndex]: 'Amount is required' });
       return;
@@ -91,30 +108,53 @@ const TableComponentBill = ({ headers, data, setRefresh, stage }) => {
       });
       return;
     }
-    e.target.innerText = 'Updating...';
+
+    setShowConfirmationModal(false); // Close confirmation modal
+
     const payload = {};
     payload.billRef = rowData._id;
     payload.paidAmount = paidAmount[rowIndex];
 
+    setButtonText((prev) => ({ ...prev, [rowIndex]: 'Updating...' }));
+
     try {
-      api.updateInPendingStage(payload).then(({ data }) => {
-        if (data.statusCode == '200') {
-          setLoading(false);
-          e.target.innerText = 'Updated';
-        } else {
-          e.target.innerText = 'Try Later';
-        }
-      });
+      const { data } = await api.updateInPendingStage(payload);
+      if (data.statusCode == '200') {
+        setButtonText((prev) => ({ ...prev, [rowIndex]: 'Updated' }));
+      } else {
+        setButtonText((prev) => ({ ...prev, [rowIndex]: 'Try Later' }));
+      }
       setTimeout(() => {
         setLoading(false);
-        e.target.innerText = 'Received';
+        setButtonText((prev) => ({ ...prev, [rowIndex]: 'Received' }));
         setRefresh(Date.now() + Math.random());
-      }, 4000);
+      }, 3000);
     } catch (error) {
       setLoading(false);
-      e.target.innerText = 'Received';
+      setButtonText((prev) => ({ ...prev, [rowIndex]: 'Received' }));
       setRefresh(Date.now() + Math.random());
-      console.error('Error :', error);
+      console.error('Error:', error);
+    }
+  };
+
+  const handleSendReminder = async (rowIndex, rowData, e) => {
+    const payload = {};
+    payload.clientRef = rowData.clientRef;
+    payload.pendingAmount = rowData.pendingAmount;
+    try {
+      const { data } = await api.sendNotificationBill(payload);
+      console.log('d', data);
+      if (data.statusCode == '200') {
+        e.target.innerText = 'Reminder Sent';
+      }
+      setTimeout(() => {
+        setLoading(false);
+        e.target.innerText = 'Send';
+      }, 5000);
+    } catch (error) {
+      setLoading(false);
+      e.target.innerText = 'Send';
+      console.error('Error:', error);
     }
   };
 
@@ -172,6 +212,11 @@ const TableComponentBill = ({ headers, data, setRefresh, stage }) => {
         closeModal={closeReceiptModal}
         receiptData={receiptData}
         adminData={data.admin}
+      />
+      <ConfirmationModal
+        showModal={showConfirmationModal}
+        closeModal={closeConfirmationModal}
+        onConfirm={handlePaymentDone}
       />
       <div className='overflow-x-auto max-h-[575px]'>
         <table className='table-auto w-full border-collapse'>
@@ -254,6 +299,15 @@ const TableComponentBill = ({ headers, data, setRefresh, stage }) => {
                             />
                           </svg>
                         </button>
+                      ) : header == 'Reminder' ? (
+                        <button
+                          onClick={(e) =>
+                            handleSendReminder(rowIndex, rowData, e)
+                          }
+                          className='text-sm ml-2 px-4 py-1 bg-blue-500 text-white rounded'
+                        >
+                          Send
+                        </button>
                       ) : header == 'Payment' ? (
                         <div className='flex items-center gap-1'>
                           <input
@@ -272,12 +326,10 @@ const TableComponentBill = ({ headers, data, setRefresh, stage }) => {
                             }
                           />
                           <button
-                            onClick={(e) =>
-                              handlePaymentDone(rowIndex, rowData, e)
-                            }
+                            onClick={(e) => openConfirmationModal(rowIndex, e)}
                             className='text-sm ml-2 px-4 py-1 bg-blue-500 text-white rounded'
                           >
-                            Received
+                            {buttonText[rowIndex] || 'Received'}
                           </button>
                         </div>
                       ) : header == 'Receipt' ? (

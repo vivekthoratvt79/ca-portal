@@ -10,9 +10,8 @@ const Accounting = ({ access }) => {
   const [activeTab, setActiveTab] = useState('tab1');
   const [dataUpload, setDataUpload] = useState([]);
   const [workingStage, setWorkingStage] = useState([]);
-  const [submitStage, setSubmitStage] = useState([]);
   const [docStage, setDocStage] = useState([]);
-  const [paymentStage, setPaymentStage] = useState([]);
+  const [completeStage, setCompleteStage] = useState([]);
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const userRole = useSelector((state) => state.auth.authData.role);
@@ -35,8 +34,8 @@ const Accounting = ({ access }) => {
     }
   }, [location.search]);
 
-  let tabKeys = ['tab1', 'tab2', 'tab3'];
-  let tabValues = ['Data', 'Working', 'Document'];
+  let tabKeys = ['tab1', 'tab2', 'tab3', 'tab4'];
+  let tabValues = ['Data', 'Working', 'Document', 'Completed'];
 
   const handleDropdownChange = (event) => {
     const selectedTab = event.target.value;
@@ -62,6 +61,7 @@ const Accounting = ({ access }) => {
     'Done',
   ];
   let docSendingHeader = ['Sr No.', 'Client Name', 'Doc Upload', 'Done'];
+  let completeHeader = ['Sr No.', 'View', 'Client Name', 'Tax Amount'];
 
   useEffect(() => {
     setLoading(true);
@@ -105,6 +105,12 @@ const Accounting = ({ access }) => {
               setLoading(false);
               setDocStage(data.data.orders);
             });
+          api
+            .getCompleteStageDetails('', serviceRef?._id, id, 'accounting')
+            .then(({ data }) => {
+              setLoading(false);
+              setCompleteStage(data.data.orders);
+            });
         } else if (userRole == 'agent') {
           let adminId = user.entity.adminRef;
           api
@@ -140,6 +146,17 @@ const Accounting = ({ access }) => {
             .then(({ data }) => {
               setLoading(false);
               setDocStage(data.data.orders);
+            });
+          api
+            .getCompleteStageDetails(
+              entitiyId,
+              serviceRef?._id,
+              adminId,
+              'accounting'
+            )
+            .then(({ data }) => {
+              setLoading(false);
+              setCompleteStage(data.data.orders);
             });
         } else {
           setLoading(false);
@@ -183,7 +200,7 @@ const Accounting = ({ access }) => {
                 {tabKeys.map((tab, index) => (
                   <button
                     key={index}
-                    className={`w-1/2 md:w-1/3 py-4 px-6 block leading-normal border-l border-t border-r rounded-t-lg focus:outline-none focus:shadow-outline ${
+                    className={`w-1/2 md:w-1/4 py-4 px-6 block leading-normal border-l border-t border-r rounded-t-lg focus:outline-none focus:shadow-outline ${
                       activeTab === tab
                         ? 'border-b-0 font-semibold bg-slate-50'
                         : 'border-b border-gray-200 bg-gray-100'
@@ -245,6 +262,21 @@ const Accounting = ({ access }) => {
                 data={docStage}
                 service='accounting'
                 stage='doc'
+                setServices={setServices}
+                services={services}
+              />
+            </div>
+            <div
+              id='tab4'
+              className={`tabcontent ${
+                activeTab === 'tab4' ? 'block' : 'hidden'
+              }`}
+            >
+              <TableComponentService
+                headers={completeHeader}
+                data={completeStage}
+                service='accounting'
+                stage='completed'
                 setServices={setServices}
                 services={services}
               />

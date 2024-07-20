@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import landingPageImg from '../Images/landingPage.png';
+import CAImg from '../Images/ca-wallpaper.jpeg';
+import AccuracyImg from '../Images/accuracy.png';
+import EfficientImg from '../Images/efficient.jpg';
+import MeetingImg from '../Images/meeting.png';
 import * as api from '../api';
 
 function LandingPage({ subdomain }) {
@@ -47,6 +51,136 @@ function LandingPage({ subdomain }) {
       console.log(error);
     }
   }, []);
+
+  const Hero = () => {
+    return (
+      <div
+        className='relative bg-cover bg-center h-screen flex items-center justify-center'
+        style={{
+          backgroundImage: `url(${CAImg})`,
+        }}
+      >
+        <div className='absolute inset-0 bg-black opacity-50'></div>
+        <div className='relative z-10 text-center text-white'>
+          <h1 className='text-5xl font-bold mb-4 animate-fadeInDown'>
+            Professional Chartered Accountant Services
+          </h1>
+          <p className='text-xl mb-8 animate-fadeInUp'>
+            Expert tax filing, financial advice, and more
+          </p>
+          <a
+            href={getBaseURL()}
+            className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded animate-bounce'
+          >
+            Learn More
+          </a>
+        </div>
+      </div>
+    );
+  };
+
+  const About = () => {
+    return (
+      <div className='container mx-auto px-4 py-16'>
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-8'>
+          <div>
+            <h2 className='text-4xl font-bold mb-4'>
+              Verified professional helping you with 100% compliance
+            </h2>
+            <p className='mb-4'>
+              <b>Accuracy Delivered</b>
+              <br></br>
+              We use ISO 27001 certified data centers, which are quarterly VAPT
+              tested and externally audited.
+            </p>
+            <p className='mb-4'>
+              <b>Data Security</b>
+              <br></br>
+              Data security is our priority We do not share our or your clients’
+              data with unaffiliated third parties for their own purposes.
+            </p>
+            <p className='mb-4'>
+              <b>3x faster experience</b> <br></br>Save 2 man-days per GSTIN
+              every month
+            </p>
+            <p className='mb-4'>
+              <b>Efficiency</b>
+              <br></br>Maximise efficiency with PAN-level filings
+            </p>
+            <p className='mb-4'>
+              <b>Upto 7% tax savings</b> <br></br>Claim 100% ITC and save an
+              average of 4% GST everytime.
+            </p>
+          </div>
+          <div className='grid grid-cols-2 gap-4'>
+            <img
+              src={EfficientImg}
+              alt='Attorney'
+              className='w-full h-auto object-cover'
+            />
+            <img
+              src={AccuracyImg}
+              alt='Meeting'
+              className='w-full h-auto object-cover'
+            />
+            <img
+              src={MeetingImg}
+              alt='Discussion'
+              className='w-full h-auto object-cover col-span-2'
+            />
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const services = [
+    {
+      title: 'Income Tax Filing',
+      description:
+        'We handle all aspects of tax filing for individuals and businesses.',
+      icon: '🏛️', // Replace with actual icon
+    },
+    {
+      title: 'GST Filing',
+      description: 'GST - R1, R9, 3B, 2B, 2B vs PR solution',
+      icon: '📄', // Replace with actual icon
+    },
+    {
+      title: 'TDS',
+      description: 'e-TDS return filing solution',
+      icon: '📝', // Replace with actual icon
+    },
+  ];
+
+  const Services = () => {
+    return (
+      <div className='container mx-auto px-4 py-16'>
+        <h2 className='text-4xl font-bold text-center mb-8'>
+          Services We Provide
+        </h2>
+        <p className='text-center mb-12'>
+          We are a team of professional Chartered Accountants dedicated to
+          providing top-notch services to our clients. With years of experience,
+          we ensure that your financial needs are met with the highest level of
+          professionalism.
+        </p>
+        <div className='grid grid-cols-1 md:grid-cols-3 gap-8'>
+          {services.map((service, index) => (
+            <div
+              key={index}
+              className='bg-blue-900 text-white p-8 rounded-lg shadow-lg text-center'
+            >
+              <div className='text-6xl mb-4'>{service.icon}</div>
+              <h3 className='text-2xl font-bold mb-2'>{service.title}</h3>
+              <p className='mb-4'>{service.description}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
   return !Object.keys(adminData).length ? (
     <div className='bg-gray-100 min-h-screen'>
       <header className='bg-white shadow'>
@@ -69,7 +203,7 @@ function LandingPage({ subdomain }) {
         </div>
       </header>
 
-      <main className='container mx-auto px-4 py-10'>
+      {/* <main className='container mx-auto px-4 py-10'>
         <section
           id='hero'
           className='text-center py-10 bg-gradient-to-r from-teal-500 to-blue-600 text-white rounded-lg mb-10 shadow-md'
@@ -142,7 +276,10 @@ function LandingPage({ subdomain }) {
             highest level of professionalism.
           </p>
         </section>
-      </main>
+      </main> */}
+      <Hero />
+      <About />
+      <Services />
 
       <footer className='bg-white shadow py-4'>
         <div className='container mx-auto px-4 text-center'>

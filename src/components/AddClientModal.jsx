@@ -30,6 +30,9 @@ const AddClientModal = ({ showModal, closeModal, services }) => {
     adhaarNumber: '',
     panNumber: '',
     adhaarImage: '',
+    udyamAdhaarNumber: '',
+    otherDetails: '',
+    addressProof: '',
     panImage: '',
     gstNumber: '',
     incomeTaxID: '',
@@ -62,34 +65,35 @@ const AddClientModal = ({ showModal, closeModal, services }) => {
       newErrors.email = 'Email is invalid';
     }
     if (!formData.phone.trim()) newErrors.phone = 'Phone number is required';
-    if (!formData.altPhone.trim())
-      newErrors.altPhone = 'Alternate phone number is required';
-    if (!formData.address.trim()) newErrors.address = 'Address is required';
-    if (!formData.dob.trim()) newErrors.dob = 'Date of birth is required';
-    if (!formData.adhaarNumber.trim())
-      newErrors.adhaarNumber = 'Adhaar number is required';
-    if (!formData.panNumber.trim())
-      newErrors.panNumber = 'Pan number is required';
-    if (!formData.adhaarImage)
-      newErrors.adhaarImage = 'Adhaar image is required';
-    if (!formData.panImage) newErrors.panImage = 'PAN image is required';
-    if (!formData.gstNumber.trim())
-      newErrors.gstNumber = 'GST number is required';
-    if (!formData.incomeTaxID.trim())
-      newErrors.incomeTaxID = 'Income Tax ID is required';
-    if (!formData.incomeTaxPassword.trim())
-      newErrors.incomeTaxPassword = 'Income Tax Password is required';
-    if (!formData.tanNumber.trim())
-      newErrors.tanNumber = 'TAN number is required';
-    if (!formData.ptecNumber.trim())
-      newErrors.ptecNumber = 'PTEC number is required';
-    if (!formData.ptecID.trim()) newErrors.ptecID = 'PTEC ID is required';
-    if (!formData.ptecPassword.trim())
-      newErrors.ptecPassword = 'PTEC Password is required';
-    if (!formData.accountantName.trim())
-      newErrors.accountantName = 'Accountant Name is required';
-    if (!formData.accountantPhone.trim())
-      newErrors.accountantPhone = 'Accountant Phone is required';
+    // if (!formData.altPhone.trim())
+    //   newErrors.altPhone = 'Alternate phone number is required';
+    // if (!formData.address.trim()) newErrors.address = 'Address is required';
+    // if (!formData.dob.trim())
+    //   newErrors.dob = 'Date of Incorporation is required';
+    // if (!formData.adhaarNumber.trim())
+    //   newErrors.adhaarNumber = 'Adhaar number is required';
+    // if (!formData.panNumber.trim())
+    //   newErrors.panNumber = 'Pan number is required';
+    // if (!formData.adhaarImage)
+    //   newErrors.adhaarImage = 'Adhaar image is required';
+    // if (!formData.panImage) newErrors.panImage = 'PAN image is required';
+    // if (!formData.gstNumber.trim())
+    //   newErrors.gstNumber = 'GST number is required';
+    // if (!formData.incomeTaxID.trim())
+    //   newErrors.incomeTaxID = 'Income Tax ID is required';
+    // if (!formData.incomeTaxPassword.trim())
+    //   newErrors.incomeTaxPassword = 'Income Tax Password is required';
+    // if (!formData.tanNumber.trim())
+    //   newErrors.tanNumber = 'TAN number is required';
+    // if (!formData.ptecNumber.trim())
+    //   newErrors.ptecNumber = 'PTEC number is required';
+    // if (!formData.ptecID.trim()) newErrors.ptecID = 'PTEC ID is required';
+    // if (!formData.ptecPassword.trim())
+    //   newErrors.ptecPassword = 'PTEC Password is required';
+    // if (!formData.accountantName.trim())
+    //   newErrors.accountantName = 'Accountant Name is required';
+    // if (!formData.accountantPhone.trim())
+    //   newErrors.accountantPhone = 'Accountant Phone is required';
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -225,8 +229,13 @@ const AddClientModal = ({ showModal, closeModal, services }) => {
               { name: 'phone', type: 'text', label: 'Phone Number' },
               { name: 'altPhone', type: 'text', label: 'Alternate Phone' },
               { name: 'address', type: 'text', label: 'Address' },
-              { name: 'dob', type: 'date', label: 'Date of Birth' },
+              { name: 'dob', type: 'date', label: 'Date of Incorporation' },
               { name: 'adhaarNumber', type: 'text', label: 'Adhaar Number' },
+              {
+                name: 'udyamAdhaarNumber',
+                type: 'text',
+                label: 'Udyam Adhaar Number',
+              },
               { name: 'panNumber', type: 'text', label: 'Pan Number' },
               { name: 'gstNumber', type: 'text', label: 'GST Number' },
               { name: 'incomeTaxID', type: 'text', label: 'Income Tax ID' },
@@ -249,6 +258,12 @@ const AddClientModal = ({ showModal, closeModal, services }) => {
                 type: 'text',
                 label: 'Accountant Phone',
               },
+              {
+                name: 'otherDetails',
+                type: 'text',
+                label: 'Other Information',
+              },
+              { name: 'addressProof', type: 'file', label: 'Address Proof' },
               { name: 'adhaarImage', type: 'file', label: 'Adhaar Image' },
               { name: 'panImage', type: 'file', label: 'PAN Image' },
             ].map(({ name, type, label }) => (

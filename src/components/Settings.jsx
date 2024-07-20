@@ -8,8 +8,12 @@ const Settings = ({ access }) => {
   const [adminServices, setAdminServices] = useState([]);
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [notificationError, setNotificationError] = useState(true);
   const userRole = useSelector((state) => state.auth.authData.role);
   const entityId = useSelector((state) => state.auth.authData.entityID);
+
+  let windowWidth = window.innerWidth;
+  let smallScreen = windowWidth <= 768;
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -34,6 +38,33 @@ const Settings = ({ access }) => {
     fetchServices();
   }, [entityId, userRole]);
 
+  const sendNotification = async (e) => {
+    const payload = {};
+    const id = userRole == 'admin' ? entityId : user.entity.adminRef;
+    payload.adminRef = id;
+    try {
+      const { data } = await api.sendNotificationsOrder(payload);
+      if (data.statusCode == '200') {
+        e.target.innerText = 'Notification Sent';
+      } else {
+        setNotificationError('Request failed! Try again later.');
+      }
+      setTimeout(() => {
+        setLoading(false);
+        setNotificationError('');
+        e.target.innerText = 'Send Notification';
+      }, 5000);
+    } catch (error) {
+      setLoading(false);
+      e.target.innerText = 'Send Notification';
+      setNotificationError('Request failed! Try again later.');
+      console.error('Error:', error);
+      setTimeout(() => {
+        setNotificationError('');
+      }, 5000);
+    }
+  };
+
   return (
     <>
       <Sidebar activeTab='settings' access={access} />
@@ -45,8 +76,51 @@ const Settings = ({ access }) => {
           <div>Settings</div>
         </div>
         <div className='mt-4'>
+          <div
+            className='p-4 mt-4 rounded-lg dark:border-gray-700'
+            style={{ borderColor: '#41506b' }}
+          >
+            <h2 className='font-semibold mb-2'>Notification</h2>
+            <hr className='mb-4' />
+            <div className='flex items-center gap-2'>
+              <button
+                onClick={(e) => sendNotification(e)}
+                className='p-2 px-4 bg-green-400 hover:bg-green-500 cursor-pointer rounded-md text-xs font-medium'
+              >
+                Send Notification
+              </button>
+              <div className={`relative notification flex items-center`}>
+                <svg
+                  className='w-6 h-6 text-gray-800 dark:text-white cursor-pointer'
+                  aria-hidden='true'
+                  xmlns='http://www.w3.org/2000/svg'
+                  width='24'
+                  height='24'
+                  fill='none'
+                  viewBox='0 0 24 24'
+                >
+                  <path
+                    stroke='currentColor'
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    strokeWidth='2'
+                    d='M10 11h2v5m-2 0h4m-2.592-8.5h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z'
+                  />
+                </svg>
+                <p
+                  className={` absolute bg-white min-w-[160px] p-2 left-full ml-2 hidden text-sm group-hover:block`}
+                >
+                  Send Notification to all users to upload data.
+                </p>
+              </div>
+            </div>
+
+            {notificationError && <p>{notificationError}</p>}
+          </div>
+        </div>
+        <div className='mt-4'>
           {services.length > 0 && (
-            <NotificationSettings
+            <OrderSettings
               loading={loading}
               services={services}
               adminServices={adminServices}
@@ -58,7 +132,7 @@ const Settings = ({ access }) => {
   );
 };
 
-const NotificationSettings = ({ services, adminServices, loading }) => {
+const OrderSettings = ({ services, adminServices, loading }) => {
   const [selectedDates, setSelectedDates] = useState({});
   const [errorMessages, setErrorMessages] = useState({});
   const [success, setSuccess] = useState({});
@@ -200,7 +274,7 @@ const NotificationSettings = ({ services, adminServices, loading }) => {
         <Loader />
       ) : (
         <>
-          <h2 className='font-semibold mb-2'>Notification Settings</h2>
+          <h2 className='font-semibold mb-2'>Order Settings</h2>
           <hr className='mb-4' />
 
           <div className='flex flex-wrap'>
