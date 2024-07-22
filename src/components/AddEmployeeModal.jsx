@@ -77,7 +77,6 @@ const AddEmployeeModal = ({ showModal, closeModal, services }) => {
     e.preventDefault();
     setLoading(true);
     formData.serviceRefs = selectedServices;
-    console.log(formData);
     try {
       await api.register(formData).then((data) => {
         setLoading(false);

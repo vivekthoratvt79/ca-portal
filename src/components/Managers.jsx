@@ -48,7 +48,11 @@ const Managers = ({ access }) => {
   return (
     <>
       <Sidebar activeTab='managers' access={access} />
-      <AddManagerModal showModal={showModal} closeModal={closeModal} />
+      <AddManagerModal
+        showModal={showModal}
+        closeModal={closeModal}
+        services={services}
+      />
 
       <div className='p-4 sm:ml-64 h-91vh'>
         <div

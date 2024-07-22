@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { addManager } from '../actions/managers';
 import Loader from './Loader';
 
-const AddManagerModal = ({ showModal, closeModal }) => {
+const AddManagerModal = ({ showModal, closeModal, services }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   let windowWidth = window.innerWidth;
@@ -16,6 +16,8 @@ const AddManagerModal = ({ showModal, closeModal }) => {
   const [successMsg, setSuccessMsg] = useState('');
   const [loading, setLoading] = useState(false);
   const [failMsg, setFailMsg] = useState('');
+  const [selectedServices, setSelectedServices] = useState([]);
+
   const initailState = {
     username: '',
     password: '',
@@ -35,27 +37,19 @@ const AddManagerModal = ({ showModal, closeModal }) => {
     });
   };
 
-  const handleFileChange = (e) => {
-    const { name, files } = e.target;
-    if (files[0]) {
-      convertToBase64(name, files[0]);
-    }
-  };
-
-  const convertToBase64 = (key, file) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onloadend = () => {
-      setFormData({
-        ...formData,
-        [key]: reader.result,
-      });
-    };
+  const handleCheckboxChange = (event) => {
+    const { value, checked } = event.target;
+    setSelectedServices((prevSelectedServices) =>
+      checked
+        ? [...prevSelectedServices, value]
+        : prevSelectedServices.filter((service) => service !== value)
+    );
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    formData.serviceRefs = selectedServices;
     dispatch(addManager(formData, navigate)).then((d) => {
       setLoading(false);
       if (d.status == 'success') {
@@ -78,8 +72,8 @@ const AddManagerModal = ({ showModal, closeModal }) => {
     >
       <div
         className={`max-w-4xl mx-auto p-6 bg-white dark:bg-zinc-800 rounded-lg shadow-md ${
-          smallScreen ? 'mobile-modal' : ''
-        }`}
+          smallScreen ? 'mobile-modal' : 'h-[600px] overflow-auto'
+        } ${successMsg && 'h-[250px]'}`}
       >
         <div className='flex justify-between items-center'>
           <div className='text-lg'>Manager Registration</div>
@@ -167,6 +161,34 @@ const AddManagerModal = ({ showModal, closeModal }) => {
                   required
                 />
               </div>
+            </div>
+
+            <div>
+              <h4>Services</h4>
+              <hr className='mb-2'></hr>
+              {services.map((service) => (
+                <div key={service._id} className='mb-2'>
+                  <input
+                    type='checkbox'
+                    id={`service-${service._id}`}
+                    name='services'
+                    value={service._id}
+                    checked={selectedServices.includes(service._id)}
+                    onChange={handleCheckboxChange}
+                    className='mr-2'
+                  />
+                  <label
+                    htmlFor={`service-${service._id}`}
+                    className='inline-flex items-start'
+                  >
+                    <span className='font-semibold'>{`${service.heading} (${service.subheading})`}</span>
+                    <p className='ml-2 text-gray-700'>{service.description}</p>
+                    <p className='ml-2 text-gray-500 italic'>
+                      {service.serviceType}
+                    </p>
+                  </label>
+                </div>
+              ))}
             </div>
 
             <div className='flex justify-center mt-6'>

@@ -193,11 +193,15 @@ const AssignWork = ({ type, id, showModal, closeModal, allServices }) => {
                                 </option>
                               ))}
                           {type === 'agent' &&
-                            managers.map((manager) => (
-                              <option key={manager._id} value={manager._id}>
-                                {manager.name}
-                              </option>
-                            ))}
+                            managers
+                              .filter((manager) =>
+                                manager.serviceRefs.includes(service._id)
+                              )
+                              .map((manager) => (
+                                <option key={manager._id} value={manager._id}>
+                                  {manager.name}
+                                </option>
+                              ))}
                         </select>
                       </div>
                     </div>

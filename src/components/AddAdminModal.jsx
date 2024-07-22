@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import * as api from '../api';
 import Loader from './Loader';
 
-const AddAdminModal = ({ showModal, closeModal }) => {
+const AddAdminModal = ({ showModal, closeModal, services }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   let windowWidth = window.innerWidth;
@@ -15,6 +15,7 @@ const AddAdminModal = ({ showModal, closeModal }) => {
   const [loading, setLoading] = useState(false);
   const [failMsg, setFailMsg] = useState('');
   const [errors, setErrors] = useState({});
+  const [selectedServices, setSelectedServices] = useState([]);
   const initialState = {
     username: '',
     password: '',
@@ -65,6 +66,15 @@ const AddAdminModal = ({ showModal, closeModal }) => {
     });
   };
 
+  const handleCheckboxChange = (event) => {
+    const { value, checked } = event.target;
+    setSelectedServices((prevSelectedServices) =>
+      checked
+        ? [...prevSelectedServices, value]
+        : prevSelectedServices.filter((service) => service !== value)
+    );
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const validationErrors = validate();
@@ -73,6 +83,8 @@ const AddAdminModal = ({ showModal, closeModal }) => {
       return;
     }
     setLoading(true);
+    formData.serviceRefs = selectedServices;
+
     try {
       const response = await api.register(formData);
       setLoading(false);
@@ -99,7 +111,7 @@ const AddAdminModal = ({ showModal, closeModal }) => {
     >
       <div
         className={`max-w-4xl mx-auto p-6 bg-white dark:bg-zinc-800 rounded-lg shadow-md ${
-          smallScreen ? 'mobile-modal' : ''
+          smallScreen ? 'mobile-modal' : 'h-[600px] overflow-auto'
         }`}
       >
         <div className='flex justify-between items-center'>
@@ -315,6 +327,34 @@ const AddAdminModal = ({ showModal, closeModal }) => {
                   <label>No</label>
                 </div>
               </div>
+            </div>
+
+            <div>
+              <h4>Services</h4>
+              <hr className='mb-2'></hr>
+              {services.map((service) => (
+                <div key={service._id} className='mb-2'>
+                  <input
+                    type='checkbox'
+                    id={`service-${service._id}`}
+                    name='services'
+                    value={service._id}
+                    checked={selectedServices.includes(service._id)}
+                    onChange={handleCheckboxChange}
+                    className='mr-2'
+                  />
+                  <label
+                    htmlFor={`service-${service._id}`}
+                    className='inline-flex items-start'
+                  >
+                    <span className='font-semibold'>{`${service.heading} (${service.subheading})`}</span>
+                    <p className='ml-2 text-gray-700'>{service.description}</p>
+                    <p className='ml-2 text-gray-500 italic'>
+                      {service.serviceType}
+                    </p>
+                  </label>
+                </div>
+              ))}
             </div>
 
             <div className='flex justify-center mt-6'>
