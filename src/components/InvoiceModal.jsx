@@ -5,7 +5,7 @@ import InvoiceTemplate from './InvoiceTemplate';
 import * as api from '../api';
 import Loader from './Loader';
 
-const InvoiceModal = ({ showModal, closeModal, invoiceData, adminData }) => {
+const InvoiceModal = ({ showModal, closeModal, invoiceData }) => {
   if (!showModal) return null;
 
   const [billDetails, setBillDetails] = useState({});

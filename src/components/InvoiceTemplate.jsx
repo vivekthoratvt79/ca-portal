@@ -176,8 +176,10 @@ const InvoiceTemplate = ({ billDetails }) => {
       <div className='mt-4 border-t-2 border-gray-300 pt-2'>
         <div className='flex gap-4 justify-between text-sm'>
           <p>
-            Tax is payable on reverse charge.(Yes/No):{' '}
-            <span className='font-bold'>No</span>
+            Tax is payable on reverse charge:{' '}
+            <span className='font-bold'>
+              {!admin?.reverseCharge ? 'No' : 'Yes'}
+            </span>
           </p>
           <p className='text-end'>
             GSTIN: <span className='font-bold'>{admin.gstNumber}</span>

@@ -5,7 +5,7 @@ import ReceiptTemplate from './ReceiptTemplate';
 import * as api from '../api';
 import Loader from './Loader';
 
-const ReceiptModal = ({ showModal, closeModal, receiptData, adminData }) => {
+const ReceiptModal = ({ showModal, closeModal, receiptData }) => {
   if (!showModal) return null;
   console.log(receiptData);
   const [billDetails, setBillDetails] = useState({});

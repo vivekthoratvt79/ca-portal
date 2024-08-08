@@ -205,13 +205,11 @@ const TableComponentBill = ({ headers, data, setRefresh, stage }) => {
         showModal={showModal}
         closeModal={closeModal}
         invoiceData={invoiceData}
-        adminData={data.admin}
       />
       <ReceiptModal
         showModal={showReceiptModal}
         closeModal={closeReceiptModal}
         receiptData={receiptData}
-        adminData={data.admin}
       />
       <ConfirmationModal
         showModal={showConfirmationModal}
