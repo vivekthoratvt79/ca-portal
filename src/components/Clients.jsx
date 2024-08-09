@@ -13,6 +13,7 @@ const Clients = ({ access }) => {
   const userRole = useSelector((state) => state.auth.authData.role);
   const entitiyId = useSelector((state) => state.auth.authData.entityID);
   const [services, setServices] = useState([]);
+  const [refresh, setRefresh] = useState(0);
 
   useEffect(() => {
     if (userRole == 'admin') {
@@ -31,7 +32,7 @@ const Clients = ({ access }) => {
     } catch (error) {
       console.log(error);
     }
-  }, [dispatch]);
+  }, [dispatch, refresh]);
   const clients = useSelector((state) => state.clients);
 
   const [showModal, setShowModal] = useState(false);
@@ -49,6 +50,7 @@ const Clients = ({ access }) => {
         showModal={showModal}
         services={services}
         closeModal={closeModal}
+        setRefresh={setRefresh}
       />
 
       <div className='p-4 sm:ml-64 h-91vh'>
@@ -112,6 +114,7 @@ const Clients = ({ access }) => {
                 data={clients}
                 type='client'
                 allServices={services}
+                setRefresh={setRefresh}
               />
             )}
           </div>

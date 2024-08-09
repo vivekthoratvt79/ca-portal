@@ -3,7 +3,7 @@ import * as api from '../api';
 import { useSelector } from 'react-redux';
 import Loader from './Loader';
 
-const AddClientModal = ({ showModal, closeModal, services }) => {
+const AddClientModal = ({ showModal, closeModal, services, setRefresh }) => {
   const user = useSelector((state) => state.auth.authData);
   const userRole = useSelector((state) => state.auth.authData.role);
 
@@ -187,10 +187,13 @@ const AddClientModal = ({ showModal, closeModal, services }) => {
     console.log(formData);
     setLoading(true);
     try {
-      await api.register(formData).then((data) => {
-        setLoading(false);
-        setIsSubmitted(true);
-      });
+      await api
+        .register(formData)
+        .then((data) => {
+          setLoading(false);
+          setIsSubmitted(true);
+        })
+        .then(() => setRefresh(Date.now() + Math.random()));
     } catch (error) {
       setLoading(false);
       setError('Registration failed. Please try again later.');
@@ -201,7 +204,7 @@ const AddClientModal = ({ showModal, closeModal, services }) => {
       setLoading(false);
       setIsSubmitted(false);
       setError('');
-    }, 5000);
+    }, 4000);
   };
 
   return (

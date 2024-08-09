@@ -53,13 +53,11 @@ const ClientHome = ({ access }) => {
     api.fetchAllServices().then(({ data }) => {
       data.statusCode == 200 && setServices(data.data.services);
     });
-    api
-      .getClientBillsInPendingStage('6674848bcffd0c1430831a70')
-      .then(({ data }) => {
-        setLoading(false);
-        setPendingBills(data.data.bills);
-        console.log(data.data.bills);
-      });
+    api.getClientBillsInPendingStage(entitiyId).then(({ data }) => {
+      setLoading(false);
+      setPendingBills(data.data.bills);
+      console.log(data.data.bills);
+    });
   }, [dispatch]);
 
   const viewInvoiceModal = (rowIndex, rowData) => {
