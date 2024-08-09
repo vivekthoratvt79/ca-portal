@@ -85,14 +85,14 @@ const ClientHome = ({ access }) => {
 
   return (
     <>
-      {pendingBills.length && (
+      {pendingBills.length > 0 && (
         <InvoiceModal
           showModal={showModal}
           closeModal={closeModal}
           invoiceData={invoiceData}
         />
       )}
-      {completeBills.length && (
+      {completeBills.length > 0 && (
         <ReceiptModal
           showModal={showReceiptModal}
           closeModal={closeReceiptModal}
