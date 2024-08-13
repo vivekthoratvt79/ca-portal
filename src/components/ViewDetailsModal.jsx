@@ -209,7 +209,11 @@ const ViewDetailsModal = ({
         >
           <div className='flex justify-between items-center'>
             <div className='text-lg font-bold'>
-              {type === 'client' ? 'Client Details' : 'Employee Details'}
+              {type === 'client'
+                ? 'Client Details'
+                : type === 'manager'
+                ? 'Manager Details'
+                : 'Employee Details'}
             </div>
             <div className='cursor-pointer text-lg' onClick={closeModal}>
               x

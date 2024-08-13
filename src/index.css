@@ -115,3 +115,10 @@ body {
 .animate-bounce {
   animation: bounce 2s infinite;
 }
+
+.task-success {
+  background-color: green;
+}
+.task-failure {
+  background-color: red;
+}

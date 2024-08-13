@@ -84,6 +84,13 @@ export const getAllBillsOfAdmin = (payload) =>
 export const getAllBillsOfClient = (payload) =>
   API.post(`/getAllBillsOfClient`, payload);
 
+export const createTask = (payload) => API.post(`/tasks/createTask`, payload);
+export const updateTask = (payload) => API.post(`/tasks/updateTask`, payload);
+export const getAllTasksOfAgent = (id) =>
+  API.get(`/tasks/getAllTasksOfAgent/${id}`);
+export const getAllTasksOfAdmin = (id) =>
+  API.get(`/tasks/getAllTasksOfAdmin/${id}`);
+
 // =================== BILLS ===============================
 
 export const getBillDetails = (billRef) =>

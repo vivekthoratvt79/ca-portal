@@ -55,7 +55,7 @@ const TableComponent = ({ headers, data, type, allServices, setRefresh }) => {
           allServices={allServices}
         />
       </>
-      <div className='overflow-x-auto max-h-[575px]'>
+      <div className='overflow-x-auto max-h-[535px]'>
         <table className='table-auto w-full border-collapse'>
           <thead>
             <tr>
