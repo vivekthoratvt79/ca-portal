@@ -448,7 +448,10 @@ const TableComponentService = ({
                                 return parts[parts.length - 1];
                               };
                               return (
-                                <p key={fileIndex}>
+                                <p
+                                  key={fileIndex}
+                                  className='client-upload mb-2'
+                                >
                                   <a
                                     target='_blank'
                                     className='text-sm text-blue-500 underline'
@@ -483,7 +486,7 @@ const TableComponentService = ({
                               return (
                                 <p
                                   key={fileIndex}
-                                  className='whitespace-nowrap'
+                                  className='whitespace-nowrap admin-upload mb-1'
                                 >
                                   <a
                                     target='_blank'

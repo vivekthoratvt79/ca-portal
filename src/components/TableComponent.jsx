@@ -4,7 +4,14 @@ import AssignWork from './AssignWork';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
-const TableComponent = ({ headers, data, type, allServices, setRefresh }) => {
+const TableComponent = ({
+  headers,
+  data,
+  type,
+  allServices,
+  setRefresh,
+  page,
+}) => {
   let user = useSelector((state) => state.auth.authData);
   const userRole = useSelector((state) => state.auth.authData.role);
   const navigate = useNavigate();
@@ -69,7 +76,8 @@ const TableComponent = ({ headers, data, type, allServices, setRefresh }) => {
               ))}
               {type != 'manager' &&
                 userRole != 'agent' &&
-                (userRole != 'manager' || type == 'client') && (
+                (userRole != 'manager' || type == 'client') &&
+                page != 'dashboard' && (
                   <th className='px-4 py-2 bg-gray-200 text-gray-700 border border-gray-300'>
                     Assign Work
                   </th>
@@ -116,7 +124,8 @@ const TableComponent = ({ headers, data, type, allServices, setRefresh }) => {
                 })}
                 {type != 'manager' &&
                   userRole != 'agent' &&
-                  (userRole != 'manager' || type == 'client') && (
+                  (userRole != 'manager' || type == 'client') &&
+                  page != 'dashboard' && (
                     <td className='px-4 py-2 border border-gray-300 text-center'>
                       <button
                         className='px-3 py-1 text-white rounded'

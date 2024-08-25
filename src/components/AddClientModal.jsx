@@ -201,6 +201,7 @@ const AddClientModal = ({ showModal, closeModal, services, setRefresh }) => {
     }
 
     setTimeout(() => {
+      setRefresh(Date.now() + Math.random());
       setLoading(false);
       setIsSubmitted(false);
       setError('');

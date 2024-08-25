@@ -15,6 +15,7 @@ const ViewDetailsModal = ({
   const [selectedServices, setSelectedServices] = useState([]);
   const [loading, setLoading] = useState(false);
   const [accessUpdated, setAccessUpdated] = useState('');
+  const [serviceUpdated, setServiceUpdated] = useState('');
   const [access, setAccess] = useState([]);
 
   const [loadingSave, setLoadingSave] = useState(false);
@@ -47,6 +48,7 @@ const ViewDetailsModal = ({
   const managers = useSelector((state) => state.managers);
 
   const [formData, setFormData] = useState({});
+  const [currentServiceRefs, setCurrentServiceRefs] = useState([]);
 
   // Function to get agent name from Redux store based on agent ID
   const getAgentName = (agentId) => {
@@ -55,49 +57,16 @@ const ViewDetailsModal = ({
   };
 
   useEffect(() => {
-    setFormData(
+    let data =
       type === 'client'
         ? clients.find(({ _id }) => _id === id)
         : type === 'manager'
         ? managers.find(({ _id }) => _id === id)
-        : employees.find(({ _id }) => _id === id)
-    );
+        : employees.find(({ _id }) => _id === id);
+
+    setFormData(data);
+    setCurrentServiceRefs(data?.serviceRefs);
   }, [type, id]);
-
-  useEffect(() => {
-    async function fetchData() {
-      setLoading(true);
-      try {
-        let { data } =
-          type === 'client'
-            ? await api.getAgentServiceMapforClient(id)
-            : await api.getManagerServiceMapForAgent(id);
-
-        const serviceRefs = data?.data?.mapArr.map(
-          ({ serviceRef, agentRef }) => ({
-            serviceRef,
-            agentRef,
-          })
-        );
-        console.log('serviceRefs', serviceRefs);
-
-        const matchedServices = allServices.filter((service) =>
-          serviceRefs.some((s) => s.serviceRef === service._id)
-        );
-        console.log('matchedServices', matchedServices);
-
-        setSelectedServices(matchedServices);
-      } catch (error) {
-        console.error('Error fetching services:', error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    if (id) {
-      fetchData();
-    }
-  }, [id, type, allServices]);
 
   useEffect(() => {
     // let user =
@@ -195,6 +164,63 @@ const ViewDetailsModal = ({
     }, 5000);
   };
 
+  // const handleServiceSelection = (e, serviceId) => {
+  //   if (e.target.checked) {
+  //     formData.serviceRefs.push(serviceId);
+  //   } else {
+  //     formData.serviceRefs = formData.serviceRefs.filter(
+  //       (id) => id !== serviceId
+  //     );
+  //   }
+  //   // Update the state to reflect the changes
+  //   setFormData({ ...formData });
+  // };
+
+  const handleServiceSelection = (e, serviceId) => {
+    if (e.target.checked) {
+      // Add service ID to currentServiceRefs
+      setCurrentServiceRefs((prev) => [...prev, serviceId]);
+    } else {
+      // Remove service ID from currentServiceRefs
+      setCurrentServiceRefs((prev) => prev.filter((id) => id !== serviceId));
+    }
+  };
+
+  const updateServices = async (e) => {
+    e.preventDefault();
+
+    let payload = {};
+    if (type == 'manager') {
+      payload.managerRef = id;
+    } else {
+      payload.agentRef = id;
+    }
+    payload.serviceRefsOld = formData.serviceRefs;
+    payload.serviceRefsNew = currentServiceRefs;
+    console.log('vtvt selected ser', payload);
+    try {
+      if (type == 'agent') {
+        api.editServicesForAgent(payload).then(({ data }) => {
+          setServiceUpdated('Services Updated!');
+        });
+      } else if (type == 'manager') {
+        api.editServicesForManager(payload).then(({ data }) => {
+          setServiceUpdated('Services Updated!');
+        });
+      } else if (type == 'client') {
+        api.editServicesForClient(payload).then(({ data }) => {
+          setServiceUpdated('Services Updated!');
+        });
+      }
+
+      setTimeout(() => {
+        setServiceUpdated('');
+      }, 4000);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div
       className={`fixed z-40 inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50`}
@@ -224,15 +250,25 @@ const ViewDetailsModal = ({
             className='space-y-6 text-sm mt-4'
             onSubmit={(e) => saveChanges(e)}
           >
-            {type !== 'manager' && (
-              <div className='max-w-lg mx-auto p-4 bg-cyan-50 shadow-md rounded'>
-                <h2 className='font-bold text-center'>Selected Services</h2>
-                <hr className=' mb-2' />
-                <div className='flex justify-evenly text-center flex-wrap'>
-                  {selectedServices.length > 0 ? (
-                    selectedServices.map((service) => (
-                      <div key={service._id} className='p-2'>
-                        <label className='block font-semibold mb-1'>
+            <div className='max-w-lg mx-auto p-4 bg-cyan-50 shadow-md rounded'>
+              <h2 className='font-bold text-center'>Services</h2>
+              <hr className=' mb-2' />
+              <div className='flex flex-wrap' style={{ gap: '4px' }}>
+                {currentServiceRefs.length > 0 ? (
+                  allServices.map((service) => (
+                    <div key={service._id} className='flex items-center p-2'>
+                      <input
+                        type='checkbox'
+                        id={service._id}
+                        checked={currentServiceRefs?.includes(service._id)}
+                        onChange={(e) => handleServiceSelection(e, service._id)}
+                        className='mr-2'
+                      />
+                      <div>
+                        <label
+                          htmlFor={service._id}
+                          className='block font-semibold mb-1'
+                        >
                           {service.heading} - {service.subheading}
                         </label>
                         <p className='text-gray-500 italic'>
@@ -244,13 +280,28 @@ const ViewDetailsModal = ({
                           </p>
                         )}
                       </div>
-                    ))
-                  ) : (
-                    <p>No services selected.</p>
-                  )}
-                </div>
+                    </div>
+                  ))
+                ) : (
+                  <p>No services selected.</p>
+                )}
               </div>
-            )}
+              <div className='flex justify-center'>
+                {serviceUpdated ? (
+                  <button className='bg-green-400 text-xs text-black px-3 py-2 rounded-md hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-blue-600 dark:hover:bg-blue-700'>
+                    {serviceUpdated}
+                  </button>
+                ) : (
+                  <button
+                    onClick={(e) => updateServices(e)}
+                    className='bg-teal-300 text-xs text-black px-3 py-2 rounded-md hover:bg-teal-500 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-blue-600 dark:hover:bg-blue-700'
+                  >
+                    Update Services
+                  </button>
+                )}
+              </div>
+            </div>
+
             {(type == 'agent' || type == 'manager') && (
               <div className='max-w-lg mx-auto p-4 bg-cyan-50 shadow-md rounded'>
                 <h2 className='font-bold text-center'>Manage Access</h2>

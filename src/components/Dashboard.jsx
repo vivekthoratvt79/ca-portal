@@ -1,217 +1,165 @@
 import React, { useEffect, useState } from 'react';
-import * as api from '../api';
+import Sidebar from './Sidebar';
+import AddClientModal from './AddClientModal';
 import { useDispatch, useSelector } from 'react-redux';
+import { fetchClientsForAgent } from '../actions/clients';
 import { fetchForAdmin } from '../actions/managers';
+import TableComponent from './TableComponent';
+import * as api from '../api';
 
 const Dashboard = () => {
-  const storageData = [40, 60]; // Used, Available
-  const msgData = [37, 100]; // Used, Available
-  const emailData = [20, 100]; // Used, Available
-  const whatsappData = [80, 100]; // Used, Available
-
-  const [tasks, setTasks] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const tasksPerPage = 6; // Number of tasks per page
-
   const dispatch = useDispatch();
-
   let user = useSelector((state) => state.auth.authData);
-  const entityId = useSelector((state) => state.auth.authData.entityID);
   const userRole = useSelector((state) => state.auth.authData.role);
-  const employees = useSelector((state) => state.employees);
+  const entitiyId = useSelector((state) => state.auth.authData.entityID);
+  const [services, setServices] = useState([]);
+  const [refresh, setRefresh] = useState(0);
 
-  const taskHeaders =
-    userRole == 'agent'
-      ? ['Client', 'Description', 'Status']
-      : ['Agent', 'Client', 'Description', 'Status'];
-
-  const keyMap = {
-    Agent: 'agentRef',
-    Client: 'clientName',
-    Description: 'description',
-    Status: 'status',
-  };
+  // State for search and pagination
+  const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const clientsPerPage = 7;
 
   useEffect(() => {
-    if (userRole == 'admin') {
-      dispatch(fetchForAdmin('agent', entityId));
-      api.getAllTasksOfAdmin(entityId).then(({ data }) => {
-        setTasks(data.data.tasks);
-      });
-    } else if (userRole == 'agent') {
-      api.getAllTasksOfAgent(entityId).then(({ data }) => {
-        setTasks(data.data.tasks);
-      });
-    } else if (userRole == 'manager') {
+    if (userRole === 'admin') {
+      dispatch(fetchForAdmin('client', entitiyId));
+      dispatch(fetchForAdmin('agent', entitiyId));
+    } else if (userRole === 'agent') {
+      dispatch(fetchClientsForAgent(entitiyId));
+    } else if (userRole === 'manager') {
+      dispatch(fetchForAdmin('client', user.entity.adminRef));
       dispatch(fetchForAdmin('agent', user.entity.adminRef));
-      api.getAllTasksOfAdmin(user.entity.adminRef).then(({ data }) => {
-        setTasks(data.data.tasks);
-      });
     }
-  }, [entityId]);
-
-  // Calculate the current tasks to display
-  const indexOfLastTask = currentPage * tasksPerPage;
-  const indexOfFirstTask = indexOfLastTask - tasksPerPage;
-  const currentTasks = tasks.slice(indexOfFirstTask, indexOfLastTask);
-
-  // Calculate total pages
-  const totalPages = Math.ceil(tasks.length / tasksPerPage);
-
-  const handleNextPage = () => {
-    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
-  };
-
-  const handlePrevPage = () => {
-    setCurrentPage((prev) => Math.max(prev - 1, 1));
-  };
-
-  const handleStatusChange = (taskId, newStatus) => {
-    let payload = {
-      taskRef: taskId,
-      status: newStatus,
-    };
-    api
-      .updateTask(payload)
-      .then(() => {
-        // Update the status in the local state after successful API call
-        setTasks((prevTasks) =>
-          prevTasks.map((task) =>
-            task._id === taskId ? { ...task, status: newStatus } : task
-          )
-        );
-      })
-      .catch((error) => {
-        console.error('Failed to update status:', error);
+    try {
+      api.fetchAllServices().then(({ data }) => {
+        if (data.statusCode === 200) {
+          setServices(data.data.services);
+        }
       });
+    } catch (error) {
+      console.log(error);
+    }
+  }, [dispatch, refresh]);
+
+  const clients = useSelector((state) => state.clients);
+
+  const [showModal, setShowModal] = useState(false);
+  const openModal = () => {
+    setShowModal(true);
   };
+  const closeModal = () => {
+    setShowModal(false);
+  };
+
+  // Filter and paginate clients
+  const filteredClients = clients.filter((client) =>
+    client.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const indexOfLastClient = currentPage * clientsPerPage;
+  const indexOfFirstClient = indexOfLastClient - clientsPerPage;
+  const currentClients = filteredClients.slice(
+    indexOfFirstClient,
+    indexOfLastClient
+  );
+
+  // Handle page change
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
     <>
+      <AddClientModal
+        showModal={showModal}
+        services={services}
+        closeModal={closeModal}
+        setRefresh={setRefresh}
+      />
+
       <div
-        className='items-center flex justify-between font-semibold h-16 p-4 border-2 border-dashed rounded-lg dark:border-gray-700'
+        className='flex justify-between items-center font-semibold h-16 p-4 border-2 border-dashed rounded-lg dark:border-gray-700 clients-container'
         style={{ borderColor: '#41506b' }}
       >
-        Dashboard
+        <div>Clients</div>
+        <input
+          type='text'
+          placeholder='Search by client name'
+          className='border p-2 rounded-md'
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
       </div>
-      <div className=''>
-        <div className='w-100 mt-4'>
-          <div className='text-md font-semibold'>Random Tasks</div>
-          <table className='table-auto w-full border-collapse mt-2'>
-            <thead>
-              <tr>
-                {taskHeaders.map((header, index) => (
-                  <th
-                    key={index}
-                    className='px-4 py-2 bg-gray-200 text-gray-700 border border-gray-300'
-                  >
-                    {header}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            {currentTasks.length === 0 ? (
-              <tbody>
+
+      {!currentClients.length ? (
+        <div className='p-4'>
+          <div className='overflow-x-auto max-h-[575px]'>
+            <table className='table-auto w-full border-collapse'>
+              <thead>
                 <tr>
-                  {taskHeaders.map((header, index) => (
-                    <td
+                  {[
+                    'Sr No.',
+                    'Name',
+                    'Email',
+                    'Number',
+                    'Assign Work',
+                    'ViewDetails',
+                  ].map((header, index) => (
+                    <th
                       key={index}
-                      className='px-4 py-2 border border-gray-300 text-center'
+                      className='px-4 py-2 bg-gray-200 text-gray-700 border border-gray-300'
                     >
-                      -
-                    </td>
+                      {header}
+                    </th>
                   ))}
                 </tr>
-              </tbody>
-            ) : (
+              </thead>
               <tbody>
-                {currentTasks.map((rowData, rowIndex) => (
-                  <tr key={rowIndex}>
-                    {taskHeaders.map((header, cellIndex) => {
-                      const cellData = rowData[keyMap[header]] || '-';
-
-                      return header === 'Status' && userRole === 'agent' ? (
-                        <td
-                          key={cellIndex}
-                          className='px-4 py-2 border border-gray-300 text-center'
-                        >
-                          <select
-                            className='w-100'
-                            value={cellData}
-                            onChange={(e) =>
-                              handleStatusChange(rowData._id, e.target.value)
-                            }
-                            style={{
-                              background: 'transparent',
-                              outline: 'none',
-                            }}
-                          >
-                            <option key='open' value='open'>
-                              Open
-                            </option>
-                            <option key='inprogress' value='inprogress'>
-                              In Progress
-                            </option>
-                            <option key='closed' value='closed'>
-                              Closed
-                            </option>
-                          </select>
-                        </td>
-                      ) : header === 'Status' ? (
-                        <td
-                          key={cellIndex}
-                          className='px-4 py-2 border border-gray-300 text-center'
-                        >
-                          {cellData === 'open' && 'Open'}
-                          {cellData === 'inprogress' && 'In Progress'}
-                          {cellData === 'closed' && 'Closed'}
-                        </td>
-                      ) : header === 'Agent' && employees.length ? (
-                        <td
-                          key={cellIndex}
-                          className='px-4 py-2 border border-gray-300 text-center'
-                        >
-                          {employees.find(
-                            (employee) => cellData === employee._id
-                          )?.name || '-'}
-                        </td>
-                      ) : (
-                        <td
-                          key={cellIndex}
-                          className='px-4 py-2 border border-gray-300 text-center'
-                        >
-                          {cellData}
-                        </td>
-                      );
-                    })}
-                  </tr>
-                ))}
+                <tr>
+                  {['Sr No.', 'Name', 'Email', 'Number', '', ''].map(
+                    (header, index) => (
+                      <td
+                        key={index}
+                        className={`px-4 py-2 border border-gray-300 text-center`}
+                      >
+                        -
+                      </td>
+                    )
+                  )}
+                </tr>
               </tbody>
-            )}
-          </table>
-
-          {/* Pagination Controls */}
-          <div className='flex justify-between mt-4'>
-            <button
-              onClick={handlePrevPage}
-              disabled={currentPage === 1}
-              className='px-4 py-2 bg-gray-200 text-gray-700 border border-gray-300 rounded'
-            >
-              Previous
-            </button>
-            <div className='flex items-center'>
-              Page {currentPage} of {totalPages}
-            </div>
-            <button
-              onClick={handleNextPage}
-              disabled={currentPage === totalPages}
-              className='px-4 py-2 bg-gray-200 text-gray-700 border border-gray-300 rounded'
-            >
-              Next
-            </button>
+            </table>
           </div>
         </div>
-      </div>
+      ) : (
+        <div className='p-4'>
+          <TableComponent
+            headers={['Sr No.', 'Name', 'Email', 'Number']}
+            data={currentClients}
+            type='client'
+            allServices={services}
+            setRefresh={setRefresh}
+            page='dashboard'
+          />
+          <div className='flex justify-center mt-4'>
+            {[
+              ...Array(
+                Math.ceil(filteredClients.length / clientsPerPage)
+              ).keys(),
+            ].map((number) => (
+              <button
+                key={number}
+                className={`px-4 py-2 mx-1 rounded ${
+                  currentPage === number + 1
+                    ? 'bg-blue-500 text-white'
+                    : 'bg-gray-200'
+                }`}
+                onClick={() => paginate(number + 1)}
+              >
+                {number + 1}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
     </>
   );
 };

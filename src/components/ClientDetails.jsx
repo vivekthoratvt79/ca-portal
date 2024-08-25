@@ -208,12 +208,12 @@ const ClientDetails = () => {
   return (
     <div className='p-4 h-91vh'>
       <div
-        className='flex gap-2 items-center font-semibold h-16 p-4 border-2 border-dashed rounded-lg dark:border-gray-700 clients-container'
+        className='flex gap-2 items-center font-semibold h-16 p-4 border-2 border-dashed rounded-lg clients-container'
         style={{ borderColor: '#41506b' }}
       >
         <div className='cursor-pointer' onClick={() => navigate('/clients')}>
           <svg
-            className='w-6 h-6 text-gray-800 dark:text-white'
+            className='w-6 h-6 text-gray-800'
             aria-hidden='true'
             xmlns='http://www.w3.org/2000/svg'
             width='24'
@@ -345,9 +345,7 @@ const ClientDetails = () => {
                 },
               ].map(({ label, name, type, disabled }) => (
                 <div key={name}>
-                  <label className='block text-zinc-700 dark:text-zinc-300'>
-                    {label}
-                  </label>
+                  <label className='block text-zinc-700'>{label}</label>
                   <input
                     type={type}
                     name={name}
@@ -355,7 +353,7 @@ const ClientDetails = () => {
                     onChange={type === 'file' ? handleFileChange : handleChange}
                     placeholder={label}
                     disabled={disabled ? true : false}
-                    className={`w-full mt-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-zinc-300 ${
+                    className={`w-full mt-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                       errors[name] ? 'border-red-500' : ''
                     }`}
                   />
@@ -367,51 +365,45 @@ const ClientDetails = () => {
             </div>
             <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
               <div>
-                <label className='block text-zinc-700 dark:text-zinc-300'>
-                  Address Proof
-                </label>
+                <label className='block text-zinc-700'>Address Proof</label>
                 <input
                   type='file'
                   name='addressProof'
                   onChange={handleFileChange}
-                  className='w-full mt-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-zinc-300'
+                  className='w-full mt-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
                 />
                 <img
                   alt='Address Proof'
                   src={formData.addressProof}
-                  className='w-full h-52 object-contain mt-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-zinc-300'
+                  className='w-full h-52 object-contain mt-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
                 />
               </div>
               <div>
-                <label className='block text-zinc-700 dark:text-zinc-300'>
-                  Adhaar Image
-                </label>
+                <label className='block text-zinc-700'>Adhaar Image</label>
                 <input
                   type='file'
                   name='adhaarImage'
                   onChange={handleFileChange}
-                  className='w-full mt-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-zinc-300'
+                  className='w-full mt-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
                 />
                 <img
                   alt='Adhaar Card'
                   src={formData.adhaarImage}
-                  className='w-full h-52 object-contain mt-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-zinc-300'
+                  className='w-full h-52 object-contain mt-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
                 />
               </div>
               <div>
-                <label className='block text-zinc-700 dark:text-zinc-300'>
-                  PAN Image
-                </label>
+                <label className='block text-zinc-700'>PAN Image</label>
                 <input
                   type='file'
                   name='panImage'
                   onChange={handleFileChange}
-                  className='w-full mt-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-zinc-300'
+                  className='w-full mt-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
                 />
                 <img
                   alt='Pan Card'
                   src={formData.panImage}
-                  className='w-full h-52 object-contain mt-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-zinc-300'
+                  className='w-full h-52 object-contain mt-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
                 />
               </div>
             </div>
@@ -424,7 +416,7 @@ const ClientDetails = () => {
                 !error && (
                   <button
                     onClick={(e) => saveChanges(e)}
-                    className={`bg-green-400 text-black px-4 py-2 rounded-md hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-blue-600 dark:hover:bg-blue-700`}
+                    className={`bg-green-400 text-black px-4 py-2 rounded-md hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-blue-500`}
                   >
                     Save Changes
                   </button>

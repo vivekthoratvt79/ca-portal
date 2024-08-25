@@ -33,6 +33,7 @@ const Clients = ({ access }) => {
       console.log(error);
     }
   }, [dispatch, refresh]);
+
   const clients = useSelector((state) => state.clients);
 
   const [showModal, setShowModal] = useState(false);

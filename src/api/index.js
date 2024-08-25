@@ -84,6 +84,17 @@ export const getAllBillsOfAdmin = (payload) =>
 export const getAllBillsOfClient = (payload) =>
   API.post(`/getAllBillsOfClient`, payload);
 
+// ======================== EDIT SERVICES =============================
+
+export const editServicesForAgent = (payload) =>
+  API.post(`/editServicesForAgent`, payload);
+export const editServicesForManager = (payload) =>
+  API.post(`/editServicesForManager`, payload);
+export const editServicesForClient = (payload) =>
+  API.post(`/editServicesForClient`, payload);
+
+// ======================= RANDOM TASKS ===============================
+
 export const createTask = (payload) => API.post(`/tasks/createTask`, payload);
 export const updateTask = (payload) => API.post(`/tasks/updateTask`, payload);
 export const getAllTasksOfAgent = (id) =>
@@ -91,7 +102,7 @@ export const getAllTasksOfAgent = (id) =>
 export const getAllTasksOfAdmin = (id) =>
   API.get(`/tasks/getAllTasksOfAdmin/${id}`);
 
-// =================== BILLS ===============================
+// ========================== BILLS ===============================
 
 export const getBillDetails = (billRef) =>
   API.get(`/bills/getBillDetails?billRef=${billRef}`);

@@ -34,6 +34,7 @@ import PTEC from './components/PTEC';
 import Accounting from './components/Accounting';
 import LandingPage from './components/LandingPage';
 import ClientDetails from './components/ClientDetails';
+import RandomTask from './components/RandomTask';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -217,6 +218,10 @@ const App = () => {
                   element={<Income access={access} />}
                 ></Route>
                 <Route path='/client/:id' element={<ClientDetails />}></Route>
+                <Route
+                  path='/tasks'
+                  element={<RandomTask access={access} />}
+                ></Route>
                 {/* <Route
               path='/expenditure'
               element={<Expenditure access={access} />}
